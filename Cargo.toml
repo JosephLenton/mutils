@@ -5,6 +5,7 @@ authors = ["josephlenton@gmail.com <josephlenton@gmail.com>"]
 edition = "2018"
 license = "MIT"
 description = "Mathematical-like utilities. Points, Sizes, Colours, maths operating on them. Things like that."
+repository = "https://github.com/JosephLenton/mutils"
 
 [dependencies]
 lazy_static = "1.4.0"

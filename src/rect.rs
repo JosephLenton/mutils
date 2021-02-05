@@ -2,6 +2,7 @@ use std::ops::Add;
 use std::ops::AddAssign;
 use std::ops::Sub;
 use std::ops::SubAssign;
+use std::iter::IntoIterator;
 
 use super::internal::FromClamped;
 use super::internal::Num;
@@ -232,6 +233,49 @@ impl<N: Num> PartialEq for Rect<N> {
     }
 }
 
+impl<N: Num> IntoIterator for Rect<N> {
+    type Item = Point<N>;
+    type IntoIter = RectIter<N>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        RectIter::new(self)
+    }
+}
+
+pub struct RectIter<N: Num = f32> {
+    bottom_left: Point<N>,
+    top_right: Point<N>,
+    current: Point<N>,
+}
+
+impl<N: Num> RectIter<N> {
+    fn new(rect: Rect<N>) -> Self {
+        Self {
+            bottom_left: rect.bottom_left(),
+            top_right: rect.top_right(),
+            current: rect.bottom_left() - Point(N::one(), N::zero()),
+        }
+    }
+}
+
+impl<N: Num> Iterator for RectIter<N> {
+    type Item = Point<N>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.current += Point(N::one(), N::zero());
+
+        if self.top_right.x() <= self.current.x() {
+            self.current = Point( self.bottom_left.x(), self.current.y() + N::one() );
+        }
+
+        if self.top_right.y() <= self.current.y() {
+            return None;
+        }
+
+        Some(self.current)
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -282,5 +326,44 @@ mod test {
         let b = Rect(Point(3, 3), Size(6, 6));
 
         assert_eq!(a.overlaps(b), true);
+    }
+
+    #[test]
+    fn it_should_not_iterate_empty_rect() {
+        let mut xs = vec![];
+        let mut ys = vec![];
+
+        for Point(x, y) in Rect(Point(2, 3), Size(0, 0)) {
+            xs.push(x);
+            ys.push(y);
+        }
+
+        assert_eq!(xs, []);
+        assert_eq!(ys, []);
+    }
+
+    #[test]
+    fn it_should_iterate_over_rect() {
+        let mut xs = vec![];
+        let mut ys = vec![];
+
+        for Point(x, y) in Rect(Point(2, 3), Size(3, 4)) {
+            xs.push(x);
+            ys.push(y);
+        }
+
+        assert_eq!(xs, [
+            2, 3, 4,
+            2, 3, 4,
+            2, 3, 4,
+            2, 3, 4,
+        ]);
+
+        assert_eq!(ys, [
+            3, 3, 3,
+            4, 4, 4,
+            5, 5, 5,
+            6, 6, 6,
+        ]);
     }
 }

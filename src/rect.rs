@@ -253,7 +253,7 @@ impl<N: Num> RectIter<N> {
         Self {
             bottom_left: rect.bottom_left(),
             top_right: rect.top_right(),
-            current: rect.bottom_left() - Point(N::one(), N::zero()),
+            current: rect.bottom_left(),
         }
     }
 }
@@ -262,8 +262,6 @@ impl<N: Num> Iterator for RectIter<N> {
     type Item = Point<N>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.current += Point(N::one(), N::zero());
-
         if self.top_right.x() <= self.current.x() {
             self.current = Point( self.bottom_left.x(), self.current.y() + N::one() );
         }
@@ -272,7 +270,9 @@ impl<N: Num> Iterator for RectIter<N> {
             return None;
         }
 
-        Some(self.current)
+        let r = self.current;
+        self.current += Point(N::one(), N::zero());
+        Some(r)
     }
 }
 
@@ -352,6 +352,7 @@ mod test {
             ys.push(y);
         }
 
+        #[rustfmt::skip]
         assert_eq!(xs, [
             2, 3, 4,
             2, 3, 4,
@@ -359,11 +360,35 @@ mod test {
             2, 3, 4,
         ]);
 
+        #[rustfmt::skip]
         assert_eq!(ys, [
             3, 3, 3,
             4, 4, 4,
             5, 5, 5,
             6, 6, 6,
+        ]);
+    }
+
+    #[test]
+    fn it_should_iterate_over_rect_usize() {
+        let mut xs = vec![];
+        let mut ys = vec![];
+
+        for Point(x, y) in Rect(Point(0, 0), Size(2, 2)) {
+            xs.push(x);
+            ys.push(y);
+        }
+
+        #[rustfmt::skip]
+        assert_eq!(xs, [
+            0, 1,
+            0, 1,
+        ]);
+
+        #[rustfmt::skip]
+        assert_eq!(ys, [
+            0, 0,
+            1, 1,
         ]);
     }
 }

@@ -25,19 +25,52 @@ impl Colour {
     pub const CYAN: Colour = Colour::new(0.0, 1.0, 1.0, 1.0);
     pub const YELLOW: Colour = Colour::new(1.0, 1.0, 0.0, 1.0);
 
-    fn rgb_hex_to_red_f32(val: u32) -> f32 {
-        Colour::rgba_u8_to_f32(((val >> 16) & 0xff) as u8)
+    #[inline(always)]
+    fn rgb_hex_to_red_f32(hex: u32) -> f32 {
+        Colour::hex_u32_to_comp_f32(hex, 16)
     }
 
-    fn rgb_hex_to_green_f32(val: u32) -> f32 {
-        Colour::rgba_u8_to_f32(((val >> 8) & 0xff) as u8)
+    #[inline(always)]
+    fn rgb_hex_to_green_f32(hex: u32) -> f32 {
+        Colour::hex_u32_to_comp_f32(hex, 8)
     }
 
-    fn rgb_hex_to_blue_f32(val: u32) -> f32 {
-        Colour::rgba_u8_to_f32((val & 0xff) as u8)
+    #[inline(always)]
+    fn rgb_hex_to_blue_f32(hex: u32) -> f32 {
+        Colour::hex_u32_to_comp_f32(hex, 0)
     }
 
-    fn rgba_u8_to_f32(val: u8) -> f32 {
+    #[inline(always)]
+    fn rgba_hex_to_red_f32(hex: u32) -> f32 {
+        Colour::hex_u32_to_comp_f32(hex, 24)
+    }
+
+    #[inline(always)]
+    fn rgba_hex_to_green_f32(hex: u32) -> f32 {
+        Colour::hex_u32_to_comp_f32(hex, 16)
+    }
+
+    #[inline(always)]
+    fn rgba_hex_to_blue_f32(hex: u32) -> f32 {
+        Colour::hex_u32_to_comp_f32(hex, 8)
+    }
+
+    #[inline(always)]
+    fn rgba_hex_to_alpha_f32(hex: u32) -> f32 {
+        Colour::hex_u32_to_comp_f32(hex, 0)
+    }
+
+    #[inline(always)]
+    fn hex_u32_to_comp_f32(val:u32, shift: u8) -> f32 {
+        ((val >> shift) & 0xff) as f32 / 255.0
+    }
+
+    #[inline(always)]
+    fn f32_to_hex_u32(val:f32, shift: u8) -> u32 {
+        ((val * 255.0).round() as u32) << shift
+    }
+
+    fn clamp_u8_to_f32(val: u8) -> f32 {
         if val >= 255 {
             1.0
         } else if val == 0 {
@@ -77,10 +110,10 @@ impl Colour {
 
     pub fn new_rgba(red: u8, green: u8, blue: u8, alpha: u8) -> Self {
         Self {
-            red: Colour::rgba_u8_to_f32(red),
-            green: Colour::rgba_u8_to_f32(green),
-            blue: Colour::rgba_u8_to_f32(blue),
-            alpha: Colour::rgba_u8_to_f32(alpha),
+            red: Colour::clamp_u8_to_f32(red),
+            green: Colour::clamp_u8_to_f32(green),
+            blue: Colour::clamp_u8_to_f32(blue),
+            alpha: Colour::clamp_u8_to_f32(alpha),
         }
     }
 
@@ -93,20 +126,45 @@ impl Colour {
         }
     }
 
+    pub fn new_rgba_hex(rgb_hex: u32) -> Self {
+        Self {
+            red: Colour::rgba_hex_to_red_f32(rgb_hex),
+            green: Colour::rgba_hex_to_green_f32(rgb_hex),
+            blue: Colour::rgba_hex_to_blue_f32(rgb_hex),
+            alpha: Colour::rgba_hex_to_alpha_f32(rgb_hex),
+        }
+    }
+
     pub fn red(&self) -> f32 {
         self.red
+    }
+
+    pub fn red_u32(&self) -> u32 {
+        Colour::f32_to_rgba_u8(self.red) as u32
     }
 
     pub fn green(&self) -> f32 {
         self.green
     }
 
+    pub fn green_u32(&self) -> u32 {
+        Colour::f32_to_rgba_u8(self.green) as u32
+    }
+
     pub fn blue(&self) -> f32 {
         self.blue
     }
 
+    pub fn blue_u32(&self) -> u32 {
+        Colour::f32_to_rgba_u8(self.blue) as u32
+    }
+
     pub fn alpha(&self) -> f32 {
         self.alpha
+    }
+
+    pub fn alpha_u32(&self) -> u32 {
+        Colour::f32_to_rgba_u8(self.alpha) as u32
     }
 
     pub fn mix(self, other: Self, mut amount: f32) -> Self {
@@ -123,6 +181,11 @@ impl Colour {
         let mut result = (self * inverse_amount) + (other * amount);
         result.alpha = self.alpha;
         result
+    }
+
+    #[inline(always)]
+    pub fn to_rgba_u32(self) -> u32 {
+        Colour::f32_to_hex_u32(self.red(), 24) | Colour::f32_to_hex_u32(self.green(), 16) | Colour::f32_to_hex_u32(self.blue(), 8) | Colour::f32_to_hex_u32(self.alpha(), 0)
     }
 }
 
@@ -251,4 +314,57 @@ impl DivAssign<f32> for Colour {
     fn div_assign(&mut self, val: f32) {
         *self = *self / val;
     }
+}
+
+#[cfg(test)]
+mod test {
+  use super::*;
+
+  #[test]
+  pub fn colour_red_u32() {
+      let rgba_hex = 0xffa89321;
+      let colour = Colour::new_rgba_hex(rgba_hex);
+
+      assert_eq!(colour.red(), 1.0);
+      assert_eq!(colour.red_u32(), 255);
+  }
+
+  #[test]
+  pub fn colour_green_u32() {
+      let rgba_hex = 0xffa89321;
+      let colour = Colour::new_rgba_hex(rgba_hex);
+
+      assert_eq!(colour.green(), 168.0 / 255.0);
+      assert_eq!(colour.green_u32(), 168);
+  }
+
+  #[test]
+  pub fn colour_blue_u32() {
+      let rgba_hex = 0xffa89321;
+      let colour = Colour::new_rgba_hex(rgba_hex);
+
+      assert_eq!(colour.blue(), 147.0 / 255.0);
+      assert_eq!(colour.blue_u32(), 147);
+  }
+
+  #[test]
+  pub fn colour_alpha_u32() {
+      let rgba_hex = 0xffa89321;
+      let colour = Colour::new_rgba_hex(rgba_hex);
+
+      assert_eq!(colour.alpha(), 33.0 / 255.0);
+      assert_eq!(colour.alpha_u32(), 33);
+  }
+
+  #[test]
+  pub fn colour_u32_matches_value_created_with() {
+      let rgba_hex = 0xffa89321;
+      let colour = Colour::new_rgba_hex(rgba_hex);
+
+      assert_eq!(colour.red_u32(), 255);
+      assert_eq!(colour.green_u32(), 168);
+      assert_eq!(colour.blue_u32(), 147);
+      assert_eq!(colour.alpha_u32(), 33);
+      assert_eq!(colour.to_rgba_u32(), rgba_hex);
+  }
 }

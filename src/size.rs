@@ -45,8 +45,8 @@ impl<N: Num> Size<N> {
         self.width() * self.height()
     }
 
-    pub fn flat_index(&self, x: N, y: N) -> N {
-        self.width() * y + x
+    pub fn index(&self, pos: Point<N>) -> N {
+        self.width() * pos.y() + pos.x()
     }
 
     pub fn half(&self) -> Self {

@@ -139,12 +139,20 @@ impl Colour {
         self.red
     }
 
+    pub fn red_u8(&self) -> u8 {
+        Colour::f32_to_rgba_u8(self.red)
+    }
+
     pub fn red_u32(&self) -> u32 {
         Colour::f32_to_rgba_u8(self.red) as u32
     }
 
     pub fn green(&self) -> f32 {
         self.green
+    }
+
+    pub fn green_u8(&self) -> u8 {
+        Colour::f32_to_rgba_u8(self.green)
     }
 
     pub fn green_u32(&self) -> u32 {
@@ -155,12 +163,20 @@ impl Colour {
         self.blue
     }
 
+    pub fn blue_u8(&self) -> u8 {
+        Colour::f32_to_rgba_u8(self.blue)
+    }
+
     pub fn blue_u32(&self) -> u32 {
         Colour::f32_to_rgba_u8(self.blue) as u32
     }
 
     pub fn alpha(&self) -> f32 {
         self.alpha
+    }
+
+    pub fn alpha_u8(&self) -> u8 {
+        Colour::f32_to_rgba_u8(self.alpha)
     }
 
     pub fn alpha_u32(&self) -> u32 {

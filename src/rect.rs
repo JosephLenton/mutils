@@ -1,8 +1,8 @@
+use std::iter::IntoIterator;
 use std::ops::Add;
 use std::ops::AddAssign;
 use std::ops::Sub;
 use std::ops::SubAssign;
-use std::iter::IntoIterator;
 
 use super::internal::FromClamped;
 use super::internal::Num;
@@ -263,7 +263,7 @@ impl<N: Num> Iterator for RectIter<N> {
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.top_right.x() <= self.current.x() {
-            self.current = Point( self.bottom_left.x(), self.current.y() + N::one() );
+            self.current = Point(self.bottom_left.x(), self.current.y() + N::one());
         }
 
         if self.top_right.y() <= self.current.y() {

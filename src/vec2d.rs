@@ -22,10 +22,7 @@ impl<V: Copy> Vec2D<V> {
     /// Creates a new Vec2D of the size given.
     ///
     /// It is filled with the default value.
-    pub fn new(
-        size: Size<usize>,
-        default: V,
-    ) -> Self {
+    pub fn new(size: Size<usize>, default: V) -> Self {
         Vec2D {
             width: size.width(),
             data: vec![default; size.area()],
@@ -33,21 +30,14 @@ impl<V: Copy> Vec2D<V> {
     }
 
     /// Returns the tile at the position given.
-    pub fn get(
-        &self,
-        pos: Point<usize>,
-    ) -> Option<&V> {
+    pub fn get(&self, pos: Point<usize>) -> Option<&V> {
         let index = map_index(pos, self.width);
 
         self.data.get(index)
     }
 
     /// Sets a tile at the position given.
-    pub fn set(
-        &mut self,
-        pos: Point<usize>,
-        value: V,
-    ) -> () {
+    pub fn set(&mut self, pos: Point<usize>, value: V) -> () {
         let index = map_index(pos, self.width);
 
         self.data[index] = value;
@@ -76,12 +66,11 @@ impl<V: Copy> Vec2D<V> {
     }
 
     /// Allows you to iterate over a sub section of this map.
-    pub fn iter_of(
-        &self,
-        area: Rect<usize>,
-    ) -> Vec2DIterator<V> {
+    pub fn iter_of(&self, area: Rect<usize>) -> Vec2DIterator<V> {
         let data_rect = self.rect();
-        let iterate_area = data_rect.intersect(area).unwrap_or(Rect(Point(0, 0), Size(0, 0)));
+        let iterate_area = data_rect
+            .intersect(area)
+            .unwrap_or(Rect(Point(0, 0), Size(0, 0)));
 
         Vec2DIterator {
             data: &self.data,
@@ -96,10 +85,7 @@ impl<V: Copy> Vec2D<V> {
 impl<V: Copy> Index<Point<usize>> for Vec2D<V> {
     type Output = V;
 
-    fn index(
-        &self,
-        pos: Point<usize>,
-    ) -> &V {
+    fn index(&self, pos: Point<usize>) -> &V {
         let index = map_index(pos, self.width);
 
         &self.data[index]
@@ -107,10 +93,7 @@ impl<V: Copy> Index<Point<usize>> for Vec2D<V> {
 }
 
 impl<V: Copy> IndexMut<Point<usize>> for Vec2D<V> {
-    fn index_mut(
-        &mut self,
-        pos: Point<usize>,
-    ) -> &mut V {
+    fn index_mut(&mut self, pos: Point<usize>) -> &mut V {
         let index = map_index(pos, self.width);
 
         &mut self.data[index]
@@ -242,7 +225,10 @@ mod test {
         }
 
         assert_eq!(count, vec2d_size.area());
-        assert_eq!(pos_count_x, vec2d_size.height() * (1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9));
+        assert_eq!(
+            pos_count_x,
+            vec2d_size.height() * (1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9)
+        );
     }
 
     #[test]

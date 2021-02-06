@@ -61,12 +61,12 @@ impl Colour {
     }
 
     #[inline(always)]
-    fn hex_u32_to_comp_f32(val:u32, shift: u8) -> f32 {
+    fn hex_u32_to_comp_f32(val: u32, shift: u8) -> f32 {
         ((val >> shift) & 0xff) as f32 / 255.0
     }
 
     #[inline(always)]
-    fn f32_to_hex_u32(val:f32, shift: u8) -> u32 {
+    fn f32_to_hex_u32(val: f32, shift: u8) -> u32 {
         ((val * 255.0).round() as u32) << shift
     }
 
@@ -201,7 +201,10 @@ impl Colour {
 
     #[inline(always)]
     pub fn to_rgba_u32(self) -> u32 {
-        Colour::f32_to_hex_u32(self.red(), 24) | Colour::f32_to_hex_u32(self.green(), 16) | Colour::f32_to_hex_u32(self.blue(), 8) | Colour::f32_to_hex_u32(self.alpha(), 0)
+        Colour::f32_to_hex_u32(self.red(), 24)
+            | Colour::f32_to_hex_u32(self.green(), 16)
+            | Colour::f32_to_hex_u32(self.blue(), 8)
+            | Colour::f32_to_hex_u32(self.alpha(), 0)
     }
 }
 
@@ -334,53 +337,53 @@ impl DivAssign<f32> for Colour {
 
 #[cfg(test)]
 mod test {
-  use super::*;
+    use super::*;
 
-  #[test]
-  pub fn colour_red_u32() {
-      let rgba_hex = 0xffa89321;
-      let colour = Colour::new_rgba_hex(rgba_hex);
+    #[test]
+    pub fn colour_red_u32() {
+        let rgba_hex = 0xffa89321;
+        let colour = Colour::new_rgba_hex(rgba_hex);
 
-      assert_eq!(colour.red(), 1.0);
-      assert_eq!(colour.red_u32(), 255);
-  }
+        assert_eq!(colour.red(), 1.0);
+        assert_eq!(colour.red_u32(), 255);
+    }
 
-  #[test]
-  pub fn colour_green_u32() {
-      let rgba_hex = 0xffa89321;
-      let colour = Colour::new_rgba_hex(rgba_hex);
+    #[test]
+    pub fn colour_green_u32() {
+        let rgba_hex = 0xffa89321;
+        let colour = Colour::new_rgba_hex(rgba_hex);
 
-      assert_eq!(colour.green(), 168.0 / 255.0);
-      assert_eq!(colour.green_u32(), 168);
-  }
+        assert_eq!(colour.green(), 168.0 / 255.0);
+        assert_eq!(colour.green_u32(), 168);
+    }
 
-  #[test]
-  pub fn colour_blue_u32() {
-      let rgba_hex = 0xffa89321;
-      let colour = Colour::new_rgba_hex(rgba_hex);
+    #[test]
+    pub fn colour_blue_u32() {
+        let rgba_hex = 0xffa89321;
+        let colour = Colour::new_rgba_hex(rgba_hex);
 
-      assert_eq!(colour.blue(), 147.0 / 255.0);
-      assert_eq!(colour.blue_u32(), 147);
-  }
+        assert_eq!(colour.blue(), 147.0 / 255.0);
+        assert_eq!(colour.blue_u32(), 147);
+    }
 
-  #[test]
-  pub fn colour_alpha_u32() {
-      let rgba_hex = 0xffa89321;
-      let colour = Colour::new_rgba_hex(rgba_hex);
+    #[test]
+    pub fn colour_alpha_u32() {
+        let rgba_hex = 0xffa89321;
+        let colour = Colour::new_rgba_hex(rgba_hex);
 
-      assert_eq!(colour.alpha(), 33.0 / 255.0);
-      assert_eq!(colour.alpha_u32(), 33);
-  }
+        assert_eq!(colour.alpha(), 33.0 / 255.0);
+        assert_eq!(colour.alpha_u32(), 33);
+    }
 
-  #[test]
-  pub fn colour_u32_matches_value_created_with() {
-      let rgba_hex = 0xffa89321;
-      let colour = Colour::new_rgba_hex(rgba_hex);
+    #[test]
+    pub fn colour_u32_matches_value_created_with() {
+        let rgba_hex = 0xffa89321;
+        let colour = Colour::new_rgba_hex(rgba_hex);
 
-      assert_eq!(colour.red_u32(), 255);
-      assert_eq!(colour.green_u32(), 168);
-      assert_eq!(colour.blue_u32(), 147);
-      assert_eq!(colour.alpha_u32(), 33);
-      assert_eq!(colour.to_rgba_u32(), rgba_hex);
-  }
+        assert_eq!(colour.red_u32(), 255);
+        assert_eq!(colour.green_u32(), 168);
+        assert_eq!(colour.blue_u32(), 147);
+        assert_eq!(colour.alpha_u32(), 33);
+        assert_eq!(colour.to_rgba_u32(), rgba_hex);
+    }
 }

@@ -9,6 +9,7 @@ use std::iter::IntoIterator;
 /// Holds the data for a Vec2D.
 ///
 /// A Vec2D has a fixed size and cannot be resized.
+#[derive(Clone, Debug)]
 pub struct Vec2D<V: Copy> {
     /// The width and height of this Vec2D.
     width: usize,

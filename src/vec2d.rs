@@ -4,7 +4,8 @@ use crate::Size;
 use ::std::iter::Iterator;
 use ::std::ops::Index;
 use ::std::ops::IndexMut;
-use std::iter::IntoIterator;
+use ::std::iter::IntoIterator;
+use ::std::cmp::PartialEq;
 
 /// Holds the data for a Vec2D.
 ///
@@ -150,6 +151,16 @@ impl<'a, V: Copy> Iterator for Vec2DIterator<'a, V> {
         }
 
         result
+    }
+}
+
+impl<V: Copy + PartialEq> PartialEq for Vec2D<V> {
+    fn eq(&self, other: &Self) -> bool {
+        if self.width != other.width {
+            return false
+        }
+
+        return self.data == other.data
     }
 }
 

@@ -9,6 +9,7 @@ mod random;
 mod rect;
 mod size;
 mod transform;
+mod vec2d;
 
 pub use self::colour::Colour;
 pub use self::line::Line;
@@ -21,3 +22,4 @@ pub use self::random::Random;
 pub use self::rect::Rect;
 pub use self::size::Size;
 pub use self::transform::Transform;
+pub use self::vec2d::Vec2D;

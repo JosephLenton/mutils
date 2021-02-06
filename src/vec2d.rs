@@ -82,6 +82,10 @@ impl<V: Copy> Vec2D<V> {
             pos: area.bottom_left(),
         }
     }
+
+    pub fn raw_data<'a>(&'a self) -> &'a [V] {
+        &self.data
+    }
 }
 
 impl<V: Copy> Index<Point<usize>> for Vec2D<V> {

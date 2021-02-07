@@ -1,11 +1,11 @@
 use crate::Point;
 use crate::Rect;
 use crate::Size;
+use ::std::cmp::PartialEq;
+use ::std::iter::IntoIterator;
 use ::std::iter::Iterator;
 use ::std::ops::Index;
 use ::std::ops::IndexMut;
-use ::std::iter::IntoIterator;
-use ::std::cmp::PartialEq;
 
 /// Holds the data for a Vec2D.
 ///
@@ -45,6 +45,8 @@ impl<V: Copy> Vec2D<V> {
         self.data[index] = value;
     }
 
+    /// Returns the size of this Vec2D as a Rect.
+    /// This is for convenience, as the bottom left corner is always Point(0, 0).
     pub fn rect(&self) -> Rect<usize> {
         Rect(Point(0, 0), self.size())
     }
@@ -83,6 +85,7 @@ impl<V: Copy> Vec2D<V> {
         }
     }
 
+    /// Returns the underlying raw data.
     pub fn raw_data<'a>(&'a self) -> &'a [V] {
         &self.data
     }
@@ -114,6 +117,16 @@ impl<'a, V: Copy> IntoIterator for &'a Vec2D<V> {
         self.iter()
     }
 }
+
+// @TODO, This should be an IterMut.
+// impl<'a, V: Copy> IntoIterator for &'a mut Vec2D<V> {
+//     type Item = (V, Point<usize>);
+//     type IntoIter = Vec2DIterator<'a, V>;
+
+//     fn into_iter(self) -> Self::IntoIter {
+//         self.iter()
+//     }
+// }
 
 /// An iterator for the `Vec2D`.
 pub struct Vec2DIterator<'a, V: 'a> {
@@ -161,10 +174,10 @@ impl<'a, V: Copy> Iterator for Vec2DIterator<'a, V> {
 impl<V: Copy + PartialEq> PartialEq for Vec2D<V> {
     fn eq(&self, other: &Self) -> bool {
         if self.width != other.width {
-            return false
+            return false;
         }
 
-        return self.data == other.data
+        return self.data == other.data;
     }
 }
 
@@ -173,11 +186,29 @@ fn map_index(pos: Point<usize>, width: usize) -> usize {
 }
 
 #[cfg(test)]
-mod test {
+mod new {
     use super::*;
 
     #[test]
-    fn index() {
+    fn should_create_vec2d_of_correct_size() {
+        let pixels = Vec2D::new(Size(10, 20), 123);
+        assert_eq!(pixels.size().area(), 200);
+    }
+
+    #[test]
+    fn should_populate_vec2d_with_default_given() {
+        let pixels = Vec2D::new(Size(2, 2), 123);
+
+        assert_eq!(pixels.raw_data(), vec![123, 123, 123, 123,]);
+    }
+}
+
+#[cfg(test)]
+mod indexing {
+    use super::*;
+
+    #[test]
+    fn should_correctly_set_and_get_items_based_on_index() {
         let mut vec2d = Vec2D::new(Size(10, 10), 0);
         let index = Point(2, 3);
 
@@ -187,30 +218,29 @@ mod test {
     }
 
     #[test]
-    fn test_index() {
-        let vec2d_size = Size(10, 10);
-        let mut vec2d = Vec2D::new(vec2d_size, 1);
+    fn should_correctly_index_items_across_whole_vec2d() {
+        let vec2d_size = Size(10, 15);
+        let mut vec2d = Vec2D::new(vec2d_size, Point(0, 0));
 
-        for x in 0..vec2d_size.width() {
-            for y in 0..vec2d_size.height() {
-                vec2d[Point(x, y)] = x;
+        for (val, _) in &vec2d {
+            assert_eq!(val, Point(0, 0));
+        }
+
+        for x in 0..vec2d.width() {
+            for y in 0..vec2d.height() {
+                vec2d[Point(x, y)] = Point(x, y);
             }
         }
 
-        vec2d.iter().for_each(|(x, pos)| -> () {
-            assert_eq!(x, pos.x());
-        });
-
-        for x in 0..vec2d_size.width() {
-            for y in 0..vec2d_size.height() {
-                vec2d[Point(x, y)] = y;
-            }
-        }
-
-        for (y, pos) in vec2d.iter() {
-            assert_eq!(y, pos.y());
+        for (val, pos) in &vec2d {
+            assert_eq!(val, pos);
         }
     }
+}
+
+#[cfg(test)]
+mod iterator {
+    use super::*;
 
     #[test]
     fn iterate_over_all() {

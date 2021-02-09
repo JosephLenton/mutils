@@ -8,61 +8,34 @@ use std::ops::Rem;
 use std::ops::Sub;
 use std::ops::SubAssign;
 
+pub type Color = Colour;
+
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Colour {
-    // @TODO: This uses FOUR f32 values for a colour. It can be replaced by ONE u32. Rewrite it!
-    red: f32,
-    green: f32,
-    blue: f32,
-    alpha: f32,
+    rgba: u32,
 }
 
 impl Colour {
-    pub const WHITE: Colour = Colour::new(1.0, 1.0, 1.0, 1.0);
-    pub const BLACK: Colour = Colour::new(0.0, 0.0, 0.0, 1.0);
+    pub const WHITE: Colour = Colour::new_from_rgba(0xffffffff);
+    pub const BLACK: Colour = Colour::new_from_rgba(0x000000ff);
 
-    pub const MAGENTA: Colour = Colour::new(1.0, 0.0, 1.0, 1.0);
-    pub const CYAN: Colour = Colour::new(0.0, 1.0, 1.0, 1.0);
-    pub const YELLOW: Colour = Colour::new(1.0, 1.0, 0.0, 1.0);
-
-    #[inline(always)]
-    fn rgb_hex_to_red_f32(hex: u32) -> f32 {
-        Colour::hex_u32_to_comp_f32(hex, 16)
-    }
+    pub const MAGENTA: Colour = Colour::new_from_rgba(0xff00ffff);
+    pub const CYAN: Colour = Colour::new_from_rgba(0x00ffffff);
+    pub const YELLOW: Colour = Colour::new_from_rgba(0xffff00ff);
 
     #[inline(always)]
-    fn rgb_hex_to_green_f32(hex: u32) -> f32 {
-        Colour::hex_u32_to_comp_f32(hex, 8)
-    }
-
-    #[inline(always)]
-    fn rgb_hex_to_blue_f32(hex: u32) -> f32 {
-        Colour::hex_u32_to_comp_f32(hex, 0)
-    }
-
-    #[inline(always)]
-    fn rgba_hex_to_red_f32(hex: u32) -> f32 {
-        Colour::hex_u32_to_comp_f32(hex, 24)
-    }
-
-    #[inline(always)]
-    fn rgba_hex_to_green_f32(hex: u32) -> f32 {
-        Colour::hex_u32_to_comp_f32(hex, 16)
-    }
-
-    #[inline(always)]
-    fn rgba_hex_to_blue_f32(hex: u32) -> f32 {
-        Colour::hex_u32_to_comp_f32(hex, 8)
-    }
-
-    #[inline(always)]
-    fn rgba_hex_to_alpha_f32(hex: u32) -> f32 {
-        Colour::hex_u32_to_comp_f32(hex, 0)
-    }
-
-    #[inline(always)]
-    fn hex_u32_to_comp_f32(val: u32, shift: u8) -> f32 {
+    fn hex_u32_to_f32(val: u32, shift: u32) -> f32 {
         ((val >> shift) & 0xff) as f32 / 255.0
+    }
+
+    #[inline(always)]
+    fn hex_u32_to_u32(val: u32, shift: u32) -> u32 {
+        (val >> shift) & 0xff
+    }
+
+    #[inline(always)]
+    fn hex_u32_to_u8(val: u32, shift: u32) -> u8 {
+        ((val >> shift) & 0xff) as u8
     }
 
     #[inline(always)]
@@ -90,97 +63,99 @@ impl Colour {
         }
     }
 
-    pub const fn new(red: f32, green: f32, blue: f32, alpha: f32) -> Self {
-        Self {
-            red,
-            green,
-            blue,
-            alpha,
+    fn f32_to_rgba_u32(val: f32) -> u32 {
+        if val >= 1.0 {
+            255
+        } else if val <= 0.0 {
+            0
+        } else {
+            (val * 255.0) as u32
         }
     }
 
-    fn new_capped_rgba(red: f32, green: f32, blue: f32, alpha: f32) -> Self {
-        Self::new(
-            red.max(0.0).min(1.0),
-            green.max(0.0).min(1.0),
-            blue.max(0.0).min(1.0),
-            alpha.max(0.0).min(1.0),
-        )
+    const fn rgba_u32s_to_rgba_hex(red: u32, green: u32, blue: u32, alpha: u32) -> u32 {
+        (red << 24) | (green << 16) | (blue << 8) | alpha
     }
 
-    pub fn new_rgba(red: u8, green: u8, blue: u8, alpha: u8) -> Self {
+    const fn rgba_u8s_to_rgba_hex(red: u8, green: u8, blue: u8, alpha: u8) -> u32 {
+        ((red as u32) << 24) | ((green as u32) << 16) | ((blue as u32) << 8) | (alpha as u32)
+    }
+
+    pub fn new_from_f32s(red: f32, green: f32, blue: f32, alpha: f32) -> Self {
+        let red = Colour::f32_to_rgba_u32(red);
+        let green = Colour::f32_to_rgba_u32(green);
+        let blue = Colour::f32_to_rgba_u32(blue);
+        let alpha = Colour::f32_to_rgba_u32(alpha);
+
         Self {
-            red: Colour::clamp_u8_to_f32(red),
-            green: Colour::clamp_u8_to_f32(green),
-            blue: Colour::clamp_u8_to_f32(blue),
-            alpha: Colour::clamp_u8_to_f32(alpha),
+            rgba: Colour::rgba_u32s_to_rgba_hex(red, green, blue, alpha),
         }
     }
 
-    pub fn new_rgb_hex(rgb_hex: u32) -> Self {
+    pub const fn new_from_u32s(red: u32, green: u32, blue: u32, alpha: u32) -> Self {
         Self {
-            red: Colour::rgb_hex_to_red_f32(rgb_hex),
-            green: Colour::rgb_hex_to_green_f32(rgb_hex),
-            blue: Colour::rgb_hex_to_blue_f32(rgb_hex),
-            alpha: 1.0,
+            rgba: Colour::rgba_u32s_to_rgba_hex(red, green, blue, alpha),
         }
     }
 
-    pub fn new_rgba_hex(rgb_hex: u32) -> Self {
+    pub const fn new_from_u8s(red: u8, green: u8, blue: u8, alpha: u8) -> Self {
         Self {
-            red: Colour::rgba_hex_to_red_f32(rgb_hex),
-            green: Colour::rgba_hex_to_green_f32(rgb_hex),
-            blue: Colour::rgba_hex_to_blue_f32(rgb_hex),
-            alpha: Colour::rgba_hex_to_alpha_f32(rgb_hex),
+            rgba: Colour::rgba_u8s_to_rgba_hex(red, green, blue, alpha),
         }
     }
 
-    pub fn red(&self) -> f32 {
-        self.red
+    pub const fn new_from_rgba(rgba: u32) -> Self {
+        Self {
+            rgba,
+        }
     }
 
-    pub fn red_u8(&self) -> u8 {
-        Colour::f32_to_rgba_u8(self.red)
+    pub fn red_f32(&self) -> f32 {
+        Colour::hex_u32_to_f32(self.rgba, 24)
     }
 
     pub fn red_u32(&self) -> u32 {
-        Colour::f32_to_rgba_u8(self.red) as u32
+        Colour::hex_u32_to_u32(self.rgba, 24)
     }
 
-    pub fn green(&self) -> f32 {
-        self.green
+    pub fn red_u8(&self) -> u8 {
+        Colour::hex_u32_to_u8(self.rgba, 24)
     }
 
-    pub fn green_u8(&self) -> u8 {
-        Colour::f32_to_rgba_u8(self.green)
+    pub fn green_f32(&self) -> f32 {
+        Colour::hex_u32_to_f32(self.rgba, 16)
     }
 
     pub fn green_u32(&self) -> u32 {
-        Colour::f32_to_rgba_u8(self.green) as u32
+        Colour::hex_u32_to_u32(self.rgba, 16)
     }
 
-    pub fn blue(&self) -> f32 {
-        self.blue
+    pub fn green_u8(&self) -> u8 {
+        Colour::hex_u32_to_u8(self.rgba, 16)
     }
 
-    pub fn blue_u8(&self) -> u8 {
-        Colour::f32_to_rgba_u8(self.blue)
+    pub fn blue_f32(&self) -> f32 {
+        Colour::hex_u32_to_f32(self.rgba, 8)
     }
 
     pub fn blue_u32(&self) -> u32 {
-        Colour::f32_to_rgba_u8(self.blue) as u32
+        Colour::hex_u32_to_u32(self.rgba, 8)
     }
 
-    pub fn alpha(&self) -> f32 {
-        self.alpha
+    pub fn blue_u8(&self) -> u8 {
+        Colour::hex_u32_to_u8(self.rgba, 8)
     }
 
-    pub fn alpha_u8(&self) -> u8 {
-        Colour::f32_to_rgba_u8(self.alpha)
+    pub fn alpha_f32(&self) -> f32 {
+        Colour::hex_u32_to_f32(self.rgba, 0)
     }
 
     pub fn alpha_u32(&self) -> u32 {
-        Colour::f32_to_rgba_u8(self.alpha) as u32
+        Colour::hex_u32_to_u32(self.rgba, 0)
+    }
+
+    pub fn alpha_u8(&self) -> u8 {
+        Colour::hex_u32_to_u8(self.rgba, 0)
     }
 
     pub fn mix(self, other: Self, mut amount: f32) -> Self {
@@ -195,16 +170,13 @@ impl Colour {
         let inverse_amount = 1.0 - amount;
 
         let mut result = (self * inverse_amount) + (other * amount);
-        result.alpha = self.alpha;
+        result.rgba = (result.rgba & 0xffffff00) | self.alpha_u32();
         result
     }
 
     #[inline(always)]
     pub fn to_rgba_u32(self) -> u32 {
-        Colour::f32_to_hex_u32(self.red(), 24)
-            | Colour::f32_to_hex_u32(self.green(), 16)
-            | Colour::f32_to_hex_u32(self.blue(), 8)
-            | Colour::f32_to_hex_u32(self.alpha(), 0)
+        self.rgba
     }
 }
 
@@ -212,11 +184,11 @@ impl Add<Self> for Colour {
     type Output = Self;
 
     fn add(self, other: Self) -> Self {
-        Self::new_capped_rgba(
-            self.red + other.red,
-            self.green + other.green,
-            self.blue + other.blue,
-            self.alpha + other.alpha,
+        Self::new_from_f32s(
+            self.red_f32() + other.red_f32(),
+            self.green_f32() + other.green_f32(),
+            self.blue_f32() + other.blue_f32(),
+            self.alpha_f32() + other.alpha_f32(),
         )
     }
 }
@@ -231,11 +203,11 @@ impl Sub<Self> for Colour {
     type Output = Self;
 
     fn sub(self, other: Self) -> Self {
-        Self::new_capped_rgba(
-            self.red - other.red,
-            self.green - other.green,
-            self.blue - other.blue,
-            self.alpha - other.alpha,
+        Self::new_from_f32s(
+            self.red_f32() - other.red_f32(),
+            self.green_f32() - other.green_f32(),
+            self.blue_f32() - other.blue_f32(),
+            self.alpha_f32() - other.alpha_f32(),
         )
     }
 }
@@ -250,11 +222,11 @@ impl Mul<Self> for Colour {
     type Output = Self;
 
     fn mul(self, other: Self) -> Self {
-        Self::new_capped_rgba(
-            self.red * other.red,
-            self.green * other.green,
-            self.blue * other.blue,
-            self.alpha * other.alpha,
+        Self::new_from_f32s(
+            self.red_f32() * other.red_f32(),
+            self.green_f32() * other.green_f32(),
+            self.blue_f32() * other.blue_f32(),
+            self.alpha_f32() * other.alpha_f32(),
         )
     }
 }
@@ -269,11 +241,11 @@ impl Div<Self> for Colour {
     type Output = Self;
 
     fn div(self, other: Self) -> Self {
-        Self::new_capped_rgba(
-            self.red / other.red,
-            self.green / other.green,
-            self.blue / other.blue,
-            self.alpha / other.alpha,
+        Self::new_from_f32s(
+            self.red_f32() / other.red_f32(),
+            self.green_f32() / other.green_f32(),
+            self.blue_f32() / other.blue_f32(),
+            self.alpha_f32() / other.alpha_f32(),
         )
     }
 }
@@ -288,11 +260,11 @@ impl Rem<Self> for Colour {
     type Output = Self;
 
     fn rem(self, other: Self) -> Self {
-        Self::new_capped_rgba(
-            self.red % other.red,
-            self.green % other.green,
-            self.blue % other.blue,
-            self.alpha % other.alpha,
+        Self::new_from_f32s(
+            self.red_f32() % other.red_f32(),
+            self.green_f32() % other.green_f32(),
+            self.blue_f32() % other.blue_f32(),
+            self.alpha_f32() % other.alpha_f32(),
         )
     }
 }
@@ -301,11 +273,11 @@ impl Mul<f32> for Colour {
     type Output = Self;
 
     fn mul(self, val: f32) -> Self {
-        Self::new_capped_rgba(
-            self.red * val,
-            self.green * val,
-            self.blue * val,
-            self.alpha * val,
+        Self::new_from_f32s(
+            self.red_f32() * val,
+            self.green_f32() * val,
+            self.blue_f32() * val,
+            self.alpha_f32() * val,
         )
     }
 }
@@ -320,11 +292,11 @@ impl Div<f32> for Colour {
     type Output = Self;
 
     fn div(self, val: f32) -> Self {
-        Self::new_capped_rgba(
-            self.red / val,
-            self.green / val,
-            self.blue / val,
-            self.alpha / val,
+        Self::new_from_f32s(
+            self.red_f32() / val,
+            self.green_f32() / val,
+            self.blue_f32() / val,
+            self.alpha_f32() / val,
         )
     }
 }
@@ -336,49 +308,73 @@ impl DivAssign<f32> for Colour {
 }
 
 #[cfg(test)]
-mod test {
+mod colour_red_u32 {
     use super::*;
 
     #[test]
-    pub fn colour_red_u32() {
+    pub fn it_should_return_red_given() {
         let rgba_hex = 0xffa89321;
-        let colour = Colour::new_rgba_hex(rgba_hex);
+        let colour = Colour::new_from_rgba(rgba_hex);
 
-        assert_eq!(colour.red(), 1.0);
+        assert_eq!(colour.red_f32(), 1.0);
         assert_eq!(colour.red_u32(), 255);
+        assert_eq!(colour.red_u8(), 255);
     }
+}
+
+#[cfg(test)]
+mod colour_green_u32 {
+    use super::*;
 
     #[test]
-    pub fn colour_green_u32() {
+    pub fn it_should_return_green_given() {
         let rgba_hex = 0xffa89321;
-        let colour = Colour::new_rgba_hex(rgba_hex);
+        let colour = Colour::new_from_rgba(rgba_hex);
 
-        assert_eq!(colour.green(), 168.0 / 255.0);
+        assert_eq!(colour.green_f32(), 168.0 / 255.0);
         assert_eq!(colour.green_u32(), 168);
+        assert_eq!(colour.green_u8(), 168);
     }
+}
+
+#[cfg(test)]
+mod colour_blue_u32 {
+    use super::*;
 
     #[test]
-    pub fn colour_blue_u32() {
+    pub fn it_should_return_blue_given() {
         let rgba_hex = 0xffa89321;
-        let colour = Colour::new_rgba_hex(rgba_hex);
+        let colour = Colour::new_from_rgba(rgba_hex);
 
-        assert_eq!(colour.blue(), 147.0 / 255.0);
+        assert_eq!(colour.blue_f32(), 147.0 / 255.0);
         assert_eq!(colour.blue_u32(), 147);
+        assert_eq!(colour.blue_u8(), 147);
     }
+}
+
+#[cfg(test)]
+mod colour_alpha_u32 {
+    use super::*;
 
     #[test]
-    pub fn colour_alpha_u32() {
+    pub fn it_should_return_alpha_given() {
         let rgba_hex = 0xffa89321;
-        let colour = Colour::new_rgba_hex(rgba_hex);
+        let colour = Colour::new_from_rgba(rgba_hex);
 
-        assert_eq!(colour.alpha(), 33.0 / 255.0);
+        assert_eq!(colour.alpha_f32(), 33.0 / 255.0);
         assert_eq!(colour.alpha_u32(), 33);
+        assert_eq!(colour.alpha_u8(), 33);
     }
+}
+
+#[cfg(test)]
+mod new_rgba_hex {
+    use super::*;
 
     #[test]
-    pub fn colour_u32_matches_value_created_with() {
+    pub fn it_should_have_components_match_those_given() {
         let rgba_hex = 0xffa89321;
-        let colour = Colour::new_rgba_hex(rgba_hex);
+        let colour = Colour::new_from_rgba(rgba_hex);
 
         assert_eq!(colour.red_u32(), 255);
         assert_eq!(colour.green_u32(), 168);

@@ -11,7 +11,7 @@ mod size;
 mod transform;
 mod vec2d;
 
-pub use self::colour::Colour;
+pub use self::colour::{Color, Colour};
 pub use self::line::Line;
 pub use self::line_iterator::LineIterator;
 pub use self::num_tuple::NumTuple;

@@ -32,6 +32,23 @@ impl<V: Copy> Vec2D<V> {
         }
     }
 
+    /// In Debug mode this will panic! if it is given a vector with different shaped arrays.
+    pub fn new_from_vecs(vec: Vec<Vec<V>>) -> Self {
+        let width = vec.get(0).map(|v| v.len()).unwrap_or(0);
+
+        #[cfg(debug_assertions)]
+        {
+            for row in &vec {
+                assert_eq!(row.len(), width);
+            }
+        }
+
+        Self {
+            data: vec.into_iter().flatten().collect(),
+            width,
+        }
+    }
+
     /// Returns the tile at the position given.
     pub fn get(&self, pos: Point<usize>) -> Option<&V> {
         let index = map_index(pos, self.width);
@@ -236,16 +253,49 @@ mod new {
     use super::*;
 
     #[test]
-    fn should_create_vec2d_of_correct_size() {
+    fn it_should_create_vec2d_of_correct_size() {
         let pixels = Vec2D::new(Size(10, 20), 123);
         assert_eq!(pixels.size().area(), 200);
     }
 
     #[test]
-    fn should_populate_vec2d_with_default_given() {
+    fn it_should_populate_vec2d_with_default_given() {
         let pixels = Vec2D::new(Size(2, 2), 123);
 
         assert_eq!(pixels.raw_data(), vec![123, 123, 123, 123,]);
+    }
+}
+
+#[cfg(test)]
+mod new_from_vecs {
+    use super::*;
+
+    #[test]
+    fn it_should_create_an_empty_vec2d_from_empty_vecs() {
+        #[rustfmt::skip]
+        let vec2d : Vec2D<usize> = Vec2D::new_from_vecs(vec![]);
+        let expected = Vec2D::new(Size(0, 0), 0);
+        assert_eq!(vec2d, expected);
+    }
+
+    #[test]
+    fn it_should_create_a_vec2d_from_elements_given() {
+        #[rustfmt::skip]
+        let vec2d : Vec2D<usize> = Vec2D::new_from_vecs(vec![
+            vec![  0,  1,  2,  3,  4 ],
+            vec![  5,  6,  7,  8,  9 ],
+            vec![ 10, 11, 12, 13, 14 ],
+            vec![ 15, 16, 17, 18, 19 ],
+        ]);
+
+        let mut expected = Vec2D::new(Size(5, 4), 0);
+        let mut i = 0;
+        for pos in expected.size() {
+            expected[pos] = i;
+            i += 1;
+        }
+
+        assert_eq!(vec2d, expected);
     }
 }
 
@@ -254,7 +304,7 @@ mod indexing {
     use super::*;
 
     #[test]
-    fn should_correctly_set_and_get_items_based_on_index() {
+    fn it_should_correctly_set_and_get_items_based_on_index() {
         let mut vec2d = Vec2D::new(Size(10, 10), 0);
         let index = Point(2, 3);
 
@@ -264,7 +314,7 @@ mod indexing {
     }
 
     #[test]
-    fn should_correctly_index_items_across_whole_vec2d() {
+    fn it_should_correctly_index_items_across_whole_vec2d() {
         let vec2d_size = Size(10, 15);
         let mut vec2d = Vec2D::new(vec2d_size, Point(0, 0));
 
@@ -289,7 +339,7 @@ mod iterator {
     use super::*;
 
     #[test]
-    fn iterate_over_all() {
+    fn it_should_iterate_over_all() {
         let vec2d_size = Size(10, 10);
         let vec2d = Vec2D::new(vec2d_size, 1);
         let mut count = 0;
@@ -305,7 +355,7 @@ mod iterator {
     }
 
     #[test]
-    fn iterate_over_larger_area() {
+    fn it_should_iterate_over_larger_area() {
         let vec2d_size = Size(10, 10);
         let vec2d = Vec2D::new(vec2d_size, 1);
         let mut count = 0;
@@ -324,7 +374,7 @@ mod iterator {
     }
 
     #[test]
-    fn iterate_over_partial_overlap() {
+    fn it_should_iterate_over_partial_overlap() {
         let vec2d_size = Size(10, 10);
         let vec2d = Vec2D::new(vec2d_size, 1);
         let mut count = 0;
@@ -340,7 +390,7 @@ mod iterator {
     }
 
     #[test]
-    fn set_and_then_iterate_over_all() {
+    fn it_should_set_and_then_iterate_over_all() {
         let vec2d_size = Size(10, 10);
         let mut vec2d = Vec2D::new(vec2d_size, 0);
 

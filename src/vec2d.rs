@@ -6,11 +6,12 @@ use ::std::iter::IntoIterator;
 use ::std::iter::Iterator;
 use ::std::ops::Index;
 use ::std::ops::IndexMut;
+use std::fmt;
 
 /// Holds the data for a Vec2D.
 ///
 /// A Vec2D has a fixed size and cannot be resized.
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct Vec2D<V: Copy> {
     /// The width and height of this Vec2D.
     width: usize,
@@ -88,6 +89,10 @@ impl<V: Copy> Vec2D<V> {
     /// Returns the underlying raw data.
     pub fn raw_data<'a>(&'a self) -> &'a [V] {
         &self.data
+    }
+
+    fn row<'a>(&'a self, y: usize) -> Vec2DRow<'a, V> {
+        Vec2DRow::new(self, y)
     }
 }
 
@@ -178,6 +183,47 @@ impl<V: Copy + PartialEq> PartialEq for Vec2D<V> {
         }
 
         return self.data == other.data;
+    }
+}
+
+impl<V: Copy + fmt::Debug> fmt::Debug for Vec2D<V> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut debug_list = f.debug_list();
+
+        for y in 0..self.height() {
+            debug_list.entry(&self.row(y));
+        }
+
+        debug_list.finish()
+    }
+}
+
+struct Vec2DRow<'a, V: Copy + 'a> {
+    /// The raw data we are iterating over.
+    data: &'a Vec2D<V>,
+
+    y: usize,
+}
+
+impl<'a, V: Copy> Vec2DRow<'a, V> {
+    fn new(data: &'a Vec2D<V>, y: usize) -> Self {
+        Self { data, y }
+    }
+}
+
+impl<'a, V: Copy + fmt::Debug> fmt::Debug for Vec2DRow<'a, V> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "[")?;
+
+        for x in 0..self.data.width() {
+            write!(f, "{:?}", self.data[Point(x, self.y)])?;
+
+            if x < self.data.width() - 1 {
+                write!(f, ", ")?;
+            }
+        }
+
+        write!(f, "]")
     }
 }
 
@@ -314,5 +360,50 @@ mod iterator {
 
         assert_eq!(count, vec2d_size.area());
         assert_eq!(pos_count_x, 10 * (1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9));
+    }
+}
+
+#[cfg(test)]
+mod debug {
+    use super::*;
+
+    #[test]
+    fn it_should_print_debug_as_expected() {
+        let mut vec2d = Vec2D::new(Size(5, 5), 0);
+
+        for x in 0..vec2d.width() {
+            for y in 0..vec2d.height() {
+                vec2d[Point(x, y)] = x;
+            }
+        }
+
+        let debug = format!("{:?}", vec2d);
+        assert_eq!(
+            debug,
+            "[[0, 1, 2, 3, 4], [0, 1, 2, 3, 4], [0, 1, 2, 3, 4], [0, 1, 2, 3, 4], [0, 1, 2, 3, 4]]"
+        );
+    }
+
+    #[test]
+    fn it_should_pretty_print_debug_as_expected() {
+        let mut vec2d = Vec2D::new(Size(5, 5), 0);
+
+        for x in 0..vec2d.width() {
+            for y in 0..vec2d.height() {
+                vec2d[Point(x, y)] = x;
+            }
+        }
+
+        let debug = format!("{:#?}", vec2d);
+        assert_eq!(
+            debug,
+            "[
+    [0, 1, 2, 3, 4],
+    [0, 1, 2, 3, 4],
+    [0, 1, 2, 3, 4],
+    [0, 1, 2, 3, 4],
+    [0, 1, 2, 3, 4],
+]"
+        );
     }
 }

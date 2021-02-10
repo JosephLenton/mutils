@@ -31,19 +31,43 @@ impl<N: Num> Line<N> {
     pub fn end(self) -> Point<N> {
         self.1
     }
+
+    pub fn x_diff(self) -> N {
+        self.start().x() - self.end().x()
+    }
+
+    pub fn y_diff(self) -> N {
+        self.start().y() - self.end().y()
+    }
+
+    pub fn left_x(self) -> N {
+        self.start().x().min(self.end().x())
+    }
+
+    pub fn right_x(self) -> N {
+        self.start().x().max(self.end().x())
+    }
+
+    pub fn bottom_y(self) -> N {
+        self.start().y().min(self.end().y())
+    }
+
+    pub fn top_y(self) -> N {
+        self.start().y().max(self.end().y())
+    }
+
+    pub fn is_horizontal(self) -> bool {
+        self.start().y() == self.end().y()
+    }
+
+    pub fn is_vertical(self) -> bool {
+        self.start().x() == self.end().x()
+    }
 }
 
 impl Line {
     pub fn midpoint(self) -> Point {
         (self.start() + self.end()) / 2.0
-    }
-
-    pub fn x_diff(self) -> f32 {
-        self.start().x() - self.end().x()
-    }
-
-    pub fn y_diff(self) -> f32 {
-        self.start().y() - self.end().y()
     }
 
     /**
@@ -60,22 +84,6 @@ impl Line {
         let hypot_sqrd = (x_diff * x_diff) + (y_diff * y_diff);
 
         hypot_sqrd.sqrt()
-    }
-
-    pub fn left_x(self) -> f32 {
-        self.start().x().min(self.end().x())
-    }
-
-    pub fn right_x(self) -> f32 {
-        self.start().x().max(self.end().x())
-    }
-
-    pub fn bottom_y(self) -> f32 {
-        self.start().y().min(self.end().y())
-    }
-
-    pub fn top_y(self) -> f32 {
-        self.start().y().max(self.end().y())
     }
 }
 
@@ -300,5 +308,40 @@ impl<N: Num> From<(Point<N>, Point<N>)> for Line<N> {
 impl<N: Num> Into<(Point<N>, Point<N>)> for Line<N> {
     fn into(self) -> (Point<N>, Point<N>) {
         (self.0, self.1)
+    }
+}
+
+#[cfg(test)]
+mod is_horizontal {
+    use super::*;
+
+    #[test]
+    fn it_should_be_true_when_horizontal() {
+        let line = Line(Point(5, 9), Point(8, 9));
+        assert_eq!(line.is_horizontal(), true);
+    }
+
+    #[test]
+    fn it_should_be_false_when_not_horizontal() {
+        let line = Line(Point(5, 9), Point(8, 10));
+        assert_eq!(line.is_horizontal(), false);
+    }
+}
+
+
+#[cfg(test)]
+mod is_vertical {
+    use super::*;
+
+    #[test]
+    fn it_should_be_true_when_vertical() {
+        let line = Line(Point(5, 9), Point(5, 19));
+        assert_eq!(line.is_vertical(), true);
+    }
+
+    #[test]
+    fn it_should_be_false_when_not_vertical() {
+        let line = Line(Point(5, 9), Point(8, 10));
+        assert_eq!(line.is_vertical(), false);
     }
 }

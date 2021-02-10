@@ -404,6 +404,106 @@ impl FromClamped<f64> for usize {
     }
 }
 
+impl FromClamped<isize> for usize {
+    fn from_clamped(n: isize) -> Self {
+        n.max(0) as Self
+    }
+}
+
+// isize
+impl FromClamped<i8> for isize {
+    fn from_clamped(n: i8) -> Self {
+        n as Self
+    }
+}
+
+impl FromClamped<i16> for isize {
+    fn from_clamped(n: i16) -> Self {
+        if size_of::<i16>() <= size_of::<Self>() {
+            n as Self
+        } else {
+            n.max(<Self>::min_value() as i16)
+                .min(<Self>::max_value() as i16) as Self
+        }
+    }
+}
+
+impl FromClamped<i32> for isize {
+    fn from_clamped(n: i32) -> Self {
+        if size_of::<i32>() <= size_of::<Self>() {
+            n as Self
+        } else {
+            n.max(<Self>::min_value() as i32)
+                .min(<Self>::max_value() as i32) as Self
+        }
+    }
+}
+
+impl FromClamped<i64> for isize {
+    fn from_clamped(n: i64) -> Self {
+        if size_of::<i64>() <= size_of::<Self>() {
+            n as Self
+        } else {
+            n.max(<Self>::min_value() as i64)
+                .min(<Self>::max_value() as i64) as Self
+        }
+    }
+}
+
+impl FromClamped<u8> for isize {
+    fn from_clamped(n: u8) -> Self {
+        n as Self
+    }
+}
+
+impl FromClamped<u16> for isize {
+    fn from_clamped(n: u16) -> Self {
+        if size_of::<u16>() < size_of::<Self>() {
+            n as Self
+        } else {
+            n.min(<Self>::max_value() as u16) as Self
+        }
+    }
+}
+
+impl FromClamped<u32> for isize {
+    fn from_clamped(n: u32) -> Self {
+        if size_of::<u32>() < size_of::<Self>() {
+            n as Self
+        } else {
+            n.min(<Self>::max_value() as u32) as Self
+        }
+    }
+}
+
+impl FromClamped<u64> for isize {
+    fn from_clamped(n: u64) -> Self {
+        if size_of::<u64>() < size_of::<Self>() {
+            n as Self
+        } else {
+            n.min(<Self>::max_value() as u64) as Self
+        }
+    }
+}
+
+impl FromClamped<f32> for isize {
+    fn from_clamped(n: f32) -> Self {
+        n.max(0.0).min(<Self>::max_value() as f32) as Self
+    }
+}
+
+impl FromClamped<f64> for isize {
+    fn from_clamped(n: f64) -> Self {
+        n.max(0.0).min(<Self>::max_value() as f64) as Self
+    }
+}
+
+impl FromClamped<usize> for isize {
+    fn from_clamped(n: usize) -> Self {
+        n.min(<Self>::max_value() as usize) as Self
+    }
+}
+
 // f32
 impl FromClamped<i16> for f32 {
     fn from_clamped(n: i16) -> Self {
@@ -432,24 +532,5 @@ impl FromClamped<u32> for f32 {
 impl FromClamped<u64> for f32 {
     fn from_clamped(n: u64) -> Self {
         n as f32
-    }
-}
-
-#[cfg(test)]
-mod test {
-    use super::*;
-
-    #[test]
-    fn u8_to_i8() {
-        assert_eq!(<i8>::from_clamped(<u8>::max_value()), <i8>::max_value());
-    }
-
-    #[test]
-    fn i8_to_u8() {
-        assert_eq!(<u8>::from_clamped(<i8>::min_value()), 0);
-        assert_eq!(
-            <u8>::from_clamped(<i8>::max_value()),
-            <i8>::max_value() as u8
-        );
     }
 }

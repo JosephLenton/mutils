@@ -105,9 +105,7 @@ impl Colour {
     }
 
     pub const fn new_from_rgba(rgba: u32) -> Self {
-        Self {
-            rgba,
-        }
+        Self { rgba }
     }
 
     pub fn red_f32(&self) -> f32 {

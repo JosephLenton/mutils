@@ -73,11 +73,11 @@ impl<N: Num + ToSignedClamped> Line<N> {
     }
 
     pub fn x_diff(self) -> <N as ToSignedClamped>::Output {
-        self.start().x().to_signed_clamped() - self.end().x().to_signed_clamped()
+        self.end().x().to_signed_clamped() - self.start().x().to_signed_clamped()
     }
 
     pub fn y_diff(self) -> <N as ToSignedClamped>::Output {
-        self.start().y().to_signed_clamped() - self.end().y().to_signed_clamped()
+        self.end().y().to_signed_clamped() - self.start().y().to_signed_clamped()
     }
 }
 
@@ -409,5 +409,16 @@ mod is_straight {
     fn it_should_be_false_when_angled() {
         let line = Line(Point(5, 9), Point(8, 10));
         assert_eq!(line.is_vertical(), false);
+    }
+}
+
+#[cfg(test)]
+mod diff {
+    use super::*;
+
+    #[test]
+    fn it_should_be_end_minus_start() {
+        let diff: Line<i32> = Line(Point(5, 9), Point(24, -3));
+        assert_eq!(diff.diff(), Size(19, -12));
     }
 }

@@ -2,7 +2,7 @@ use crate::geom::Point;
 use crate::geom::Size;
 use crate::num::Num;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct SizeIterator<N: Num = f32> {
     pos: Point<N>,
     size: Size<N>,

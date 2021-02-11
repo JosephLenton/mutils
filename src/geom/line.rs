@@ -56,6 +56,10 @@ impl<N: Num> Line<N> {
     pub fn is_vertical(self) -> bool {
         self.start().x() == self.end().x()
     }
+
+    pub fn is_straight(self) -> bool {
+        self.is_horizontal() || self.is_vertical()
+    }
 }
 
 impl<N: Num + ToSignedClamped> Line<N> {
@@ -347,6 +351,29 @@ mod is_vertical {
 
     #[test]
     fn it_should_be_false_when_not_vertical() {
+        let line = Line(Point(5, 9), Point(8, 10));
+        assert_eq!(line.is_vertical(), false);
+    }
+}
+
+#[cfg(test)]
+mod is_straight {
+    use super::*;
+
+    #[test]
+    fn it_should_be_true_when_vertical() {
+        let line = Line(Point(5, 9), Point(5, 19));
+        assert_eq!(line.is_vertical(), true);
+    }
+
+    #[test]
+    fn it_should_be_true_when_horizontal() {
+        let line = Line(Point(5, 9), Point(8, 9));
+        assert_eq!(line.is_horizontal(), true);
+    }
+
+    #[test]
+    fn it_should_be_false_when_angled() {
         let line = Line(Point(5, 9), Point(8, 10));
         assert_eq!(line.is_vertical(), false);
     }

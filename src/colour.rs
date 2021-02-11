@@ -306,7 +306,7 @@ impl DivAssign<f32> for Colour {
 }
 
 #[cfg(test)]
-mod colour_red_u32 {
+mod red_xx {
     use super::*;
 
     #[test]
@@ -321,7 +321,7 @@ mod colour_red_u32 {
 }
 
 #[cfg(test)]
-mod colour_green_u32 {
+mod green_xx {
     use super::*;
 
     #[test]
@@ -336,7 +336,7 @@ mod colour_green_u32 {
 }
 
 #[cfg(test)]
-mod colour_blue_u32 {
+mod blue_xx {
     use super::*;
 
     #[test]
@@ -351,7 +351,7 @@ mod colour_blue_u32 {
 }
 
 #[cfg(test)]
-mod colour_alpha_u32 {
+mod alpha_xx {
     use super::*;
 
     #[test]

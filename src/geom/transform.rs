@@ -1,6 +1,9 @@
-use crate::{Line, Point, Size};
 use ::std::convert::From;
 use ::std::ops::Add;
+
+use crate::geom::Line;
+use crate::geom::Point;
+use crate::geom::Size;
 
 #[derive(Copy, Clone, PartialEq)]
 pub struct Transform {

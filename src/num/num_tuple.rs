@@ -8,8 +8,13 @@ use std::ops::Rem;
 use std::ops::Sub;
 use std::ops::SubAssign;
 
-use super::internal::Num;
+use crate::num::Num;
 
+/// This exists to help add some common functionality to things that
+/// are a tuple of two numeric items.
+///
+/// What are some examples of a 'tuple with two numeric items'?
+/// Rect, Point, Size, Line. Things like that.
 pub trait NumTuple<N: Num>:
     Add<Output = Self>
     + AddAssign

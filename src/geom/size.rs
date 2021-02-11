@@ -10,13 +10,13 @@ use ::std::ops::Rem;
 use ::std::ops::Sub;
 use ::std::ops::SubAssign;
 
-use super::internal::FromClamped;
-use super::internal::Num;
-
 use ::num_traits::sign::{abs, signum, Signed};
 
-use super::NumTuple;
-use super::Point;
+use crate::num::FromClamped;
+use crate::num::Num;
+use crate::num::NumTuple;
+
+use crate::geom::Point;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Size<N: Num = f32>(pub N, pub N);

@@ -12,12 +12,12 @@ use ::std::ops::SubAssign;
 
 use ::num_traits::sign::{abs, signum, Signed};
 
-use super::internal::FromClamped;
-use super::internal::Num;
+use crate::num::FromClamped;
+use crate::num::Num;
+use crate::num::NumTuple;
 
-use super::NumTuple;
-use super::Rect;
-use super::Size;
+use crate::geom::Rect;
+use crate::geom::Size;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Point<N: Num = f32>(pub N, pub N);

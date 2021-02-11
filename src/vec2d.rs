@@ -1,12 +1,13 @@
-use crate::Point;
-use crate::Rect;
-use crate::Size;
 use ::std::cmp::PartialEq;
+use ::std::fmt;
 use ::std::iter::IntoIterator;
 use ::std::iter::Iterator;
 use ::std::ops::Index;
 use ::std::ops::IndexMut;
-use std::fmt;
+
+use crate::geom::Point;
+use crate::geom::Rect;
+use crate::geom::Size;
 
 /// Holds the data for a Vec2D.
 ///

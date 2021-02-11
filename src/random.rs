@@ -1,10 +1,12 @@
-use crate::{Line, Point};
 use ::lazy_static::lazy_static;
 use ::rand::rngs::SmallRng;
 use ::rand::{Rng, SeedableRng};
 use ::std::ops::Add;
 use ::std::ops::Sub;
 use ::std::sync::Mutex;
+
+use crate::geom::Line;
+use crate::geom::Point;
 
 lazy_static! {
     static ref GLOBAL_RNG: Mutex<SmallRng> = {

@@ -1,25 +1,11 @@
 mod colour;
-pub mod internal;
-mod line;
-mod line_iterator;
-mod num_tuple;
-mod number_extensions;
-mod point;
 mod random;
-mod rect;
-mod size;
-mod transform;
 mod vec2d;
 
+pub mod geom;
+pub mod num;
+
 pub use self::colour::{Color, Colour};
-pub use self::line::Line;
-pub use self::line_iterator::LineIterator;
-pub use self::num_tuple::NumTuple;
-pub use self::number_extensions::NumberExtensions;
-pub use self::point::Point;
 pub use self::random::random;
 pub use self::random::Random;
-pub use self::rect::Rect;
-pub use self::size::Size;
-pub use self::transform::Transform;
-pub use self::vec2d::Vec2D;
+pub use self::vec2d::*;

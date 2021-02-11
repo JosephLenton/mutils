@@ -4,12 +4,15 @@ use std::ops::AddAssign;
 use std::ops::Sub;
 use std::ops::SubAssign;
 
-use super::internal::FromClamped;
-use super::internal::Num;
-use super::NumTuple;
+use crate::num::FromClamped;
+use crate::num::Num;
+use crate::num::NumTuple;
 
-use super::Point;
-use super::Size;
+use crate::geom::Point;
+use crate::geom::Size;
+
+mod rect_iterator;
+pub use self::rect_iterator::RectIterator;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Rect<N: Num = f32>(pub Point<N>, pub Size<N>);
@@ -235,49 +238,15 @@ impl<N: Num> PartialEq for Rect<N> {
 
 impl<N: Num> IntoIterator for Rect<N> {
     type Item = Point<N>;
-    type IntoIter = RectIter<N>;
+    type IntoIter = RectIterator<N>;
 
     fn into_iter(self) -> Self::IntoIter {
-        RectIter::new(self)
-    }
-}
-
-pub struct RectIter<N: Num = f32> {
-    bottom_left: Point<N>,
-    top_right: Point<N>,
-    current: Point<N>,
-}
-
-impl<N: Num> RectIter<N> {
-    fn new(rect: Rect<N>) -> Self {
-        Self {
-            bottom_left: rect.bottom_left(),
-            top_right: rect.top_right(),
-            current: rect.bottom_left(),
-        }
-    }
-}
-
-impl<N: Num> Iterator for RectIter<N> {
-    type Item = Point<N>;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        if self.top_right.x() <= self.current.x() {
-            self.current = Point(self.bottom_left.x(), self.current.y() + N::one());
-        }
-
-        if self.top_right.y() <= self.current.y() {
-            return None;
-        }
-
-        let r = self.current;
-        self.current += Point(N::one(), N::zero());
-        Some(r)
+        RectIterator::new(self)
     }
 }
 
 #[cfg(test)]
-mod test {
+mod overlaps {
     use super::*;
 
     #[test]
@@ -327,6 +296,11 @@ mod test {
 
         assert_eq!(a.overlaps(b), true);
     }
+}
+
+#[cfg(test)]
+mod into_iter {
+    use super::*;
 
     #[test]
     fn it_should_not_iterate_empty_rect() {

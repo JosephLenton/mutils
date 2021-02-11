@@ -11,12 +11,13 @@ use ::std::ops::SubAssign;
 
 use ::num_traits::sign::Signed;
 
-use super::internal::Num;
-use super::internal::ToSignedClamped;
+use crate::num::Num;
+use crate::num::ToSignedClamped;
 
-use crate::Point;
+use crate::geom::Point;
+use crate::geom::Size;
+
 use crate::Random;
-use crate::Size;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Line<N: Num = f32>(pub Point<N>, pub Point<N>);

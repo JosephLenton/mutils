@@ -3,6 +3,7 @@ use crate::num::Num;
 use crate::geom::Point;
 use crate::geom::Rect;
 
+#[derive(Clone)]
 pub struct RectIterator<N: Num = f32> {
     bottom_left: Point<N>,
     top_right: Point<N>,

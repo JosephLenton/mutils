@@ -1,21 +1,21 @@
-use std::ops::Add;
-use std::ops::AddAssign;
-use std::ops::Div;
-use std::ops::DivAssign;
-use std::ops::Mul;
-use std::ops::MulAssign;
-use std::ops::Neg;
-use std::ops::Rem;
-use std::ops::Sub;
-use std::ops::SubAssign;
-
-use crate::Random;
+use ::std::ops::Add;
+use ::std::ops::AddAssign;
+use ::std::ops::Div;
+use ::std::ops::DivAssign;
+use ::std::ops::Mul;
+use ::std::ops::MulAssign;
+use ::std::ops::Neg;
+use ::std::ops::Rem;
+use ::std::ops::Sub;
+use ::std::ops::SubAssign;
 
 use ::num_traits::sign::Signed;
 
 use super::internal::Num;
+use super::internal::ToSignedClamped;
 
 use crate::Point;
+use crate::Random;
 use crate::Size;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
@@ -30,14 +30,6 @@ impl<N: Num> Line<N> {
     #[inline(always)]
     pub fn end(self) -> Point<N> {
         self.1
-    }
-
-    pub fn x_diff(self) -> N {
-        self.start().x() - self.end().x()
-    }
-
-    pub fn y_diff(self) -> N {
-        self.start().y() - self.end().y()
     }
 
     pub fn left_x(self) -> N {
@@ -62,6 +54,20 @@ impl<N: Num> Line<N> {
 
     pub fn is_vertical(self) -> bool {
         self.start().x() == self.end().x()
+    }
+}
+
+impl<N: Num + ToSignedClamped> Line<N> {
+    pub fn diff(self) -> Size<<N as ToSignedClamped>::Output> {
+        Size(self.x_diff(), self.y_diff())
+    }
+
+    pub fn x_diff(self) -> <N as ToSignedClamped>::Output {
+        self.start().x().to_signed_clamped() - self.end().x().to_signed_clamped()
+    }
+
+    pub fn y_diff(self) -> <N as ToSignedClamped>::Output {
+        self.start().y().to_signed_clamped() - self.end().y().to_signed_clamped()
     }
 }
 
@@ -327,7 +333,6 @@ mod is_horizontal {
         assert_eq!(line.is_horizontal(), false);
     }
 }
-
 
 #[cfg(test)]
 mod is_vertical {

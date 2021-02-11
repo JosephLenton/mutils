@@ -88,11 +88,19 @@ impl<N: Num + Signed> Size<N> {
             Self(N::zero(), signum(self.height()))
         }
     }
+
+    pub fn flip_horizontal(self) -> Self {
+        Self(-self.width(), self.height())
+    }
+
+    pub fn flip_vertical(self) -> Self {
+        Self(self.width(), -self.height())
+    }
 }
 
 impl<N: Num> NumTuple<N> for Size<N> {
-    fn new(x: N, y: N) -> Self {
-        Size(x, y)
+    fn new(width: N, height: N) -> Self {
+        Size(width, height)
     }
 
     fn first(&self) -> N {
@@ -353,5 +361,27 @@ mod iterator {
                 i += 1;
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod flip_horizontal {
+    use super::*;
+
+    #[test]
+    fn it_should_flip_horizontally() {
+        let size : Size<i32> = Size(15, 23);
+        assert_eq!(size.flip_horizontal(), Size(-15, 23));
+    }
+}
+
+#[cfg(test)]
+mod flip_vertical {
+    use super::*;
+
+    #[test]
+    fn it_should_flip_vertically() {
+        let size : Size<i32> = Size(15, 23);
+        assert_eq!(size.flip_vertical(), Size(15, -23));
     }
 }

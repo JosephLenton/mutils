@@ -125,6 +125,14 @@ impl<N: Num + Signed> Point<N> {
             Self(N::zero(), signum(self.second()))
         }
     }
+
+    pub fn flip_x(self) -> Self {
+        Self(-self.x(), self.y())
+    }
+
+    pub fn flip_y(self) -> Self {
+        Self(self.x(), -self.y())
+    }
 }
 
 impl Point<f32> {
@@ -341,5 +349,27 @@ impl<N: Num> Into<(N, N)> for Point<N> {
 impl<N: Num> PartialEq for Point<N> {
     fn eq(&self, other: &Self) -> bool {
         self.0 == other.0 && self.1 == other.1
+    }
+}
+
+#[cfg(test)]
+mod flip_x {
+    use super::*;
+
+    #[test]
+    fn it_should_flip_x() {
+        let point: Point<i32> = Point(15, 23);
+        assert_eq!(point.flip_x(), Point(-15, 23));
+    }
+}
+
+#[cfg(test)]
+mod flip_y {
+    use super::*;
+
+    #[test]
+    fn it_should_flip_y() {
+        let point: Point<i32> = Point(15, 23);
+        assert_eq!(point.flip_y(), Point(15, -23));
     }
 }

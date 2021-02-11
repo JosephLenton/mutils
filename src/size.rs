@@ -370,7 +370,7 @@ mod flip_horizontal {
 
     #[test]
     fn it_should_flip_horizontally() {
-        let size : Size<i32> = Size(15, 23);
+        let size: Size<i32> = Size(15, 23);
         assert_eq!(size.flip_horizontal(), Size(-15, 23));
     }
 }
@@ -381,7 +381,7 @@ mod flip_vertical {
 
     #[test]
     fn it_should_flip_vertically() {
-        let size : Size<i32> = Size(15, 23);
+        let size: Size<i32> = Size(15, 23);
         assert_eq!(size.flip_vertical(), Size(15, -23));
     }
 }

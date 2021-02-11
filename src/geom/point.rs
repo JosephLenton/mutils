@@ -7,12 +7,17 @@ use ::std::ops::Mul;
 use ::std::ops::MulAssign;
 use ::std::ops::Neg;
 use ::std::ops::Rem;
+use ::std::ops::Shl;
+use ::std::ops::ShlAssign;
+use ::std::ops::Shr;
+use ::std::ops::ShrAssign;
 use ::std::ops::Sub;
 use ::std::ops::SubAssign;
 
 use ::num_traits::sign::{abs, signum, Signed};
 
 use crate::num::FromClamped;
+use crate::num::INum;
 use crate::num::Num;
 use crate::num::NumTuple;
 
@@ -321,6 +326,34 @@ impl<N: Num> Div<N> for Point<N> {
 impl<N: Num> DivAssign<N> for Point<N> {
     fn div_assign(&mut self, other: N) {
         *self = *self / other;
+    }
+}
+
+impl<N: INum> Shl<N> for Point<N> {
+    type Output = Self;
+
+    fn shl(self, other: N) -> Self {
+        Self(self.0 << other, self.1 << other)
+    }
+}
+
+impl<N: INum> ShlAssign<N> for Point<N> {
+    fn shl_assign(&mut self, other: N) {
+        *self = *self << other;
+    }
+}
+
+impl<N: INum> Shr<N> for Point<N> {
+    type Output = Self;
+
+    fn shr(self, other: N) -> Self {
+        Self(self.0 >> other, self.1 >> other)
+    }
+}
+
+impl<N: INum> ShrAssign<N> for Point<N> {
+    fn shr_assign(&mut self, other: N) {
+        *self = *self >> other;
     }
 }
 

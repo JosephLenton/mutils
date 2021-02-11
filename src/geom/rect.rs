@@ -1,3 +1,7 @@
+use ::std::ops::Shl;
+use ::std::ops::ShlAssign;
+use ::std::ops::Shr;
+use ::std::ops::ShrAssign;
 use std::iter::IntoIterator;
 use std::ops::Add;
 use std::ops::AddAssign;
@@ -5,6 +9,7 @@ use std::ops::Sub;
 use std::ops::SubAssign;
 
 use crate::num::FromClamped;
+use crate::num::INum;
 use crate::num::Num;
 use crate::num::NumTuple;
 
@@ -227,6 +232,34 @@ impl<N: Num> Sub<Size<N>> for Rect<N> {
 impl<N: Num> SubAssign<Size<N>> for Rect<N> {
     fn sub_assign(&mut self, other: Size<N>) {
         self.1 -= other;
+    }
+}
+
+impl<N: INum> Shl<N> for Rect<N> {
+    type Output = Self;
+
+    fn shl(self, other: N) -> Self {
+        Self(self.0 << other, self.1 << other)
+    }
+}
+
+impl<N: INum> ShlAssign<N> for Rect<N> {
+    fn shl_assign(&mut self, other: N) {
+        *self = *self << other;
+    }
+}
+
+impl<N: INum> Shr<N> for Rect<N> {
+    type Output = Self;
+
+    fn shr(self, other: N) -> Self {
+        Self(self.0 >> other, self.1 >> other)
+    }
+}
+
+impl<N: INum> ShrAssign<N> for Rect<N> {
+    fn shr_assign(&mut self, other: N) {
+        *self = *self >> other;
     }
 }
 

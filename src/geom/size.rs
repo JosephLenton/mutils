@@ -18,6 +18,9 @@ use crate::num::NumTuple;
 
 use crate::geom::Point;
 
+mod size_iterator;
+pub use self::size_iterator::SizeIterator;
+
 #[derive(Copy, Clone, Debug)]
 pub struct Size<N: Num = f32>(pub N, pub N);
 
@@ -302,65 +305,10 @@ impl<N: Num> PartialEq for Size<N> {
 
 impl<N: Num> IntoIterator for Size<N> {
     type Item = Point<N>;
-    type IntoIter = SizeIter<N>;
+    type IntoIter = SizeIterator<N>;
 
     fn into_iter(self) -> Self::IntoIter {
-        SizeIter::new(self)
-    }
-}
-
-pub struct SizeIter<N: Num = f32> {
-    pos: Point<N>,
-    size: Size<N>,
-}
-
-impl<N: Num> SizeIter<N> {
-    fn new(size: Size<N>) -> Self {
-        Self {
-            pos: Point(N::zero(), N::zero()),
-            size,
-        }
-    }
-}
-
-impl<N: Num> Iterator for SizeIter<N> {
-    type Item = Point<N>;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        if self.pos.x() >= self.size.width() {
-            self.pos = Point(N::zero(), self.pos.y() + N::one());
-        }
-
-        if self.pos.y() >= self.size.height() {
-            return None;
-        }
-
-        let r = self.pos;
-        self.pos += Point(N::one(), N::zero());
-        Some(r)
-    }
-}
-
-#[cfg(test)]
-mod iterator {
-    use super::*;
-
-    #[test]
-    fn it_should_iterate_over_size() {
-        let size: Size<usize> = Size(6, 9);
-        let mut ps: Vec<Point<usize>> = vec![];
-
-        for pos in size {
-            ps.push(pos);
-        }
-
-        let mut i = 0;
-        for y in 0..size.height() {
-            for x in 0..size.width() {
-                assert_eq!(ps[i], Point(x, y));
-                i += 1;
-            }
-        }
+        SizeIterator::new(self)
     }
 }
 

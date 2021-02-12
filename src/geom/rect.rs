@@ -13,8 +13,13 @@ use crate::num::INum;
 use crate::num::Num;
 use crate::num::NumTuple;
 
+use crate::geom::HorizontalPosition;
+use crate::geom::Line;
+use crate::geom::LinePosition;
 use crate::geom::Point;
+use crate::geom::PointPosition;
 use crate::geom::Size;
+use crate::geom::VerticalPosition;
 
 mod rect_iterator;
 pub use self::rect_iterator::RectIterator;
@@ -63,6 +68,18 @@ impl<N: Num> Rect<N> {
         self.0
     }
 
+    pub fn bottom_right(&self) -> Point<N> {
+        self.bottom_left() + Size(self.width(), N::zero())
+    }
+
+    pub fn top_left(&self) -> Point<N> {
+        self.bottom_left() + Size(N::zero(), self.height())
+    }
+
+    pub fn top_right(&self) -> Point<N> {
+        self.bottom_left() + self.size()
+    }
+
     pub fn top_y(&self) -> N {
         self.bottom_left().y() + self.size().height()
     }
@@ -77,10 +94,6 @@ impl<N: Num> Rect<N> {
 
     pub fn right_x(&self) -> N {
         self.bottom_left().x() + self.size().width()
-    }
-
-    pub fn top_right(&self) -> Point<N> {
-        self.bottom_left() + self.size()
     }
 
     pub fn centre(&self) -> Point<N> {
@@ -121,27 +134,43 @@ impl<N: Num> Rect<N> {
         true
     }
 
-    pub fn contains(&self, point: Point<N>) -> bool {
-        let bottom_left = self.bottom_left();
-        let top_right = self.top_right();
+    pub fn contains_point(&self, point: Point<N>) -> bool {
+        self.point_horizontal_position(point) == HorizontalPosition::Inside
+            && self.point_vertical_position(point) == VerticalPosition::Inside
+    }
 
-        if point.x() < bottom_left.x() {
-            return false;
+    pub fn line_position(&self, other: Line<N>) -> LinePosition {
+        LinePosition(
+            self.point_position(other.start()),
+            self.point_position(other.end()),
+        )
+    }
+
+    pub fn point_position(&self, other: Point<N>) -> PointPosition {
+        PointPosition(
+            self.point_horizontal_position(other),
+            self.point_vertical_position(other),
+        )
+    }
+
+    pub fn point_horizontal_position(&self, other: Point<N>) -> HorizontalPosition {
+        if other.x() < self.left_x() {
+            HorizontalPosition::Left
+        } else if other.x() > self.right_x() {
+            HorizontalPosition::Right
+        } else {
+            HorizontalPosition::Inside
         }
+    }
 
-        if point.y() < bottom_left.y() {
-            return false;
+    pub fn point_vertical_position(&self, other: Point<N>) -> VerticalPosition {
+        if other.y() < self.bottom_y() {
+            VerticalPosition::Below
+        } else if other.y() > self.top_y() {
+            VerticalPosition::Above
+        } else {
+            VerticalPosition::Inside
         }
-
-        if top_right.x() < point.x() {
-            return false;
-        }
-
-        if top_right.y() < point.y() {
-            return false;
-        }
-
-        true
     }
 
     pub fn intersect(&self, other: Self) -> Option<Self> {
@@ -328,5 +357,135 @@ mod overlaps {
         let b = Rect(Point(3, 3), Size(6, 6));
 
         assert_eq!(a.overlaps(b), true);
+    }
+}
+
+#[cfg(test)]
+mod bottom_left {
+    use super::*;
+
+    #[test]
+    fn it_should_return_bottom_left() {
+        let rect: Rect<u32> = Rect(Point(3, 4), Size(9, 13));
+        assert_eq!(rect.bottom_left(), Point(3, 4));
+    }
+}
+
+#[cfg(test)]
+mod bottom_right {
+    use super::*;
+
+    #[test]
+    fn it_should_return_bottom_right() {
+        let rect: Rect<u32> = Rect(Point(3, 4), Size(9, 13));
+        assert_eq!(rect.bottom_right(), Point(12, 4));
+    }
+}
+
+#[cfg(test)]
+mod top_left {
+    use super::*;
+
+    #[test]
+    fn it_should_return_top_left() {
+        let rect: Rect<u32> = Rect(Point(3, 4), Size(9, 13));
+        assert_eq!(rect.top_left(), Point(3, 17));
+    }
+}
+
+#[cfg(test)]
+mod top_right {
+    use super::*;
+
+    #[test]
+    fn it_should_return_top_right() {
+        let rect: Rect<u32> = Rect(Point(3, 4), Size(9, 13));
+        assert_eq!(rect.top_right(), Point(12, 17));
+    }
+}
+
+#[cfg(test)]
+mod point_position {
+    use super::*;
+
+    #[test]
+    fn it_should_return_bottom_left() {
+        let rect: Rect<u32> = Rect(Point(10, 12), Size(10, 8));
+        assert_eq!(
+            rect.point_position(Point(3, 4)),
+            PointPosition(HorizontalPosition::Left, VerticalPosition::Below)
+        );
+    }
+
+    #[test]
+    fn it_should_return_middle_left() {
+        let rect: Rect<u32> = Rect(Point(10, 12), Size(10, 8));
+        assert_eq!(
+            rect.point_position(Point(3, 16)),
+            PointPosition(HorizontalPosition::Left, VerticalPosition::Inside)
+        );
+    }
+
+    #[test]
+    fn it_should_return_above_left() {
+        let rect: Rect<u32> = Rect(Point(10, 12), Size(10, 8));
+        assert_eq!(
+            rect.point_position(Point(3, 24)),
+            PointPosition(HorizontalPosition::Left, VerticalPosition::Above)
+        );
+    }
+
+    #[test]
+    fn it_should_return_bottom_middle() {
+        let rect: Rect<u32> = Rect(Point(10, 12), Size(10, 8));
+        assert_eq!(
+            rect.point_position(Point(13, 4)),
+            PointPosition(HorizontalPosition::Inside, VerticalPosition::Below)
+        );
+    }
+
+    #[test]
+    fn it_should_return_middle_middle() {
+        let rect: Rect<u32> = Rect(Point(10, 12), Size(10, 8));
+        assert_eq!(
+            rect.point_position(Point(13, 14)),
+            PointPosition(HorizontalPosition::Inside, VerticalPosition::Inside)
+        );
+    }
+
+    #[test]
+    fn it_should_return_above_middle() {
+        let rect: Rect<u32> = Rect(Point(10, 12), Size(10, 8));
+        assert_eq!(
+            rect.point_position(Point(13, 24)),
+            PointPosition(HorizontalPosition::Inside, VerticalPosition::Above)
+        );
+    }
+
+    #[test]
+    fn it_should_return_bottom_right() {
+        let rect: Rect<u32> = Rect(Point(10, 12), Size(10, 8));
+        assert_eq!(
+            rect.point_position(Point(30, 4)),
+            PointPosition(HorizontalPosition::Right, VerticalPosition::Below)
+        );
+    }
+
+    #[test]
+    fn it_should_return_middle_right() {
+        let rect: Rect<u32> = Rect(Point(10, 12), Size(10, 8));
+        assert_eq!(
+            rect.point_position(Point(30, 14)),
+            PointPosition(HorizontalPosition::Right, VerticalPosition::Inside)
+        );
+    }
+
+    #[test]
+    fn it_should_return_above_right() {
+        let rect: Rect<u32> = Rect(Point(10, 12), Size(10, 8));
+        assert_eq!(
+            rect.point_position(Point(30, 34)),
+            PointPosition(HorizontalPosition::Right, VerticalPosition::Above)
+        );
     }
 }

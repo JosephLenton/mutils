@@ -1,4 +1,4 @@
-use super::Num;
+use crate::num::Num;
 use std::mem::size_of;
 
 /// It's useful to convert from a higher precision numerical type,
@@ -13,6 +13,14 @@ use std::mem::size_of;
 pub trait FromClamped<N: Num> {
     /// Returns the value in the new type, but clamped.
     fn from_clamped(n: N) -> Self;
+}
+
+// All numbers can clamp themselves.
+impl<N: Num> FromClamped<N> for N {
+    #[inline(always)]
+    fn from_clamped(n: N) -> Self {
+        n
+    }
 }
 
 // i8

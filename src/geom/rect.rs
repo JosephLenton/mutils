@@ -8,10 +8,10 @@ use std::ops::AddAssign;
 use std::ops::Sub;
 use std::ops::SubAssign;
 
-use crate::num::FromClamped;
 use crate::num::INum;
 use crate::num::Num;
 use crate::num::NumTuple;
+use crate::num::ToRounded;
 
 use crate::geom::HorizontalPosition;
 use crate::geom::Line;
@@ -196,15 +196,15 @@ impl<N: Num> Rect<N> {
     pub fn get_scale_diff(&self, other: Self) -> Size<N> {
         self.size().get_scale_diff(other.size())
     }
-}
-
-impl<N: Num> Rect<N> {
-    pub fn to_clamped<T: Num + FromClamped<N>>(&self) -> Rect<T> {
-        Rect(self.bottom_left().to_clamped(), self.size().to_clamped())
-    }
 
     pub fn to<T: Num + From<N>>(&self) -> Rect<T> {
         Rect(self.bottom_left().to(), self.size().to())
+    }
+}
+
+impl<O: Num, N: Num + ToRounded<O>> ToRounded<Rect<O>> for Rect<N> {
+    fn to_rounded(self) -> Rect<O> {
+        Rect(self.bottom_left().to_rounded(), self.size().to_rounded())
     }
 }
 

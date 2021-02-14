@@ -34,4 +34,20 @@ impl PointPosition {
     pub fn is_below(self) -> bool {
         self.vertical() == VerticalPosition::Below
     }
+
+    pub fn is_entirely_inside(self) -> bool {
+        self == PointPosition(HorizontalPosition::Inside, VerticalPosition::Inside)
+    }
+
+    // It is outside if either the horizontal or the vertical, is not inside.
+    pub fn is_outside(self) -> bool {
+        self.horizontal() != HorizontalPosition::Inside
+            || self.vertical() != VerticalPosition::Inside
+    }
+
+    // It is entirely outside if neither the horizontal or the vertical, are inside.
+    pub fn is_entirely_outside(self) -> bool {
+        self.horizontal() != HorizontalPosition::Inside
+            && self.vertical() != VerticalPosition::Inside
+    }
 }

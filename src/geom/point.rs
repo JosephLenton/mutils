@@ -16,10 +16,11 @@ use ::std::ops::SubAssign;
 
 use ::num_traits::sign::{abs, signum, Signed};
 
-use crate::num::FromClamped;
 use crate::num::INum;
 use crate::num::Num;
 use crate::num::NumTuple;
+use crate::num::ToRounded;
+use crate::num::ToSignedClamped;
 
 use crate::geom::Rect;
 use crate::geom::Size;
@@ -64,6 +65,12 @@ impl<N: Num> Point<N> {
     pub fn distance_to(&self, other: Self) -> Size<N> {
         Size::new(other.first() - self.first(), other.second() - self.second())
     }
+
+    /// This is to allow creating a new Point, with a new type, from the type given.
+    /// i.e. `Point::new(1 as u8, 1 as u8)::to::<u32>()`
+    pub fn to<T: Num + From<N>>(&self) -> Point<T> {
+        Point(T::from(self.first()), T::from(self.second()))
+    }
 }
 
 impl<N: Num> NumTuple<N> for Point<N> {
@@ -97,21 +104,15 @@ impl<N: Num> NumTuple<N> for Point<N> {
     }
 }
 
-impl<N: Num> Point<N> {
-    /// Converts to a new type. If the current values don't fit in the new type,
-    /// then it'll be clamped between min and max.
-    /// i.e. `NumTuple::new(1 as i16, 1 as i16)::to::<u16>()`
-    pub fn to_clamped<T: Num + FromClamped<N>>(&self) -> Point<T> {
-        NumTuple::new(
-            T::from_clamped(self.first()),
-            T::from_clamped(self.second()),
-        )
+impl<O: Num, N: Num + ToRounded<O>> ToRounded<Point<O>> for Point<N> {
+    fn to_rounded(self) -> Point<O> {
+        Point(self.x().to_rounded(), self.y().to_rounded())
     }
+}
 
-    /// This is to allow creating a new Point, with a new type, from the type given.
-    /// i.e. `Point::new(1 as u8, 1 as u8)::to::<u32>()`
-    pub fn to<T: Num + From<N>>(&self) -> Point<T> {
-        NumTuple::new(T::from(self.first()), T::from(self.second()))
+impl<N: Num + ToSignedClamped> Point<N> {
+    pub fn to_signed_clamped(self) -> Point<<N as ToSignedClamped>::Output> {
+        Point(self.x().to_signed_clamped(), self.y().to_signed_clamped())
     }
 }
 

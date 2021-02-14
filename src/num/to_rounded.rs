@@ -814,6 +814,13 @@ impl ToRounded<i64> for i8 {
     }
 }
 
+// usize
+impl ToRounded<isize> for usize {
+    fn to_rounded(self) -> isize {
+        self.min(<isize>::max_value() as Self) as isize
+    }
+}
+
 #[cfg(test)]
 mod f32 {
     use super::*;

@@ -1,4 +1,4 @@
-use super::FromClamped;
+use super::ToRounded;
 use super::Num;
 
 pub trait ToSignedClamped {
@@ -38,7 +38,7 @@ impl ToSignedClamped for u64 {
 
     #[inline(always)]
     fn to_signed_clamped(self) -> Self::Output {
-        i64::from_clamped(self)
+        self.to_rounded()
     }
 }
 
@@ -47,7 +47,7 @@ impl ToSignedClamped for usize {
 
     #[inline(always)]
     fn to_signed_clamped(self) -> Self::Output {
-        isize::from_clamped(self)
+        self.to_rounded()
     }
 }
 

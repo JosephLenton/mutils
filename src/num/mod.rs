@@ -1,4 +1,3 @@
-mod from_clamped;
 mod half;
 mod num;
 mod num_trampolene;
@@ -7,7 +6,6 @@ mod number_extensions;
 mod to_rounded;
 mod to_signed_clamped;
 
-pub use self::from_clamped::*;
 pub use self::half::*;
 pub use self::num::*;
 pub use self::num_trampolene::*;

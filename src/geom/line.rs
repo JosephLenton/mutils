@@ -664,6 +664,7 @@ mod intersect {
     fn it_should_clip_lines_from_the_left() {
         let rect = Rect(Point(10.0, 10.0), Size(10.0, 10.0));
         let line = Line(Point(7.0, 11.0), Point(16.0, 17.0));
+
         assert_eq!(
             line.intersect(rect),
             Some(Line(Point(10.0, 13.0), Point(16.0, 17.0)))
@@ -692,13 +693,22 @@ mod intersect {
         );
     }
 
-    // #[test]
-    // fn it_should_clip_u32_lines() {
-    //     let rect : Rect<u32> = Rect(Point(10, 10), Size(10, 10));
-    //     let line : Rect<u32> = Line(Point(7, 11), Point(16, 17));
-    //     assert_eq!(
-    //         line.intersect(rect),
-    //         Some(Line(Point(10, 13), Point(16, 17)))
-    //     );
-    // }
+    #[test]
+    fn it_should_clip_u32_lines() {
+        let rect : Rect<u32> = Rect(Point(10, 10), Size(10, 10));
+        let line : Line<u32> = Line(Point(7, 11), Point(16, 17));
+
+        assert_eq!(
+            line.intersect(rect),
+            Some(Line(Point(10, 13), Point(16, 17)))
+        );
+
+        let rect : Rect<u32> = Rect(Point(10, 10), Size(8, 9));
+        let line : Line<u32> = Line(Point(12, 7), Point(24, 25));
+
+        assert_eq!(
+            line.intersect(rect),
+            Some(Line(Point(14, 10), Point(18, 16)))
+        );
+    }
 }

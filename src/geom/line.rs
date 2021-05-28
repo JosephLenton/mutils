@@ -695,16 +695,16 @@ mod intersect {
 
     #[test]
     fn it_should_clip_u32_lines() {
-        let rect : Rect<u32> = Rect(Point(10, 10), Size(10, 10));
-        let line : Line<u32> = Line(Point(7, 11), Point(16, 17));
+        let rect: Rect<u32> = Rect(Point(10, 10), Size(10, 10));
+        let line: Line<u32> = Line(Point(7, 11), Point(16, 17));
 
         assert_eq!(
             line.intersect(rect),
             Some(Line(Point(10, 13), Point(16, 17)))
         );
 
-        let rect : Rect<u32> = Rect(Point(10, 10), Size(8, 9));
-        let line : Line<u32> = Line(Point(12, 7), Point(24, 25));
+        let rect: Rect<u32> = Rect(Point(10, 10), Size(8, 9));
+        let line: Line<u32> = Line(Point(12, 7), Point(24, 25));
 
         assert_eq!(
             line.intersect(rect),

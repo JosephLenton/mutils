@@ -36,6 +36,10 @@ impl<N: Num> Rect<N> {
         Self(bottom_left, size)
     }
 
+    pub fn new_from_centre(centre: Point<N>, size: Size<N>) -> Self {
+        Self(centre - size.half(), size)
+    }
+
     pub fn move_xy(&mut self, xy: Point<N>) {
         self.0 += xy;
     }
@@ -357,6 +361,17 @@ mod overlaps {
         let b = Rect(Point(3, 3), Size(6, 6));
 
         assert_eq!(a.overlaps(b), true);
+    }
+}
+
+#[cfg(test)]
+mod new_from_centre {
+    use super::*;
+
+    #[test]
+    fn it_should_work() {
+        let rect: Rect<f32> = Rect::new_from_centre(Point(10.0, 10.0), Size(5.0, 8.0));
+        assert_eq!(rect, Rect(Point(7.5, 6.0), Size(5.0, 8.0)));
     }
 }
 

@@ -1,5 +1,5 @@
-use super::ToRounded;
 use super::Num;
+use super::ToRounded;
 
 pub trait ToSignedClamped {
     type Output: Num;

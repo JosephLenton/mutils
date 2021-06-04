@@ -119,19 +119,19 @@ impl<N: Num> Rect<N> {
         let top_right_a = self.top_right();
         let top_right_b = other.top_right();
 
-        if top_right_b.x() < bottom_left_a.x() {
+        if top_right_b.x() <= bottom_left_a.x() {
             return false;
         }
 
-        if top_right_b.y() < bottom_left_a.y() {
+        if top_right_b.y() <= bottom_left_a.y() {
             return false;
         }
 
-        if top_right_a.x() < bottom_left_b.x() {
+        if top_right_a.x() <= bottom_left_b.x() {
             return false;
         }
 
-        if top_right_a.y() < bottom_left_b.y() {
+        if top_right_a.y() <= bottom_left_b.y() {
             return false;
         }
 
@@ -361,6 +361,22 @@ mod overlaps {
         let b = Rect(Point(3, 3), Size(6, 6));
 
         assert_eq!(a.overlaps(b), true);
+    }
+
+    #[test]
+    fn it_should_overlap_identical_rectangles() {
+        let a: Rect<i32> = Rect(Point(3, 2), Size(4, 5));
+        let b: Rect<i32> = Rect(Point(3, 2), Size(4, 5));
+
+        assert!(a.overlaps(b));
+    }
+
+    #[test]
+    fn it_should_not_overlap_rectangles_next_to_each_other() {
+        let a: Rect<i32> = Rect(Point(2, 2), Size(2, 2));
+        let b: Rect<i32> = Rect(Point(4, 2), Size(2, 2));
+
+        assert!(!a.overlaps(b));
     }
 }
 

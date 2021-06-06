@@ -22,6 +22,9 @@ impl Colour {
     pub const MAGENTA: Colour = Colour::new_from_rgba(0xff00ffff);
     pub const CYAN: Colour = Colour::new_from_rgba(0x00ffffff);
     pub const YELLOW: Colour = Colour::new_from_rgba(0xffff00ff);
+    pub const RED: Colour = Colour::new_from_rgba(0xff0000ff);
+    pub const GREEN: Colour = Colour::new_from_rgba(0x00ff00ff);
+    pub const BLUE: Colour = Colour::new_from_rgba(0x0000ffff);
 
     #[inline(always)]
     fn hex_u32_to_f32(val: u32, shift: u32) -> f32 {

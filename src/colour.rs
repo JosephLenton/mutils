@@ -17,14 +17,18 @@ pub struct Colour {
 
 impl Colour {
     pub const WHITE: Colour = Colour::new_from_rgba(0xffffffff);
+    pub const LIGHT_GREY: Colour = Colour::new_from_rgba(0xC0C0C0ff);
+    pub const GREY: Colour = Colour::new_from_rgba(0x808080ff);
+    pub const DARK_GREY: Colour = Colour::new_from_rgba(0x404040ff);
     pub const BLACK: Colour = Colour::new_from_rgba(0x000000ff);
+
+    pub const RED: Colour = Colour::new_from_rgba(0xff0000ff);
+    pub const GREEN: Colour = Colour::new_from_rgba(0x00ff00ff);
+    pub const BLUE: Colour = Colour::new_from_rgba(0x0000ffff);
 
     pub const MAGENTA: Colour = Colour::new_from_rgba(0xff00ffff);
     pub const CYAN: Colour = Colour::new_from_rgba(0x00ffffff);
     pub const YELLOW: Colour = Colour::new_from_rgba(0xffff00ff);
-    pub const RED: Colour = Colour::new_from_rgba(0xff0000ff);
-    pub const GREEN: Colour = Colour::new_from_rgba(0x00ff00ff);
-    pub const BLUE: Colour = Colour::new_from_rgba(0x0000ffff);
 
     #[inline(always)]
     fn hex_u32_to_f32(val: u32, shift: u32) -> f32 {

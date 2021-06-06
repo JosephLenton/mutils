@@ -26,6 +26,7 @@ use crate::geom::Size;
 
 use crate::geom::HorizontalPosition;
 use crate::geom::PointPosition;
+use crate::geom::Transform;
 use crate::geom::VerticalPosition;
 
 use crate::Random;
@@ -511,6 +512,14 @@ impl<N: Num + Signed> Neg for Line<N> {
 
     fn neg(self) -> Self::Output {
         Self(-self.0, -self.1)
+    }
+}
+
+impl Add<Transform> for Line {
+    type Output = Line;
+
+    fn add(self, transform: Transform) -> Self::Output {
+        transform + self
     }
 }
 

@@ -1,3 +1,5 @@
+use crate::geom::position::HorizontalPosition;
+use crate::geom::position::VerticalPosition;
 use crate::geom::PointPosition;
 
 #[derive(Copy, Clone, PartialEq, Debug)]
@@ -46,5 +48,23 @@ impl LinePosition {
 
     pub fn is_entirely_inside(self) -> bool {
         self.start().is_entirely_inside() && self.end().is_entirely_inside()
+    }
+
+    /**
+     * Returns true, if it's guaranteed this does not clip the inside.
+     * `is_entirely_outside` is not the opposite of `is_entirely_inside`.
+     */
+    pub fn is_entirely_outside(self) -> bool {
+        // Is either fully above, or fully below.
+        if self.is_on_same_horizontal() && self.start().horizontal() != HorizontalPosition::Inside {
+            return true;
+        }
+
+        // Is either fully on the left, or fully on the right.
+        if self.is_on_same_vertical() && self.start().vertical() != VerticalPosition::Inside {
+            return true;
+        }
+
+        false
     }
 }

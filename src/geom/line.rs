@@ -24,10 +24,8 @@ use crate::geom::Point;
 use crate::geom::Rect;
 use crate::geom::Size;
 
-use crate::geom::HorizontalPosition;
 use crate::geom::PointPosition;
 use crate::geom::Transform;
-use crate::geom::VerticalPosition;
 
 use crate::Random;
 
@@ -127,16 +125,7 @@ where
             return Some(self);
         }
 
-        // Is either fully above, or fully below.
-        if position.is_on_same_horizontal()
-            && position.start().horizontal() != HorizontalPosition::Inside
-        {
-            return None;
-        }
-
-        // Is either fully on the left, or fully on the right.
-        if position.is_on_same_vertical() && position.start().vertical() != VerticalPosition::Inside
-        {
+        if position.is_entirely_outside() {
             return None;
         }
 

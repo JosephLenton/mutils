@@ -80,6 +80,16 @@ impl<N: Num> Line<N> {
     pub fn to_rect(self) -> Rect<N> {
         self.start().rect_to(self.end())
     }
+
+    /// Where `n` is a valid from 0.0 to 1.0,
+    /// this will return a point on the length of the line.
+    pub fn transition_point(self, n: N) -> Point<N> {
+        self.start() + self.diff_as_point() * n
+    }
+
+    fn diff_as_point(self) -> Point<N> {
+        self.end() - self.start()
+    }
 }
 
 impl<N: Num + ToSignedClamped> Line<N> {
@@ -708,5 +718,28 @@ mod intersect {
             line.intersect(rect),
             Some(Line(Point(14, 10), Point(18, 16)))
         );
+    }
+}
+
+#[cfg(test)]
+mod transition_point {
+    use super::*;
+
+    #[test]
+    fn it_should_return_start_when_zero() {
+        let line = Line(Point(3.0, 4.0), Point(14.0, 19.0));
+        assert_eq!(line.transition_point(0.0), Point(3.0, 4.0));
+    }
+
+    #[test]
+    fn it_should_return_end_when_one() {
+        let line = Line(Point(3.0, 4.0), Point(14.0, 19.0));
+        assert_eq!(line.transition_point(1.0), Point(14.0, 19.0));
+    }
+
+    #[test]
+    fn it_should_return_middle_when_half() {
+        let line = Line(Point(3.0, 4.0), Point(14.0, 19.0));
+        assert_eq!(line.transition_point(0.5), Point(8.5, 11.5));
     }
 }

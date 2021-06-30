@@ -1,6 +1,6 @@
 [package]
 name = "mutils"
-version = "3.0.7"
+version = "3.0.8"
 authors = ["josephlenton@gmail.com <josephlenton@gmail.com>"]
 edition = "2018"
 license = "MIT"
@@ -14,3 +14,6 @@ rand = { version = "0.8.0", default-features=false, features = ["small_rng"] }
 [dependencies.num-traits]
 version = "0.2.11"
 default-features = false
+
+[dev-dependencies]
+assert_approx_eq = "1.1.0"

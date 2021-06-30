@@ -9,6 +9,7 @@ use crate::geom::Size;
 pub struct Transform {
     scale: Size,
     position: Point,
+    rotation: f32,
 }
 
 impl Transform {
@@ -16,6 +17,7 @@ impl Transform {
         Self {
             position: Point(0.0, 0.0),
             scale: Size(1.0, 1.0),
+            rotation: 0.0,
         }
     }
 
@@ -26,6 +28,15 @@ impl Transform {
 
     pub fn position(&self) -> Point<f32> {
         self.position
+    }
+
+    pub fn set_rotation(mut self, rotation: f32) -> Self {
+        self.rotation = rotation;
+        self
+    }
+
+    pub fn rotation(&self) -> f32 {
+        self.rotation
     }
 
     pub fn flip_x(&self) -> bool {

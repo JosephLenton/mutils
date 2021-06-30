@@ -1,17 +1,18 @@
-use std::fmt::Display;
-use std::ops::Add;
-use std::ops::AddAssign;
-use std::ops::Div;
-use std::ops::DivAssign;
-use std::ops::Mul;
-use std::ops::MulAssign;
-use std::ops::Rem;
-use std::ops::Shl;
-use std::ops::ShlAssign;
-use std::ops::Shr;
-use std::ops::ShrAssign;
-use std::ops::Sub;
-use std::ops::SubAssign;
+use ::std::fmt::Debug;
+use ::std::fmt::Display;
+use ::std::ops::Add;
+use ::std::ops::AddAssign;
+use ::std::ops::Div;
+use ::std::ops::DivAssign;
+use ::std::ops::Mul;
+use ::std::ops::MulAssign;
+use ::std::ops::Rem;
+use ::std::ops::Shl;
+use ::std::ops::ShlAssign;
+use ::std::ops::Shr;
+use ::std::ops::ShrAssign;
+use ::std::ops::Sub;
+use ::std::ops::SubAssign;
 
 use super::Half;
 use super::NumTrampolene;
@@ -44,6 +45,7 @@ pub trait Num:
     + Zero
     + One
     + Sized
+    + Debug
 {
 }
 
@@ -72,6 +74,7 @@ impl<U> Num for U where
         + Zero
         + One
         + Sized
+        + Debug
 {
 }
 

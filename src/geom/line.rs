@@ -90,6 +90,11 @@ impl<N: Num> Line<N> {
     fn diff_as_point(self) -> Point<N> {
         self.end() - self.start()
     }
+
+    /// This swaps the start and end points.
+    pub fn reverse(self) -> Self {
+        Self(self.end(), self.start())
+    }
 }
 
 impl<N: Num + ToSignedClamped> Line<N> {
@@ -209,7 +214,11 @@ where
 }
 
 impl Line<f32> {
-    fn calculate_intersection(self, rect: Rect<f32>, clip_to: PointPosition) -> Option<Point<f32>> {
+    pub fn calculate_intersection(
+        self,
+        rect: Rect<f32>,
+        clip_to: PointPosition,
+    ) -> Option<Point<f32>> {
         let p1 = self.start();
         let slope = self.slope();
         let inverse_slope = self.inverse_slope();
@@ -243,6 +252,27 @@ impl Line<f32> {
         }
 
         None
+    }
+
+    pub fn rotate(self, angle: f32) -> Self {
+        let midpoint = self.midpoint();
+        let half_len = self.hypot() / 2.0;
+
+        let angle = self.angle() + angle;
+        let cos = angle.cos();
+        let sin = angle.sin();
+
+        let start = midpoint - Point(half_len * cos, half_len * sin);
+        let end = midpoint + Point(half_len * cos, half_len * sin);
+
+        Line(start, end)
+    }
+
+    pub fn rotate_around_point(self, angle: f32, target: Point<f32>) -> Self {
+        Line(
+            self.start().rotate_around_point(angle, target),
+            self.end().rotate_around_point(angle, target),
+        )
     }
 }
 
@@ -741,5 +771,47 @@ mod transition_point {
     fn it_should_return_middle_when_half() {
         let line = Line(Point(3.0, 4.0), Point(14.0, 19.0));
         assert_eq!(line.transition_point(0.5), Point(8.5, 11.5));
+    }
+}
+
+#[cfg(test)]
+mod rotate {
+    use super::*;
+    use ::std::f32::consts::TAU;
+
+    #[test]
+    fn it_should_be_slipped_with_180_rotation() {
+        let line = Line(Point(1.0000024, 5.0), Point(14.999998, 20.0));
+        assert_eq!(line.rotate(TAU * 0.5), line.reverse());
+    }
+
+    #[test]
+    fn it_should_be_the_same_with_360_rotation() {
+        let line = Line(Point(0.9999995, 4.5), Point(15.0, 20.0));
+        assert_eq!(line.rotate(TAU), line);
+    }
+}
+
+#[cfg(test)]
+mod rotate_around_point {
+    use super::*;
+    use ::std::f32::consts::TAU;
+
+    #[test]
+    fn it_should_be_flipped_with_180_rotation() {
+        let line = Line(Point(0.0, 5.0), Point(5.0, 0.0));
+        let rotation: Line<i32> = line
+            .rotate_around_point(TAU * 0.5, Point(0.0, 0.0))
+            .to_rounded();
+        assert_eq!(rotation, Line(Point(0, -5), Point(-5, -0)));
+    }
+
+    #[test]
+    fn it_should_be_flipped_with_180_rotation_around_point() {
+        let line = Line(Point(8.0, 15.0), Point(13.0, 10.0));
+        let rotation: Line<i32> = line
+            .rotate_around_point(TAU * 0.5, Point(8.0, 10.0))
+            .to_rounded();
+        assert_eq!(rotation, Line(Point(8, 5), Point(3, 10)));
     }
 }

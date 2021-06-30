@@ -180,6 +180,29 @@ impl Point<f32> {
     pub fn round(self) -> Self {
         Self::new(self.first().round(), self.second().round())
     }
+
+    pub fn rotate_around_point(self, angle: f32, other: Self) -> Self {
+        (self - other).rotate_around_zero(angle) + other
+    }
+
+    fn rotate_around_zero(self, rotation: f32) -> Self {
+        let Point(x, y) = self;
+
+        let hypot = x.hypot(y);
+        let angle = self.angle_to_zero() + rotation;
+        let cos = angle.cos();
+        let sin = angle.sin();
+
+        Self(hypot * cos, hypot * sin)
+    }
+
+    pub fn angle_to(self, other: Self) -> f32 {
+        (self - other).angle_to_zero()
+    }
+
+    fn angle_to_zero(self) -> f32 {
+        self.y().atan2(self.x())
+    }
 }
 
 impl<N: Num> Add<Self> for Point<N> {
@@ -405,5 +428,92 @@ mod flip_y {
     fn it_should_flip_y() {
         let point: Point<i32> = Point(15, 23);
         assert_eq!(point.flip_y(), Point(15, -23));
+    }
+}
+
+#[cfg(test)]
+mod rotate_around_point {
+    use super::*;
+    use ::assert_approx_eq::assert_approx_eq;
+    use ::std::f32::consts::TAU;
+
+    #[test]
+    fn it_should_rotate_90_degrees() {
+        let point = Point(0.0, 10.0);
+        let rotate = point.rotate_around_point(TAU * 0.25, Point(0.0, 0.0));
+
+        assert_approx_point_eq(rotate, Point(-10.0, 0.0));
+    }
+
+    #[test]
+    fn it_should_rotate_90_degrees_around_point() {
+        let point = Point(25.0, 35.0);
+        let rotate = point.rotate_around_point(TAU * 0.25, Point(25.0, 25.0));
+
+        assert_approx_point_eq(rotate, Point(15.0, 25.0));
+    }
+
+    fn assert_approx_point_eq(a: Point<f32>, b: Point<f32>) {
+        assert_approx_eq!(a.x(), b.x());
+        assert_approx_eq!(a.y(), b.y());
+    }
+}
+
+#[cfg(test)]
+mod angle_to {
+    use super::*;
+    use ::assert_approx_eq::assert_approx_eq;
+    use ::std::f32::consts::TAU;
+
+    #[test]
+    fn it_should_angle_to_zero_from_right() {
+        let point = Point(10.0, 0.0);
+        assert_approx_eq!(point.angle_to(Point(0.0, 0.0)), 0.0);
+    }
+
+    #[test]
+    fn it_should_angle_to_zero_from_above() {
+        let point = Point(0.0, 10.0);
+        assert_approx_eq!(point.angle_to(Point(0.0, 0.0)), TAU * 0.25);
+    }
+
+    #[test]
+    fn it_should_angle_to_zero_from_left() {
+        let point = Point(-10.0, 0.0);
+        assert_approx_eq!(point.angle_to(Point(0.0, 0.0)), TAU * 0.5);
+    }
+
+    #[test]
+    fn it_should_angle_to_zero_from_below() {
+        let point = Point(0.0, -10.0);
+        assert_approx_eq!(point.angle_to(Point(0.0, 0.0)), -TAU * 0.25);
+    }
+
+    #[test]
+    fn it_should_angle_to_point_from_right() {
+        let origin = Point(5.0, 8.0);
+        let point = Point(10.0, 0.0) + origin;
+        assert_approx_eq!(point.angle_to(origin), 0.0);
+    }
+
+    #[test]
+    fn it_should_angle_to_point_from_above() {
+        let origin = Point(5.0, 8.0);
+        let point = Point(0.0, 10.0) + origin;
+        assert_approx_eq!(point.angle_to(origin), TAU * 0.25);
+    }
+
+    #[test]
+    fn it_should_angle_to_point_from_left() {
+        let origin = Point(5.0, 8.0);
+        let point = Point(-10.0, 0.0) + origin;
+        assert_approx_eq!(point.angle_to(origin), TAU * 0.5);
+    }
+
+    #[test]
+    fn it_should_angle_to_point_from_below() {
+        let origin = Point(5.0, 8.0);
+        let point = Point(0.0, -10.0) + origin;
+        assert_approx_eq!(point.angle_to(origin), -TAU * 0.25);
     }
 }

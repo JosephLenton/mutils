@@ -189,7 +189,7 @@ impl Point<f32> {
         let Point(x, y) = self;
 
         let hypot = x.hypot(y);
-        let angle = self.angle_to_zero() + rotation;
+        let angle = self.angle_to_zero() - rotation;
         let cos = angle.cos();
         let sin = angle.sin();
 
@@ -442,7 +442,7 @@ mod rotate_around_point {
         let point = Point(0.0, 10.0);
         let rotate = point.rotate_around_point(TAU * 0.25, Point(0.0, 0.0));
 
-        assert_approx_point_eq(rotate, Point(-10.0, 0.0));
+        assert_approx_point_eq(rotate, Point(10.0, 0.0));
     }
 
     #[test]
@@ -450,7 +450,7 @@ mod rotate_around_point {
         let point = Point(25.0, 35.0);
         let rotate = point.rotate_around_point(TAU * 0.25, Point(25.0, 25.0));
 
-        assert_approx_point_eq(rotate, Point(15.0, 25.0));
+        assert_approx_point_eq(rotate, Point(35.0, 25.0));
     }
 
     fn assert_approx_point_eq(a: Point<f32>, b: Point<f32>) {

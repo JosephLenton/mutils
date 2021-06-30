@@ -95,7 +95,7 @@ impl Add<Line> for Transform {
     type Output = Line;
 
     fn add(self, line: Self::Output) -> Self::Output {
-        (line * self.scale()) + self.position()
+        line.rotate_around_zero(self.rotation()) * self.scale() + self.position()
     }
 }
 

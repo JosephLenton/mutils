@@ -258,7 +258,7 @@ impl Line<f32> {
         let midpoint = self.midpoint();
         let half_len = self.hypot() / 2.0;
 
-        let angle = self.angle() + angle;
+        let angle = self.angle() - angle;
         let cos = angle.cos();
         let sin = angle.sin();
 
@@ -266,6 +266,10 @@ impl Line<f32> {
         let end = midpoint + Point(half_len * cos, half_len * sin);
 
         Line(start, end)
+    }
+
+    pub fn rotate_around_zero(self, angle: f32) -> Self {
+        self.rotate_around_point(angle, Point(0.0, 0.0))
     }
 
     pub fn rotate_around_point(self, angle: f32, target: Point<f32>) -> Self {
@@ -780,15 +784,24 @@ mod rotate {
     use ::std::f32::consts::TAU;
 
     #[test]
-    fn it_should_be_slipped_with_180_rotation() {
-        let line = Line(Point(1.0000024, 5.0), Point(14.999998, 20.0));
-        assert_eq!(line.rotate(TAU * 0.5), line.reverse());
+    fn it_should_be_level_after_45_rotation() {
+        let line = Line(Point(0.0, 0.0), Point(10.0, 10.0));
+        let rotation: Line<i32> = line.rotate(TAU / 8.0).to_rounded();
+        assert_eq!(rotation, Line(Point(-2, 5), Point(12, 5)));
+    }
+
+    #[test]
+    fn it_should_be_flipped_with_180_rotation() {
+        let line = Line(Point(1.0, 5.0), Point(15.0, 20.0));
+        let rotation: Line<i32> = line.rotate(TAU / 2.0).to_rounded();
+        assert_eq!(rotation, line.reverse().to_rounded());
     }
 
     #[test]
     fn it_should_be_the_same_with_360_rotation() {
-        let line = Line(Point(0.9999995, 4.5), Point(15.0, 20.0));
-        assert_eq!(line.rotate(TAU), line);
+        let line = Line(Point(0.0, 5.0), Point(15.0, 20.0));
+        let rotation: Line<i32> = line.rotate(TAU).to_rounded();
+        assert_eq!(rotation, line.to_rounded());
     }
 }
 
@@ -798,12 +811,30 @@ mod rotate_around_point {
     use ::std::f32::consts::TAU;
 
     #[test]
+    fn it_should_be_rotated_with_90_rotation() {
+        let line = Line(Point(0.0, 5.0), Point(5.0, 0.0));
+        let rotation: Line<i32> = line
+            .rotate_around_point(TAU * 0.25, Point(0.0, 0.0))
+            .to_rounded();
+        assert_eq!(rotation, Line(Point(5, 0), Point(0, -5)));
+    }
+
+    #[test]
     fn it_should_be_flipped_with_180_rotation() {
         let line = Line(Point(0.0, 5.0), Point(5.0, 0.0));
         let rotation: Line<i32> = line
             .rotate_around_point(TAU * 0.5, Point(0.0, 0.0))
             .to_rounded();
         assert_eq!(rotation, Line(Point(0, -5), Point(-5, -0)));
+    }
+
+    #[test]
+    fn it_should_be_rotated_with_90_rotation_around_point() {
+        let line = Line(Point(8.0, 15.0), Point(13.0, 10.0));
+        let rotation: Line<i32> = line
+            .rotate_around_point(TAU * 0.25, Point(8.0, 10.0))
+            .to_rounded();
+        assert_eq!(rotation, Line(Point(13, 10), Point(8, 5)));
     }
 
     #[test]

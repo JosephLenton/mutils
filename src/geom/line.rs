@@ -97,6 +97,12 @@ impl<N: Num> Line<N> {
     }
 }
 
+impl<N: Num + Signed> Line<N> {
+    pub fn direction_sign(&self) -> Point<N> {
+        self.diff_as_point().sign()
+    }
+}
+
 impl<N: Num + ToSignedClamped> Line<N> {
     pub fn to_signed_clamped(self) -> Line<<N as ToSignedClamped>::Output> {
         Line(
@@ -844,5 +850,38 @@ mod rotate_around_point {
             .rotate_around_point(TAU * 0.5, Point(8.0, 10.0))
             .to_rounded();
         assert_eq!(rotation, Line(Point(8, 5), Point(3, 10)));
+    }
+}
+
+#[cfg(test)]
+mod direction_sign {
+    use super::*;
+
+    #[test]
+    fn it_should_be_positive_when_end_is_larger() {
+        let line = Line(Point(0.0, 0.0), Point(100.0, 100.0));
+
+        assert_eq!(line.direction_sign(), Point(1.0, 1.0));
+    }
+
+    #[test]
+    fn it_should_be_positive_when_end_is_the_same() {
+        let line = Line(Point(0.0, 0.0), Point(0.0, 0.0));
+
+        assert_eq!(line.direction_sign(), Point(1.0, 1.0));
+    }
+
+    #[test]
+    fn it_should_be_negative_when_end_is_smaller() {
+        let line = Line(Point(0.0, 0.0), Point(-100.0, -100.0));
+
+        assert_eq!(line.direction_sign(), Point(-1.0, -1.0));
+    }
+
+    #[test]
+    fn it_should_be_mix_when_end_is_smaller_and_larger() {
+        let line = Line(Point(0.0, 0.0), Point(100.0, -100.0));
+
+        assert_eq!(line.direction_sign(), Point(1.0, -1.0));
     }
 }

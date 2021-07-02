@@ -95,6 +95,22 @@ impl<N: Num> Line<N> {
     pub fn reverse(self) -> Self {
         Self(self.end(), self.start())
     }
+
+    pub fn is_direction_negative_x(self) -> bool {
+        self.end().x() < self.start().x()
+    }
+
+    pub fn is_direction_positive_x(self) -> bool {
+        self.start().x() < self.end().x()
+    }
+
+    pub fn is_direction_negative_y(self) -> bool {
+        self.end().y() < self.start().y()
+    }
+
+    pub fn is_direction_positive_y(self) -> bool {
+        self.start().y() < self.end().y()
+    }
 }
 
 impl<N: Num + Signed> Line<N> {

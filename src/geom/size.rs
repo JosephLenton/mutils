@@ -186,6 +186,10 @@ impl Size<f32> {
     pub fn hypot(self) -> f32 {
         self.width().hypot(self.height())
     }
+
+    pub fn hypot_sqrd(self) -> f32 {
+        (self.width() * self.width()) + (self.height() * self.height())
+    }
 }
 
 impl<O: Num, N: Num + ToRounded<O>> ToRounded<Size<O>> for Size<N> {

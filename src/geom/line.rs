@@ -321,12 +321,11 @@ impl Line {
     }
 
     pub fn hypot(self) -> f32 {
-        let Line(Point(x1, y1), Point(x2, y2)) = self;
-        let x_diff = x2 - x1;
-        let y_diff = y2 - y1;
-        let hypot_sqrd = (x_diff * x_diff) + (y_diff * y_diff);
+        self.start().distance_to(self.end()).hypot()
+    }
 
-        hypot_sqrd.sqrt()
+    pub fn hypot_sqrd(self) -> f32 {
+        self.start().distance_to(self.end()).hypot_sqrd()
     }
 }
 
@@ -899,5 +898,29 @@ mod direction_sign {
         let line = Line(Point(0.0, 0.0), Point(100.0, -100.0));
 
         assert_eq!(line.direction_sign(), Point(1.0, -1.0));
+    }
+}
+
+#[cfg(test)]
+mod hypot {
+    use super::*;
+
+    #[test]
+    fn it_should_be_correct_for_positive() {
+        let line = Line(Point(2.0, 2.0), Point(5.0, 6.0));
+
+        assert_eq!(5.0, line.hypot());
+    }
+}
+
+#[cfg(test)]
+mod hypot_sqrd {
+    use super::*;
+
+    #[test]
+    fn it_should_be_correct_for_positive() {
+        let line = Line(Point(2.0, 2.0), Point(5.0, 6.0));
+
+        assert_eq!(25.0, line.hypot_sqrd());
     }
 }

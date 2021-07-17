@@ -154,6 +154,33 @@ impl<N: Num + ToRounded<f32>> Line<N>
 where
     f32: ToRounded<N>,
 {
+    pub fn overlaps_line(self, other: Line<N>) -> bool {
+        self.intersect_line(other).is_some()
+    }
+
+    pub fn intersect_line(self, other: Line<N>) -> Option<Point<N>> {
+        let self_rounded = self.to_rounded();
+        let other_rounded = other.to_rounded();
+
+        let size_1 = self_rounded.diff();
+        let size_2 = other_rounded.diff();
+        let start_dist = self_rounded.start() - other_rounded.start();
+
+        let s = (-size_1.height() * start_dist.x() + size_1.width() * start_dist.y())
+            / (-size_2.width() * size_1.height() + size_1.width() * size_2.height());
+        let t = (size_2.width() * start_dist.y() - size_2.height() * start_dist.x())
+            / (-size_2.width() * size_1.height() + size_1.width() * size_2.height());
+
+        if s >= 0.0 && s <= 1.0 && t >= 0.0 && t <= 1.0 {
+            let intersection_x = self_rounded.start().x() + (t * size_1.width());
+            let intersection_y = self_rounded.start().y() + (t * size_1.height());
+            let intersection = Point(intersection_x, intersection_y).to_rounded();
+            return Some(intersection);
+        }
+
+        None
+    }
+
     /**
      * Calculates if this overlaps another rectangle.
      * If it does, it will return the part of the line that intersects
@@ -243,25 +270,6 @@ where
 }
 
 impl Line<f32> {
-    pub fn intersect_line(self, other: Line<f32>) -> Option<Point<f32>> {
-        let size_1 = self.diff();
-        let size_2 = other.diff();
-        let start_dist = self.start() - other.start();
-
-        let s = (-size_1.height() * start_dist.x() + size_1.width() * start_dist.y())
-            / (-size_2.width() * size_1.height() + size_1.width() * size_2.height());
-        let t = (size_2.width() * start_dist.y() - size_2.height() * start_dist.x())
-            / (-size_2.width() * size_1.height() + size_1.width() * size_2.height());
-
-        if s >= 0.0 && s <= 1.0 && t >= 0.0 && t <= 1.0 {
-            let intersection_x = self.start().x() + (t * size_1.width());
-            let intersection_y = self.start().y() + (t * size_1.height());
-            return Some(Point(intersection_x, intersection_y));
-        }
-
-        None
-    }
-
     fn calculate_intersection(self, rect: Rect<f32>, clip_to: PointPosition) -> Option<Point<f32>> {
         let p1 = self.start();
         let slope = self.slope();

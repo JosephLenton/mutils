@@ -92,7 +92,7 @@ impl<V: Copy> Vec2D<V> {
     pub fn iter_of(&self, area: Rect<usize>) -> Vec2DIterator<V> {
         let data_rect = self.rect();
         let iterate_area = data_rect
-            .intersect(area)
+            .intersect_rect(area)
             .unwrap_or(Rect(Point(0, 0), Size(0, 0)));
 
         Vec2DIterator {

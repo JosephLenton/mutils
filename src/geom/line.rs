@@ -154,7 +154,14 @@ impl<N: Num + ToRounded<f32>> Line<N>
 where
     f32: ToRounded<N>,
 {
-    pub fn intersect(self, rect: Rect<N>) -> Option<Line<N>> {
+    /**
+     * Calculates if this overlaps another rectangle.
+     * If it does, it will return the part of the line that intersects
+     * within that rectangle.
+     *
+     * `None` is returned when no intersection is found.
+     */
+    pub fn intersect_rect(self, rect: Rect<N>) -> Option<Line<N>> {
         let mut position = rect.line_position(self);
 
         // No clippin needed.
@@ -226,7 +233,7 @@ where
                     //   /    |
                     //        |
                     //
-                    if rect_f32.intersect(line_f32.to_rect()) == None {
+                    if rect_f32.intersect_rect(line_f32.to_rect()) == None {
                         return None;
                     }
                 }
@@ -236,11 +243,26 @@ where
 }
 
 impl Line<f32> {
-    pub fn calculate_intersection(
-        self,
-        rect: Rect<f32>,
-        clip_to: PointPosition,
-    ) -> Option<Point<f32>> {
+    pub fn intersect_line(self, other: Line<f32>) -> Option<Point<f32>> {
+        let size_1 = self.diff();
+        let size_2 = other.diff();
+        let start_dist = self.start() - other.start();
+
+        let s = (-size_1.height() * start_dist.x() + size_1.width() * start_dist.y())
+            / (-size_2.width() * size_1.height() + size_1.width() * size_2.height());
+        let t = (size_2.width() * start_dist.y() - size_2.height() * start_dist.x())
+            / (-size_2.width() * size_1.height() + size_1.width() * size_2.height());
+
+        if s >= 0.0 && s <= 1.0 && t >= 0.0 && t <= 1.0 {
+            let intersection_x = self.start().x() + (t * size_1.width());
+            let intersection_y = self.start().y() + (t * size_1.height());
+            return Some(Point(intersection_x, intersection_y));
+        }
+
+        None
+    }
+
+    fn calculate_intersection(self, rect: Rect<f32>, clip_to: PointPosition) -> Option<Point<f32>> {
         let p1 = self.start();
         let slope = self.slope();
         let inverse_slope = self.inverse_slope();
@@ -665,28 +687,28 @@ mod intersect {
     fn it_should_ignore_lines_fully_above() {
         let rect = Rect(Point(10.0, 10.0), Size(10.0, 10.0));
         let line = Line(Point(5.0, 5.0), Point(25.0, 5.0));
-        assert_eq!(line.intersect(rect), None);
+        assert_eq!(line.intersect_rect(rect), None);
     }
 
     #[test]
     fn it_should_ignore_lines_fully_left() {
         let rect = Rect(Point(10.0, 10.0), Size(10.0, 10.0));
         let line = Line(Point(5.0, 5.0), Point(5.0, 25.0));
-        assert_eq!(line.intersect(rect), None);
+        assert_eq!(line.intersect_rect(rect), None);
     }
 
     #[test]
     fn it_should_ignore_lines_fully_right() {
         let rect = Rect(Point(10.0, 10.0), Size(10.0, 10.0));
         let line = Line(Point(25.0, 5.0), Point(25.0, 25.0));
-        assert_eq!(line.intersect(rect), None);
+        assert_eq!(line.intersect_rect(rect), None);
     }
 
     #[test]
     fn it_should_ignore_lines_fully_below() {
         let rect = Rect(Point(10.0, 10.0), Size(10.0, 10.0));
         let line = Line(Point(5.0, 25.0), Point(25.0, 25.0));
-        assert_eq!(line.intersect(rect), None);
+        assert_eq!(line.intersect_rect(rect), None);
     }
 
     /// This tests for when lines go very close to a corner,
@@ -707,7 +729,7 @@ mod intersect {
     fn it_should_ignore_lines_crossing_a_corner() {
         let rect = Rect(Point(10.0, 10.0), Size(10.0, 10.0));
         let line = Line(Point(5.0, 12.0), Point(12.0, 5.0));
-        assert_eq!(line.intersect(rect), None);
+        assert_eq!(line.intersect_rect(rect), None);
     }
 
     #[test]
@@ -718,9 +740,9 @@ mod intersect {
         let l2 = Line(Point(12.0, 18.0), Point(18.0, 12.0));
         let l3 = Line(Point(18.0, 18.0), Point(12.0, 12.0));
 
-        assert_eq!(l1.intersect(rect), Some(l1));
-        assert_eq!(l2.intersect(rect), Some(l2));
-        assert_eq!(l3.intersect(rect), Some(l3));
+        assert_eq!(l1.intersect_rect(rect), Some(l1));
+        assert_eq!(l2.intersect_rect(rect), Some(l2));
+        assert_eq!(l3.intersect_rect(rect), Some(l3));
     }
 
     #[test]
@@ -729,7 +751,7 @@ mod intersect {
         let line = Line(Point(7.0, 11.0), Point(16.0, 17.0));
 
         assert_eq!(
-            line.intersect(rect),
+            line.intersect_rect(rect),
             Some(Line(Point(10.0, 13.0), Point(16.0, 17.0)))
         );
     }
@@ -740,7 +762,7 @@ mod intersect {
         let line = Line(Point(26.0, 29.0), Point(18.0, 17.0));
 
         assert_eq!(
-            line.intersect(rect),
+            line.intersect_rect(rect),
             Some(Line(Point(20.0, 20.0), Point(18.0, 17.0))),
         );
     }
@@ -751,7 +773,7 @@ mod intersect {
         let line = Line(Point(12.0, 7.0), Point(24.0, 25.0));
 
         assert_eq!(
-            line.intersect(rect),
+            line.intersect_rect(rect),
             Some(Line(Point(14.0, 10.0), Point(18.0, 16.0)))
         );
     }
@@ -762,7 +784,7 @@ mod intersect {
         let line: Line<u32> = Line(Point(7, 11), Point(16, 17));
 
         assert_eq!(
-            line.intersect(rect),
+            line.intersect_rect(rect),
             Some(Line(Point(10, 13), Point(16, 17)))
         );
 
@@ -770,7 +792,7 @@ mod intersect {
         let line: Line<u32> = Line(Point(12, 7), Point(24, 25));
 
         assert_eq!(
-            line.intersect(rect),
+            line.intersect_rect(rect),
             Some(Line(Point(14, 10), Point(18, 16)))
         );
     }
@@ -922,5 +944,38 @@ mod hypot_sqrd {
         let line = Line(Point(2.0, 2.0), Point(5.0, 6.0));
 
         assert_eq!(25.0, line.hypot_sqrd());
+    }
+}
+
+#[cfg(test)]
+mod intersect_line {
+    use super::*;
+
+    #[test]
+    fn it_should_intersect_lines() {
+        let line_1 = Line(Point(0.0, 0.0), Point(10.0, 10.0));
+        let line_2 = Line(Point(0.0, 10.0), Point(10.0, 0.0));
+
+        let intersection = line_1.intersect_line(line_2);
+        assert_eq!(intersection, Some(Point(5.0, 5.0)));
+    }
+
+    #[test]
+    fn it_should_have_intersections_working_in_both_directions() {
+        let line_1 = Line(Point(0.0, 0.0), Point(10.0, 10.0));
+        let line_2 = Line(Point(0.0, 10.0), Point(10.0, 0.0));
+
+        let intersection_1 = line_1.intersect_line(line_2);
+        let intersection_2 = line_1.intersect_line(line_2);
+        assert_eq!(intersection_1, intersection_2);
+    }
+
+    #[test]
+    fn it_should_not_intersect_parallel_lines() {
+        let line_1 = Line(Point(0.0, 0.0), Point(10.0, 2.0));
+        let line_2 = Line(Point(0.0, 2.0), Point(10.0, 4.0));
+
+        let intersection = line_1.intersect_line(line_2);
+        assert_eq!(intersection, None);
     }
 }

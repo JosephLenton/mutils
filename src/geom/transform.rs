@@ -13,7 +13,7 @@ pub struct Transform {
 }
 
 impl Transform {
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self {
             position: Point(0.0, 0.0),
             scale: Size(1.0, 1.0),

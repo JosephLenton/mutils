@@ -177,7 +177,7 @@ impl<N: Num> Rect<N> {
         }
     }
 
-    pub fn intersect(&self, other: Self) -> Option<Self> {
+    pub fn intersect_rect(&self, other: Self) -> Option<Self> {
         if !self.overlaps(other) {
             return None;
         }

@@ -46,7 +46,6 @@ impl Iterator for CircleCircumferenceIterator {
 #[cfg(test)]
 mod iterator {
     use super::*;
-    use ::assert_approx_eq::assert_approx_eq;
 
     #[test]
     fn it_should_return_num_of_points_requested() {

@@ -47,6 +47,29 @@ impl<N: Num> Size<N> {
         self.set_second(height);
     }
 
+    /// Returns the longest side.
+    ///
+    /// Be aware it uses an absolute comparison. This means -10 is
+    /// considered larger than 5.
+    ///
+    /// For example ... `Size(-10, 5).longest_size()` will return -10.
+    pub fn longest_side(self) -> N {
+        if self.width().abs() < self.height().abs() {
+            self.height()
+        } else {
+            self.width()
+        }
+    }
+
+    /// Note that for negative sizes, the
+    pub fn shortest_side(self) -> N {
+        if self.width().abs() < self.height().abs() {
+            self.width()
+        } else {
+            self.height()
+        }
+    }
+
     /// The area of the size.
     /// Returns width * height.
     pub fn area(&self) -> N {
@@ -349,6 +372,58 @@ impl<N: Num> IntoIterator for Size<N> {
 
     fn into_iter(self) -> Self::IntoIter {
         SizeIterator::new(self)
+    }
+}
+
+#[cfg(test)]
+mod longest_side {
+    use super::*;
+
+    #[test]
+    fn it_should_return_larger_width_over_smaller_height() {
+        let size = Size(10, 5);
+
+        assert_eq!(size.longest_side(), 10);
+    }
+
+    #[test]
+    fn it_should_return_larger_height_over_smaller_width() {
+        let size = Size(5, 10);
+
+        assert_eq!(size.longest_side(), 10);
+    }
+
+    #[test]
+    fn it_should_return_larger_negative_over_smaller_positive() {
+        let size = Size(-10, 5);
+
+        assert_eq!(size.longest_side(), -10);
+    }
+}
+
+#[cfg(test)]
+mod shortest_side {
+    use super::*;
+
+    #[test]
+    fn it_should_return_smaller_height_over_larger_width() {
+        let size = Size(10, 5);
+
+        assert_eq!(size.shortest_side(), 5);
+    }
+
+    #[test]
+    fn it_should_return_smaller_width_over_larger_height() {
+        let size = Size(5, 10);
+
+        assert_eq!(size.shortest_side(), 5);
+    }
+
+    #[test]
+    fn it_should_return_smaller_positive_numbers_over_larger_negative_numbers() {
+        let size = Size(-10, 5);
+
+        assert_eq!(size.shortest_side(), 5);
     }
 }
 

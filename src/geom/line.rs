@@ -330,6 +330,20 @@ impl Line<f32> {
             self.end().rotate_around_point(angle, target),
         )
     }
+
+    pub fn rotate_around_start(self, angle: f32) -> Self {
+        Line(
+            self.start(),
+            self.end().rotate_around_point(angle, self.start()),
+        )
+    }
+
+    pub fn rotate_around_end(self, angle: f32) -> Self {
+        Line(
+            self.start().rotate_around_point(angle, self.end()),
+            self.end(),
+        )
+    }
 }
 
 impl<O: Num, N: Num + ToRounded<O>> ToRounded<Line<O>> for Line<N> {

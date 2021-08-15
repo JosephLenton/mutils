@@ -1,7 +1,6 @@
-use crate::num::Num;
-
 use crate::geom::Point;
 use crate::geom::Rect;
+use crate::num::Num;
 
 #[derive(Clone, Debug)]
 pub struct RectIterator<N: Num = f32> {

@@ -83,17 +83,14 @@ where
         let self_rounded = self.to_rounded();
         let other_rounded = other.to_rounded();
 
-        let distance = self_rounded
-            .centre()
-            .line_to(other_rounded.centre())
-            .hypot();
+        let distance = self_rounded.centre().hypot_to(other_rounded.centre());
         let radius_distance = self_rounded.radius() + other_rounded.radius();
 
         distance < radius_distance
     }
 
     pub fn contains_point(&self, point: Point<N>) -> bool {
-        self.centre().line_to(point).hypot() <= self.radius()
+        self.centre().hypot_to(point) <= self.radius()
     }
 }
 

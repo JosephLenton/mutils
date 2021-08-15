@@ -111,6 +111,16 @@ impl<N: Num> NumTuple<N> for Point<N> {
     }
 }
 
+impl<N> Point<N>
+where
+    N: Num + ToRounded<f32>,
+    f32: ToRounded<N>,
+{
+    pub fn hypot_to(self, other: Point<N>) -> N {
+        self.distance_to(other).hypot()
+    }
+}
+
 impl<O: Num, N: Num + ToRounded<O>> ToRounded<Point<O>> for Point<N> {
     fn to_rounded(self) -> Point<O> {
         Point(self.x().to_rounded(), self.y().to_rounded())

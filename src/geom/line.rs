@@ -360,7 +360,7 @@ where
     }
 
     pub fn hypot(self) -> N {
-        self.start().distance_to(self.end()).hypot()
+        self.start().hypot_to(self.end())
     }
 
     pub fn hypot_sqrd(self) -> N {

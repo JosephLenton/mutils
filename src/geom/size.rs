@@ -182,12 +182,21 @@ impl Size<f32> {
     pub fn round(self) -> Self {
         Self::new(self.first().round(), self.second().round())
     }
+}
 
-    pub fn hypot(self) -> f32 {
-        self.width().hypot(self.height())
+impl<N> Size<N>
+where
+    N: Num + ToRounded<f32>,
+    f32: ToRounded<N>,
+{
+    pub fn hypot(self) -> N {
+        let width: f32 = self.width().to_rounded();
+        let height: f32 = self.height().to_rounded();
+        let hypot = width.hypot(height);
+        hypot.to_rounded()
     }
 
-    pub fn hypot_sqrd(self) -> f32 {
+    pub fn hypot_sqrd(self) -> N {
         (self.width() * self.width()) + (self.height() * self.height())
     }
 }
@@ -340,6 +349,30 @@ impl<N: Num> IntoIterator for Size<N> {
 
     fn into_iter(self) -> Self::IntoIter {
         SizeIterator::new(self)
+    }
+}
+
+#[cfg(test)]
+mod hypot {
+    use super::*;
+
+    #[test]
+    fn it_should_be_correct_for_positive_values() {
+        let size = Size(3.0, 4.0);
+
+        assert_eq!(5.0, size.hypot());
+    }
+}
+
+#[cfg(test)]
+mod hypot_sqrd {
+    use super::*;
+
+    #[test]
+    fn it_should_be_correct_for_positive() {
+        let size = Size(3.0, 4.0);
+
+        assert_eq!(25.0, size.hypot_sqrd());
     }
 }
 

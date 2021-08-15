@@ -342,19 +342,28 @@ impl Line {
     pub fn midpoint(self) -> Point {
         (self.start() + self.end()) / 2.0
     }
+}
 
+impl<N> Line<N>
+where
+    N: Num + ToRounded<f32>,
+    f32: ToRounded<N>,
+{
     /**
      * Returns the atan2( y dist, x dist )
      */
-    pub fn angle(self) -> f32 {
-        self.y_diff().atan2(self.x_diff())
+    pub fn angle(self) -> N {
+        let y_diff: f32 = self.to_rounded().y_diff();
+        let x_diff: f32 = self.to_rounded().x_diff();
+        let angle = y_diff.atan2(x_diff);
+        angle.to_rounded()
     }
 
-    pub fn hypot(self) -> f32 {
+    pub fn hypot(self) -> N {
         self.start().distance_to(self.end()).hypot()
     }
 
-    pub fn hypot_sqrd(self) -> f32 {
+    pub fn hypot_sqrd(self) -> N {
         self.start().distance_to(self.end()).hypot_sqrd()
     }
 }

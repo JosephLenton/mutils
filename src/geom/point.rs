@@ -14,7 +14,9 @@ use ::std::ops::ShrAssign;
 use ::std::ops::Sub;
 use ::std::ops::SubAssign;
 
-use ::num_traits::sign::{abs, signum, Signed};
+use ::num_traits::sign::abs;
+use ::num_traits::sign::signum;
+use ::num_traits::sign::Signed;
 
 use crate::num::INum;
 use crate::num::Num;
@@ -22,6 +24,7 @@ use crate::num::NumTuple;
 use crate::num::ToRounded;
 use crate::num::ToSignedClamped;
 
+use crate::geom::Line;
 use crate::geom::Rect;
 use crate::geom::Size;
 
@@ -54,7 +57,11 @@ impl<N: Num> Point<N> {
         self.set_second(y);
     }
 
-    pub fn rect_to(&self, other: Self) -> Rect<N> {
+    pub fn line_to(self, other: Self) -> Line<N> {
+        Line(self, other)
+    }
+
+    pub fn rect_to(self, other: Self) -> Rect<N> {
         let xy = self.min(other);
         let other_xy = self.max(other);
         let size = xy.distance_to(other_xy);
@@ -62,7 +69,7 @@ impl<N: Num> Point<N> {
         Rect(xy, size)
     }
 
-    pub fn distance_to(&self, other: Self) -> Size<N> {
+    pub fn distance_to(self, other: Self) -> Size<N> {
         Size::new(other.first() - self.first(), other.second() - self.second())
     }
 

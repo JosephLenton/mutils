@@ -316,7 +316,7 @@ mod overlaps {
     use super::*;
 
     #[test]
-    fn rect_overlap_outside_left() {
+    fn it_should_not_overlap_with_rectangles_outside_to_the_left() {
         let a = Rect(Point(20, 0), Size(10, 10));
         let b = Rect(Point(0, 0), Size(10, 10));
 
@@ -324,7 +324,7 @@ mod overlaps {
     }
 
     #[test]
-    fn rect_overlap_outside_right() {
+    fn it_should_not_overlap_with_rectangles_outside_to_the_right() {
         let a = Rect(Point(0, 0), Size(10, 10));
         let b = Rect(Point(20, 0), Size(10, 10));
 
@@ -332,7 +332,23 @@ mod overlaps {
     }
 
     #[test]
-    fn rect_overlap_inside_left() {
+    fn it_should_not_overlap_with_rectangles_outside_above() {
+        let a = Rect(Point(20, 20), Size(10, 10));
+        let b = Rect(Point(20, 0), Size(10, 10));
+
+        assert_eq!(a.overlaps(b), false);
+    }
+
+    #[test]
+    fn it_should_not_overlap_with_rectangles_outside_below() {
+        let a = Rect(Point(20, 20), Size(10, 10));
+        let b = Rect(Point(20, 40), Size(10, 10));
+
+        assert_eq!(a.overlaps(b), false);
+    }
+
+    #[test]
+    fn it_should_overlap_with_rectangles_intersecting_on_the_left() {
         let a = Rect(Point(0, 0), Size(10, 10));
         let b = Rect(Point(-5, 0), Size(10, 10));
 
@@ -340,7 +356,7 @@ mod overlaps {
     }
 
     #[test]
-    fn rect_overlap_inside_left_above() {
+    fn it_should_overlap_with_rectangles_intersecting_left_above() {
         let a = Rect(Point(0, 0), Size(10, 10));
         let b = Rect(Point(-5, 5), Size(10, 10));
 
@@ -348,7 +364,7 @@ mod overlaps {
     }
 
     #[test]
-    fn rect_overlap_inside_right_below() {
+    fn it_should_overlap_with_rectangles_intersecting_right_below() {
         let a = Rect(Point(0, 0), Size(10, 10));
         let b = Rect(Point(5, -5), Size(10, 10));
 
@@ -356,7 +372,7 @@ mod overlaps {
     }
 
     #[test]
-    fn rect_overlap_inside() {
+    fn it_should_overlap_with_rectangles_intersecting_fully_inside() {
         let a = Rect(Point(0, 0), Size(10, 10));
         let b = Rect(Point(3, 3), Size(6, 6));
 
@@ -385,7 +401,7 @@ mod new_from_centre {
     use super::*;
 
     #[test]
-    fn it_should_work() {
+    fn it_should_create_a_rectangle_around_the_point_given() {
         let rect: Rect<f32> = Rect::new_from_centre(Point(10.0, 10.0), Size(5.0, 8.0));
         assert_eq!(rect, Rect(Point(7.5, 6.0), Size(5.0, 8.0)));
     }

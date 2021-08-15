@@ -56,6 +56,22 @@ impl<N: Num> Circle<N> {
     pub fn centre(&self) -> Point<N> {
         self.0
     }
+
+    pub fn mult_radius(&mut self, n: N) {
+        self.1 *= n;
+    }
+
+    pub fn div_radius(&mut self, n: N) {
+        self.1 /= n;
+    }
+
+    pub fn add_radius(&mut self, n: N) {
+        self.1 += n;
+    }
+
+    pub fn sub_radius(&mut self, n: N) {
+        self.1 -= n;
+    }
 }
 
 impl<N> Circle<N>

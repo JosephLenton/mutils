@@ -5,13 +5,13 @@ use crate::num::ToRounded;
 use ::std::f32::consts::TAU;
 
 #[derive(Clone, Debug)]
-pub struct CircleCircumferenceIterator {
+pub struct CircleCircumferencePointsIterator {
     circle: Circle<f32>,
     index: usize,
     num_points: usize,
 }
 
-impl CircleCircumferenceIterator {
+impl CircleCircumferencePointsIterator {
     pub fn new<N>(circle: Circle<N>, num_points: usize) -> Self
     where
         N: Num + ToRounded<f32>,
@@ -24,7 +24,7 @@ impl CircleCircumferenceIterator {
     }
 }
 
-impl Iterator for CircleCircumferenceIterator {
+impl Iterator for CircleCircumferencePointsIterator {
     type Item = Point<f32>;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -49,21 +49,22 @@ mod iterator {
 
     #[test]
     fn it_should_return_num_of_points_requested() {
-        let iterator = CircleCircumferenceIterator::new(Circle(Point(10.0, 20.0), 5.0), 3);
+        let iterator = CircleCircumferencePointsIterator::new(Circle(Point(10.0, 20.0), 5.0), 3);
 
         assert_eq!(iterator.count(), 3);
     }
 
     #[test]
     fn it_should_return_no_points_if_zero_requested() {
-        let mut iterator = CircleCircumferenceIterator::new(Circle(Point(10.0, 20.0), 5.0), 0);
+        let mut iterator =
+            CircleCircumferencePointsIterator::new(Circle(Point(10.0, 20.0), 5.0), 0);
 
         assert_eq!(iterator.next(), None);
     }
 
     #[test]
     fn it_should_return_all_points_of_a_circle() {
-        let iterator = CircleCircumferenceIterator::new(Circle(Point(10.0, 20.0), 5.0), 8);
+        let iterator = CircleCircumferencePointsIterator::new(Circle(Point(10.0, 20.0), 5.0), 8);
 
         let points: Vec<Point<f32>> = iterator.collect();
         assert_eq!(

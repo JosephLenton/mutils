@@ -9,8 +9,11 @@ use crate::num::ToRounded;
 use crate::geom::Point;
 use crate::geom::Size;
 
-mod circle_circumference_iterator;
-pub use self::circle_circumference_iterator::*;
+mod circle_circumference_points_iterator;
+pub use self::circle_circumference_points_iterator::*;
+
+mod circle_circumference_lines_iterator;
+pub use self::circle_circumference_lines_iterator::*;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Circle<N: Num = f32>(pub Point<N>, pub N);
@@ -81,8 +84,12 @@ impl<N> Circle<N>
 where
     N: Num + ToRounded<f32>,
 {
-    pub fn iter_circumference(self, num_points: usize) -> CircleCircumferenceIterator {
-        CircleCircumferenceIterator::new(self, num_points)
+    pub fn iter_circumference_points(self, num_points: usize) -> CircleCircumferencePointsIterator {
+        CircleCircumferencePointsIterator::new(self, num_points)
+    }
+
+    pub fn iter_circumference_lines(self, num_lines: usize) -> CircleCircumferenceLinesIterator {
+        CircleCircumferenceLinesIterator::new(self, num_lines)
     }
 }
 

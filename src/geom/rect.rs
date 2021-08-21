@@ -28,6 +28,10 @@ pub use self::rect_iterator::RectIterator;
 pub struct Rect<N: Num = f32>(pub Point<N>, pub Size<N>);
 
 impl<N: Num> Rect<N> {
+    pub fn new_zero_value() -> Self {
+        Rect(Point::new_zero_value(), Size::new_zero_value())
+    }
+
     pub fn new_from_raw(bottom_left_x: N, bottom_left_y: N, width: N, height: N) -> Self {
         Self::new(Point(bottom_left_x, bottom_left_y), Size(width, height))
     }

@@ -33,6 +33,10 @@ pub struct Point<N: Num = f32>(pub N, pub N);
 
 // Point Speicifc functions.
 impl<N: Num> Point<N> {
+    pub fn new_zero_value() -> Self {
+        Point(N::zero(), N::zero())
+    }
+
     pub fn x(&self) -> N {
         self.first()
     }

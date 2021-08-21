@@ -31,6 +31,10 @@ pub struct Size<N: Num = f32>(pub N, pub N);
 
 // Size Speicifc functions.
 impl<N: Num> Size<N> {
+    pub fn new_zero_value() -> Self {
+        Size(N::zero(), N::zero())
+    }
+
     pub fn width(&self) -> N {
         self.first()
     }

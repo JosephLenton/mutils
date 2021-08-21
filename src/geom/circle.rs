@@ -19,6 +19,10 @@ pub use self::circle_circumference_lines_iterator::*;
 pub struct Circle<N: Num = f32>(pub Point<N>, pub N);
 
 impl<N: Num> Circle<N> {
+    pub fn new_zero_value() -> Self {
+        Circle(Point::new_zero_value(), N::zero())
+    }
+
     pub fn with_radius(centre_point: Point<N>, radius: N) -> Self {
         Self(centre_point, radius)
     }

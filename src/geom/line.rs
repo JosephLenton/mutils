@@ -33,6 +33,10 @@ use crate::Random;
 pub struct Line<N: Num = f32>(pub Point<N>, pub Point<N>);
 
 impl<N: Num> Line<N> {
+    pub fn new_zero_value() -> Self {
+        Line(Point::new_zero_value(), Point::new_zero_value())
+    }
+
     #[inline(always)]
     pub fn start(self) -> Point<N> {
         self.0

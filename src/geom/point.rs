@@ -20,6 +20,7 @@ use ::num_traits::sign::Signed;
 
 use crate::num::INum;
 use crate::num::Num;
+use crate::num::NumIdentity;
 use crate::num::NumTuple;
 use crate::num::ToRounded;
 use crate::num::ToSignedClamped;
@@ -147,9 +148,9 @@ impl<N: Num + Signed> Point<N> {
         let h_abs = abs(self.second());
 
         if w_abs > h_abs {
-            Self(signum(self.first()), N::zero())
+            Self(signum(self.first()), <N as NumIdentity>::zero())
         } else {
-            Self(N::zero(), signum(self.second()))
+            Self(<N as NumIdentity>::zero(), signum(self.second()))
         }
     }
 

@@ -16,8 +16,7 @@ use ::std::ops::SubAssign;
 
 use super::Half;
 use super::NumTrampolene;
-
-use ::num_traits::identities::{One, Zero};
+use crate::num::NumIdentity;
 
 /// A common number trait.
 ///
@@ -42,8 +41,7 @@ pub trait Num:
     + PartialEq
     + NumTrampolene
     + Half
-    + Zero
-    + One
+    + NumIdentity
     + Sized
     + Debug
 {
@@ -71,8 +69,7 @@ impl<U> Num for U where
         + PartialEq
         + NumTrampolene
         + Half
-        + Zero
-        + One
+        + NumIdentity
         + Sized
         + Debug
 {

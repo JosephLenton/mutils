@@ -14,10 +14,13 @@ use ::std::ops::ShrAssign;
 use ::std::ops::Sub;
 use ::std::ops::SubAssign;
 
-use ::num_traits::sign::{abs, signum, Signed};
+use ::num_traits::sign::abs;
+use ::num_traits::sign::signum;
+use ::num_traits::sign::Signed;
 
 use crate::num::INum;
 use crate::num::Num;
+use crate::num::NumIdentity;
 use crate::num::NumTuple;
 use crate::num::ToRounded;
 
@@ -105,13 +108,13 @@ impl<N: Num> Size<N> {
 
 impl<N: Num + Signed> Size<N> {
     pub fn sign(&self) -> Self {
-        let width_sign = if self.0 == N::zero() {
-            N::zero()
+        let width_sign = if self.0 == <N as NumIdentity>::zero() {
+            <N as NumIdentity>::zero()
         } else {
             signum(self.0)
         };
-        let height_sign = if self.1 == N::zero() {
-            N::zero()
+        let height_sign = if self.1 == <N as NumIdentity>::zero() {
+            <N as NumIdentity>::zero()
         } else {
             signum(self.1)
         };
@@ -124,9 +127,9 @@ impl<N: Num + Signed> Size<N> {
         let h_abs = abs(self.height());
 
         if w_abs > h_abs {
-            Self(signum(self.width()), N::zero())
+            Self(signum(self.width()), <N as NumIdentity>::zero())
         } else {
-            Self(N::zero(), signum(self.height()))
+            Self(<N as NumIdentity>::zero(), signum(self.height()))
         }
     }
 

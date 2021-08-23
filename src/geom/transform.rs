@@ -5,7 +5,7 @@ use crate::geom::Line;
 use crate::geom::Point;
 use crate::geom::Size;
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Transform {
     scale: Size,
     position: Point,

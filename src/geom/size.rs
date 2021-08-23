@@ -29,7 +29,7 @@ use crate::geom::Point;
 mod size_iterator;
 pub use self::size_iterator::SizeIterator;
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Size<N: Num = f32>(pub N, pub N);
 
 // Size Speicifc functions.
@@ -364,12 +364,6 @@ impl<N: Num> Into<(N, N)> for Size<N> {
     /// Size(N, N) -> (N, N)
     fn into(self) -> (N, N) {
         (self.0, self.1)
-    }
-}
-
-impl<N: Num> PartialEq for Size<N> {
-    fn eq(&self, other: &Self) -> bool {
-        self.0 == other.0 && self.1 == other.1
     }
 }
 

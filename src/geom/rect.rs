@@ -24,7 +24,7 @@ use crate::geom::VerticalPosition;
 mod rect_iterator;
 pub use self::rect_iterator::RectIterator;
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Rect<N: Num = f32>(pub Point<N>, pub Size<N>);
 
 impl<N: Num> Rect<N> {
@@ -297,12 +297,6 @@ impl<N: INum> Shr<N> for Rect<N> {
 impl<N: INum> ShrAssign<N> for Rect<N> {
     fn shr_assign(&mut self, other: N) {
         *self = *self >> other;
-    }
-}
-
-impl<N: Num> PartialEq for Rect<N> {
-    fn eq(&self, other: &Self) -> bool {
-        self.0 == other.0 && self.1 == other.1
     }
 }
 

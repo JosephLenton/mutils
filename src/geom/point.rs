@@ -29,7 +29,7 @@ use crate::geom::Line;
 use crate::geom::Rect;
 use crate::geom::Size;
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Point<N: Num = f32>(pub N, pub N);
 
 // Point Speicifc functions.
@@ -422,12 +422,6 @@ impl<N: Num> Into<(N, N)> for Point<N> {
     /// Point(N, N) -> (N, N)
     fn into(self) -> (N, N) {
         (self.0, self.1)
-    }
-}
-
-impl<N: Num> PartialEq for Point<N> {
-    fn eq(&self, other: &Self) -> bool {
-        self.0 == other.0 && self.1 == other.1
     }
 }
 

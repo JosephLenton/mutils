@@ -227,6 +227,12 @@ impl<N: Num> Rect<N> {
     }
 }
 
+impl Rect<f32> {
+    pub(crate) fn from_f32<N: Num>(self) -> Rect<N> {
+        Rect(self.bottom_left().from_f32(), self.size().from_f32())
+    }
+}
+
 impl<O: Num, N: Num + ToRounded<O>> ToRounded<Rect<O>> for Rect<N> {
     fn to_rounded(self) -> Rect<O> {
         Rect(self.bottom_left().to_rounded(), self.size().to_rounded())

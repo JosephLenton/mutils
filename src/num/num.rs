@@ -16,6 +16,7 @@ use ::std::ops::SubAssign;
 
 use super::Half;
 use super::NumTrampolene;
+use crate::num::FromRounded;
 use crate::num::NumIdentity;
 use crate::num::ToRounded;
 
@@ -46,6 +47,7 @@ pub trait Num:
     + Sized
     + Debug
     + ToRounded<f32>
+    + FromRounded<f32>
 {
 }
 
@@ -53,8 +55,7 @@ pub trait Num:
 /// So am I!
 ///
 /// I think it's saying *'the trait above really does exists, and is
-/// implemented, for `U`'*. This applies for cases where `U` matches the `Num`
-/// trait.
+/// implemented, for every type that implements Add + AddAssign + Sub, etc.
 impl<U> Num for U
 where
     U: Add<Self, Output = Self>
@@ -76,7 +77,7 @@ where
         + Sized
         + Debug
         + ToRounded<f32>,
-    f32: ToRounded<U>,
+    f32: ToRounded<Self>,
 {
 }
 

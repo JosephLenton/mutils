@@ -17,8 +17,10 @@ use ::std::ops::SubAssign;
 use ::num_traits::sign::signum;
 use ::num_traits::sign::Signed;
 
+use crate::num::FromRounded;
 use crate::num::INum;
 use crate::num::Num;
+use crate::num::NumIdentity;
 use crate::num::NumTuple;
 use crate::num::ToRounded;
 
@@ -120,18 +122,37 @@ impl<N: Num> Size<N> {
             self.height().max(other.height()),
         )
     }
+
+    pub fn hypot(self) -> N {
+        let width: f32 = self.width().to_rounded();
+        let height: f32 = self.height().to_rounded();
+        let hypot = width.hypot(height);
+        FromRounded::from_rounded(hypot)
+    }
+
+    pub fn hypot_sqrd(self) -> N {
+        (self.width() * self.width()) + (self.height() * self.height())
+    }
 }
 
 impl<N: Num + Signed> Size<N> {
-    pub fn signum(&self) -> Self {
-        Self(self.signum_width(), self.signum_height())
+    pub fn sign(&self) -> Self {
+        Self(self.sign_width(), self.sign_height())
     }
 
-    pub fn signum_width(&self) -> N {
+    pub fn sign_width(&self) -> N {
+        if self.width() == <N as NumIdentity>::zero() {
+            return <N as NumIdentity>::zero();
+        }
+
         signum(self.width())
     }
 
-    pub fn signum_height(&self) -> N {
+    pub fn sign_height(&self) -> N {
+        if self.height() == <N as NumIdentity>::zero() {
+            return <N as NumIdentity>::zero();
+        }
+
         signum(self.height())
     }
 
@@ -176,6 +197,13 @@ impl<N: Num> NumTuple<N> for Size<N> {
 }
 
 impl Size<f32> {
+    pub(crate) fn from_f32<N: Num>(self) -> Size<N> {
+        Size(
+            FromRounded::from_rounded(self.width()),
+            FromRounded::from_rounded(self.height()),
+        )
+    }
+
     pub fn overlaps(self, Size(w, h): Self, xy1: Self, xy2: Self) -> bool {
         let Size(x_min, y_min) = xy1.min(xy2);
         let Size(x_max, y_max) = xy1.max(xy2);
@@ -213,23 +241,6 @@ impl Size<f32> {
 
     pub fn round(self) -> Self {
         Self::new(self.first().round(), self.second().round())
-    }
-}
-
-impl<N> Size<N>
-where
-    N: Num + ToRounded<f32>,
-    f32: ToRounded<N>,
-{
-    pub fn hypot(self) -> N {
-        let width: f32 = self.width().to_rounded();
-        let height: f32 = self.height().to_rounded();
-        let hypot = width.hypot(height);
-        hypot.to_rounded()
-    }
-
-    pub fn hypot_sqrd(self) -> N {
-        (self.width() * self.width()) + (self.height() * self.height())
     }
 }
 

@@ -15,6 +15,7 @@ use ::std::ops::SubAssign;
 
 use ::num_traits::sign::Signed;
 
+use crate::num::FromRounded;
 use crate::num::INum;
 use crate::num::Num;
 use crate::num::ToRounded;
@@ -127,49 +128,7 @@ impl<N: Num> Line<N> {
     pub fn max(self, other: Self) -> Self {
         Self(self.start().max(other.start()), self.end().max(other.end()))
     }
-}
 
-impl<N: Num + Signed> Line<N> {
-    pub fn direction_sign(&self) -> Point<N> {
-        self.diff_as_point().sign()
-    }
-}
-
-impl<N: Num + ToSignedClamped> Line<N> {
-    pub fn to_signed_clamped(self) -> Line<<N as ToSignedClamped>::Output> {
-        Line(
-            self.start().to_signed_clamped(),
-            self.end().to_signed_clamped(),
-        )
-    }
-
-    pub fn diff(self) -> Size<<N as ToSignedClamped>::Output> {
-        Size(self.x_diff(), self.y_diff())
-    }
-
-    pub fn x_diff(self) -> <N as ToSignedClamped>::Output {
-        self.end().x().to_signed_clamped() - self.start().x().to_signed_clamped()
-    }
-
-    pub fn y_diff(self) -> <N as ToSignedClamped>::Output {
-        self.end().y().to_signed_clamped() - self.start().y().to_signed_clamped()
-    }
-
-    pub fn slope(self) -> <N as ToSignedClamped>::Output {
-        let diff = self.diff();
-        diff.height() / diff.width()
-    }
-
-    pub fn inverse_slope(self) -> <N as ToSignedClamped>::Output {
-        let diff = self.diff();
-        diff.width() / diff.height()
-    }
-}
-
-impl<N: Num + ToRounded<f32>> Line<N>
-where
-    f32: ToRounded<N>,
-{
     pub fn overlaps_line(self, other: Line<N>) -> bool {
         self.intersect_line(other).is_some()
     }
@@ -190,7 +149,7 @@ where
         if s >= 0.0 && s <= 1.0 && t >= 0.0 && t <= 1.0 {
             let intersection_x = self_rounded.start().x() + (t * size_1.width());
             let intersection_y = self_rounded.start().y() + (t * size_1.height());
-            let intersection = Point(intersection_x, intersection_y).to_rounded();
+            let intersection = Point(intersection_x, intersection_y).from_f32();
             return Some(intersection);
         }
 
@@ -231,7 +190,7 @@ where
             // Case 1:
             // both endpoints are within the clipping region
             if position.is_entirely_inside() {
-                return Some(line_f32.to_rounded());
+                return Some(line_f32.from_f32());
             }
 
             // Starts and ends in the same space, and this is outside.
@@ -283,9 +242,68 @@ where
             }
         }
     }
+
+    /**
+     * Returns the atan2( y dist, x dist )
+     */
+    pub fn angle(self) -> N {
+        let y_diff: f32 = self.to_rounded().y_diff();
+        let x_diff: f32 = self.to_rounded().x_diff();
+        let angle = y_diff.atan2(x_diff);
+        FromRounded::from_rounded(angle)
+    }
+
+    pub fn hypot(self) -> N {
+        self.start().hypot_to(self.end())
+    }
+
+    pub fn hypot_sqrd(self) -> N {
+        self.start().distance_to(self.end()).hypot_sqrd()
+    }
+}
+
+impl<N: Num + Signed> Line<N> {
+    pub fn direction_sign(&self) -> Point<N> {
+        self.diff_as_point().sign()
+    }
+}
+
+impl<N: Num + ToSignedClamped> Line<N> {
+    pub fn to_signed_clamped(self) -> Line<<N as ToSignedClamped>::Output> {
+        Line(
+            self.start().to_signed_clamped(),
+            self.end().to_signed_clamped(),
+        )
+    }
+
+    pub fn diff(self) -> Size<<N as ToSignedClamped>::Output> {
+        Size(self.x_diff(), self.y_diff())
+    }
+
+    pub fn x_diff(self) -> <N as ToSignedClamped>::Output {
+        self.end().x().to_signed_clamped() - self.start().x().to_signed_clamped()
+    }
+
+    pub fn y_diff(self) -> <N as ToSignedClamped>::Output {
+        self.end().y().to_signed_clamped() - self.start().y().to_signed_clamped()
+    }
+
+    pub fn slope(self) -> <N as ToSignedClamped>::Output {
+        let diff = self.diff();
+        diff.height() / diff.width()
+    }
+
+    pub fn inverse_slope(self) -> <N as ToSignedClamped>::Output {
+        let diff = self.diff();
+        diff.width() / diff.height()
+    }
 }
 
 impl Line<f32> {
+    pub(crate) fn from_f32<N: Num>(self) -> Line<N> {
+        Line(self.start().from_f32(), self.end().from_f32())
+    }
+
     fn calculate_intersection(self, rect: Rect<f32>, clip_to: PointPosition) -> Option<Point<f32>> {
         let p1 = self.start();
         let slope = self.slope();
@@ -360,41 +378,15 @@ impl Line<f32> {
             self.end(),
         )
     }
-}
 
-impl<O: Num, N: Num + ToRounded<O>> ToRounded<Line<O>> for Line<N> {
-    fn to_rounded(self) -> Line<O> {
-        Line(self.start().to_rounded(), self.end().to_rounded())
-    }
-}
-
-impl Line {
     pub fn midpoint(self) -> Point {
         (self.start() + self.end()) / 2.0
     }
 }
 
-impl<N> Line<N>
-where
-    N: Num + ToRounded<f32>,
-    f32: ToRounded<N>,
-{
-    /**
-     * Returns the atan2( y dist, x dist )
-     */
-    pub fn angle(self) -> N {
-        let y_diff: f32 = self.to_rounded().y_diff();
-        let x_diff: f32 = self.to_rounded().x_diff();
-        let angle = y_diff.atan2(x_diff);
-        angle.to_rounded()
-    }
-
-    pub fn hypot(self) -> N {
-        self.start().hypot_to(self.end())
-    }
-
-    pub fn hypot_sqrd(self) -> N {
-        self.start().distance_to(self.end()).hypot_sqrd()
+impl<O: Num, N: Num + ToRounded<O>> ToRounded<Line<O>> for Line<N> {
+    fn to_rounded(self) -> Line<O> {
+        Line(self.start().to_rounded(), self.end().to_rounded())
     }
 }
 

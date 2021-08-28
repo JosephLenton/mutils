@@ -14,7 +14,7 @@ pub struct CircleCircumferencePointsIterator {
 impl CircleCircumferencePointsIterator {
     pub fn new<N>(circle: Circle<N>, num_points: usize) -> Self
     where
-        N: Num + ToRounded<f32>,
+        N: Num,
     {
         Self {
             circle: circle.to_rounded(),

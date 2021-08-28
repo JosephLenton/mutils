@@ -3,6 +3,7 @@ use std::ops::AddAssign;
 use std::ops::Sub;
 use std::ops::SubAssign;
 
+use crate::num::FromRounded;
 use crate::num::Num;
 use crate::num::ToRounded;
 
@@ -100,26 +101,7 @@ impl<N: Num> Circle<N> {
             self.radius().max(other.radius()),
         )
     }
-}
 
-impl<N> Circle<N>
-where
-    N: Num + ToRounded<f32>,
-{
-    pub fn iter_circumference_points(self, num_points: usize) -> CircleCircumferencePointsIterator {
-        CircleCircumferencePointsIterator::new(self, num_points)
-    }
-
-    pub fn iter_circumference_lines(self, num_lines: usize) -> CircleCircumferenceLinesIterator {
-        CircleCircumferenceLinesIterator::new(self, num_lines)
-    }
-}
-
-impl<N> Circle<N>
-where
-    N: Num + ToRounded<f32>,
-    f32: ToRounded<N>,
-{
     pub fn overlaps(&self, other: Self) -> bool {
         let self_rounded = self.to_rounded();
         let other_rounded = other.to_rounded();
@@ -132,6 +114,23 @@ where
 
     pub fn contains_point(&self, point: Point<N>) -> bool {
         self.centre().hypot_to(point) <= self.radius()
+    }
+
+    pub fn iter_circumference_points(self, num_points: usize) -> CircleCircumferencePointsIterator {
+        CircleCircumferencePointsIterator::new(self, num_points)
+    }
+
+    pub fn iter_circumference_lines(self, num_lines: usize) -> CircleCircumferenceLinesIterator {
+        CircleCircumferenceLinesIterator::new(self, num_lines)
+    }
+}
+
+impl Circle<f32> {
+    pub(crate) fn from_f32<N: Num>(self) -> Circle<N> {
+        Circle(
+            self.centre().from_f32(),
+            FromRounded::from_rounded(self.radius()),
+        )
     }
 }
 

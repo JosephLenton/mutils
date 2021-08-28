@@ -18,6 +18,7 @@ use ::num_traits::sign::abs;
 use ::num_traits::sign::signum;
 use ::num_traits::sign::Signed;
 
+use crate::num::FromRounded;
 use crate::num::INum;
 use crate::num::Num;
 use crate::num::NumIdentity;
@@ -96,6 +97,10 @@ impl<N: Num> Point<N> {
     pub fn max(self, other: Self) -> Self {
         Self(self.x().max(other.x()), self.y().max(other.y()))
     }
+
+    pub fn hypot_to(self, other: Point<N>) -> N {
+        self.distance_to(other).hypot()
+    }
 }
 
 impl<N: Num> NumTuple<N> for Point<N> {
@@ -126,16 +131,6 @@ impl<N: Num> NumTuple<N> for Point<N> {
 
     fn get(&mut self) -> (N, N) {
         (self.0, self.1)
-    }
-}
-
-impl<N> Point<N>
-where
-    N: Num + ToRounded<f32>,
-    f32: ToRounded<N>,
-{
-    pub fn hypot_to(self, other: Point<N>) -> N {
-        self.distance_to(other).hypot()
     }
 }
 
@@ -237,6 +232,13 @@ impl Point<f32> {
 
     fn angle_to_zero(self) -> f32 {
         self.y().atan2(self.x())
+    }
+
+    pub(crate) fn from_f32<N: Num>(self) -> Point<N> {
+        Point(
+            FromRounded::from_rounded(self.x()),
+            FromRounded::from_rounded(self.y()),
+        )
     }
 }
 

@@ -78,10 +78,23 @@ impl<N: Num> Point<N> {
         Size::new(other.first() - self.first(), other.second() - self.second())
     }
 
-    /// This is to allow creating a new Point, with a new type, from the type given.
-    /// i.e. `Point::new(1 as u8, 1 as u8)::to::<u32>()`
+    /// This is to allow creating a new Point, which wraps a different number type.
+    ///
+    /// For example `Point(1u8, 2u8)::to::<u32>()` creates a `Point(1u32, 2u32)`.
     pub fn to<T: Num + From<N>>(&self) -> Point<T> {
         Point(T::from(self.first()), T::from(self.second()))
+    }
+
+    pub fn abs(&self) -> Self {
+        Self(self.x().abs(), self.y().abs())
+    }
+
+    pub fn min(self, other: Self) -> Self {
+        Self(self.x().min(other.x()), self.y().min(other.y()))
+    }
+
+    pub fn max(self, other: Self) -> Self {
+        Self(self.x().max(other.x()), self.y().max(other.y()))
     }
 }
 

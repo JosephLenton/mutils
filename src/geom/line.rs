@@ -115,6 +115,18 @@ impl<N: Num> Line<N> {
     pub fn is_direction_positive_y(self) -> bool {
         self.start().y() < self.end().y()
     }
+
+    pub fn abs(&self) -> Self {
+        Self(self.start().abs(), self.end().abs())
+    }
+
+    pub fn min(self, other: Self) -> Self {
+        Self(self.start().min(other.start()), self.end().min(other.end()))
+    }
+
+    pub fn max(self, other: Self) -> Self {
+        Self(self.start().max(other.start()), self.end().max(other.end()))
+    }
 }
 
 impl<N: Num + Signed> Line<N> {

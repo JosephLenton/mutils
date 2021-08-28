@@ -82,6 +82,24 @@ impl<N: Num> Circle<N> {
     pub fn sub_radius(&mut self, n: N) {
         self.1 -= n;
     }
+
+    pub fn abs(&self) -> Self {
+        Self(self.centre().abs(), self.radius().abs())
+    }
+
+    pub fn min(self, other: Self) -> Self {
+        Self(
+            self.centre().min(other.centre()),
+            self.radius().min(other.radius()),
+        )
+    }
+
+    pub fn max(self, other: Self) -> Self {
+        Self(
+            self.centre().max(other.centre()),
+            self.radius().max(other.radius()),
+        )
+    }
 }
 
 impl<N> Circle<N>

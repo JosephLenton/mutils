@@ -104,33 +104,37 @@ impl<N: Num> Size<N> {
     pub fn to<T: Num + From<N>>(&self) -> Size<T> {
         Size(T::from(self.first()), T::from(self.second()))
     }
+
+    pub fn abs(&self) -> Self {
+        Self(self.width().abs(), self.height().abs())
+    }
+
+    pub fn min(self, other: Self) -> Self {
+        Self(
+            self.width().min(other.width()),
+            self.height().min(other.height()),
+        )
+    }
+
+    pub fn max(self, other: Self) -> Self {
+        Self(
+            self.width().max(other.width()),
+            self.height().max(other.height()),
+        )
+    }
 }
 
 impl<N: Num + Signed> Size<N> {
-    pub fn sign(&self) -> Self {
-        let width_sign = if self.0 == <N as NumIdentity>::zero() {
-            <N as NumIdentity>::zero()
-        } else {
-            signum(self.0)
-        };
-        let height_sign = if self.1 == <N as NumIdentity>::zero() {
-            <N as NumIdentity>::zero()
-        } else {
-            signum(self.1)
-        };
-
-        Self(width_sign, height_sign)
+    pub fn signum(&self) -> Self {
+        Self(self.signum_width(), self.signum_height())
     }
 
-    pub fn sign_exclusive_dir(&self) -> Self {
-        let w_abs = abs(self.width());
-        let h_abs = abs(self.height());
+    pub fn signum_width(&self) -> N {
+        signum(self.width())
+    }
 
-        if w_abs > h_abs {
-            Self(signum(self.width()), <N as NumIdentity>::zero())
-        } else {
-            Self(<N as NumIdentity>::zero(), signum(self.height()))
-        }
+    pub fn signum_height(&self) -> N {
+        signum(self.height())
     }
 
     pub fn flip_horizontal(self) -> Self {

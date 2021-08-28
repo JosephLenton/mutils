@@ -208,6 +208,24 @@ impl<N: Num> Rect<N> {
     pub fn to<T: Num + From<N>>(&self) -> Rect<T> {
         Rect(self.bottom_left().to(), self.size().to())
     }
+
+    pub fn abs(&self) -> Self {
+        Self(self.bottom_left().abs(), self.size().abs())
+    }
+
+    pub fn min(self, other: Self) -> Self {
+        Self(
+            self.bottom_left().min(other.bottom_left()),
+            self.size().min(other.size()),
+        )
+    }
+
+    pub fn max(self, other: Self) -> Self {
+        Self(
+            self.bottom_left().max(other.bottom_left()),
+            self.size().max(other.size()),
+        )
+    }
 }
 
 impl<O: Num, N: Num + ToRounded<O>> ToRounded<Rect<O>> for Rect<N> {
@@ -306,6 +324,29 @@ impl<N: Num> IntoIterator for Rect<N> {
 
     fn into_iter(self) -> Self::IntoIter {
         RectIterator::new(self)
+    }
+}
+
+#[cfg(test)]
+mod abs {
+    use super::*;
+
+    #[test]
+    fn it_should_return_same_values_when_abs() {
+        let r: Rect<i32> = Rect(Point(123, 456), Size(333, 444));
+        assert_eq!(r.abs(), r);
+    }
+
+    #[test]
+    fn it_should_abs_the_point() {
+        let r: Rect<i32> = Rect(Point(-123, -456), Size(333, 444));
+        assert_eq!(r.abs(), Rect(Point(123, 456), Size(333, 444)));
+    }
+
+    #[test]
+    fn it_should_abs_the_size() {
+        let r: Rect<i32> = Rect(Point(123, 456), Size(-333, -444));
+        assert_eq!(r.abs(), Rect(Point(123, 456), Size(333, 444)));
     }
 }
 

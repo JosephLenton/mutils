@@ -53,17 +53,6 @@ pub trait NumTuple<N: Num>:
         )
     }
 
-    fn max_from_zero(self, other: Self) -> Self {
-        Self::new(
-            self.first().max(other.first()),
-            self.second().max(other.second()),
-        )
-    }
-
-    fn abs(&self) -> Self {
-        Self::new(self.first().abs(), self.second().abs())
-    }
-
     fn is_outside(self, xy1: Self, xy2: Self) -> bool {
         !self.is_inside(xy1, xy2)
     }

@@ -9,7 +9,6 @@ use std::ops::Sub;
 use std::ops::SubAssign;
 
 use crate::num::Num;
-use crate::num::ToRounded;
 
 /// This exists to help add some common functionality to things that
 /// are a tuple of two numeric items.

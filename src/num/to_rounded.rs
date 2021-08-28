@@ -1,4 +1,3 @@
-use crate::num::Num;
 use std::mem::size_of;
 
 ///
@@ -17,83 +16,14 @@ pub trait ToRounded<N> {
     fn to_rounded(self) -> N;
 }
 
-// All numbers can clamp themselves.
-impl<N: Num> ToRounded<N> for N {
+// f64
+impl ToRounded<Self> for f64 {
     #[inline(always)]
     fn to_rounded(self) -> Self {
         self
     }
 }
 
-// f32
-impl ToRounded<f64> for f32 {
-    #[inline(always)]
-    fn to_rounded(self) -> f64 {
-        self as f64
-    }
-}
-
-impl ToRounded<usize> for f32 {
-    fn to_rounded(self) -> usize {
-        self.round() as usize
-    }
-}
-
-impl ToRounded<isize> for f32 {
-    fn to_rounded(self) -> isize {
-        self.round() as isize
-    }
-}
-
-impl ToRounded<u8> for f32 {
-    fn to_rounded(self) -> u8 {
-        self.round() as u8
-    }
-}
-
-impl ToRounded<u16> for f32 {
-    fn to_rounded(self) -> u16 {
-        self.round() as u16
-    }
-}
-
-impl ToRounded<u32> for f32 {
-    fn to_rounded(self) -> u32 {
-        self.round() as u32
-    }
-}
-
-impl ToRounded<u64> for f32 {
-    fn to_rounded(self) -> u64 {
-        self.round() as u64
-    }
-}
-
-impl ToRounded<i8> for f32 {
-    fn to_rounded(self) -> i8 {
-        self.round() as i8
-    }
-}
-
-impl ToRounded<i16> for f32 {
-    fn to_rounded(self) -> i16 {
-        self.round() as i16
-    }
-}
-
-impl ToRounded<i32> for f32 {
-    fn to_rounded(self) -> i32 {
-        self.round() as i32
-    }
-}
-
-impl ToRounded<i64> for f32 {
-    fn to_rounded(self) -> i64 {
-        self.round() as i64
-    }
-}
-
-// f64
 impl ToRounded<f32> for f64 {
     fn to_rounded(self) -> f32 {
         self.round() as f32
@@ -160,7 +90,89 @@ impl ToRounded<i64> for f64 {
     }
 }
 
+// f32
+impl ToRounded<f64> for f32 {
+    #[inline(always)]
+    fn to_rounded(self) -> f64 {
+        self as f64
+    }
+}
+
+impl ToRounded<Self> for f32 {
+    #[inline(always)]
+    fn to_rounded(self) -> Self {
+        self
+    }
+}
+
+impl ToRounded<usize> for f32 {
+    fn to_rounded(self) -> usize {
+        self.round() as usize
+    }
+}
+
+impl ToRounded<isize> for f32 {
+    fn to_rounded(self) -> isize {
+        self.round() as isize
+    }
+}
+
+impl ToRounded<u8> for f32 {
+    fn to_rounded(self) -> u8 {
+        self.round() as u8
+    }
+}
+
+impl ToRounded<u16> for f32 {
+    fn to_rounded(self) -> u16 {
+        self.round() as u16
+    }
+}
+
+impl ToRounded<u32> for f32 {
+    fn to_rounded(self) -> u32 {
+        self.round() as u32
+    }
+}
+
+impl ToRounded<u64> for f32 {
+    fn to_rounded(self) -> u64 {
+        self.round() as u64
+    }
+}
+
+impl ToRounded<i8> for f32 {
+    fn to_rounded(self) -> i8 {
+        self.round() as i8
+    }
+}
+
+impl ToRounded<i16> for f32 {
+    fn to_rounded(self) -> i16 {
+        self.round() as i16
+    }
+}
+
+impl ToRounded<i32> for f32 {
+    fn to_rounded(self) -> i32 {
+        self.round() as i32
+    }
+}
+
+impl ToRounded<i64> for f32 {
+    fn to_rounded(self) -> i64 {
+        self.round() as i64
+    }
+}
+
 // u64
+impl ToRounded<Self> for u64 {
+    #[inline(always)]
+    fn to_rounded(self) -> Self {
+        self
+    }
+}
+
 impl ToRounded<f32> for u64 {
     #[inline(always)]
     fn to_rounded(self) -> f32 {
@@ -238,6 +250,13 @@ impl ToRounded<i64> for u64 {
 }
 
 // u32
+impl ToRounded<Self> for u32 {
+    #[inline(always)]
+    fn to_rounded(self) -> Self {
+        self
+    }
+}
+
 impl ToRounded<f32> for u32 {
     #[inline(always)]
     fn to_rounded(self) -> f32 {
@@ -317,6 +336,13 @@ impl ToRounded<i64> for u32 {
 }
 
 // u16
+impl ToRounded<Self> for u16 {
+    #[inline(always)]
+    fn to_rounded(self) -> Self {
+        self
+    }
+}
+
 impl ToRounded<f32> for u16 {
     #[inline(always)]
     fn to_rounded(self) -> f32 {
@@ -398,6 +424,13 @@ impl ToRounded<i64> for u16 {
 }
 
 // u8
+impl ToRounded<Self> for u8 {
+    #[inline(always)]
+    fn to_rounded(self) -> Self {
+        self
+    }
+}
+
 impl ToRounded<f32> for u8 {
     #[inline(always)]
     fn to_rounded(self) -> f32 {
@@ -481,6 +514,13 @@ impl ToRounded<i64> for u8 {
 }
 
 // i64
+impl ToRounded<Self> for i64 {
+    #[inline(always)]
+    fn to_rounded(self) -> Self {
+        self
+    }
+}
+
 impl ToRounded<f32> for i64 {
     #[inline(always)]
     fn to_rounded(self) -> f32 {
@@ -566,6 +606,13 @@ impl ToRounded<i32> for i64 {
 }
 
 // i32
+impl ToRounded<Self> for i32 {
+    #[inline(always)]
+    fn to_rounded(self) -> Self {
+        self
+    }
+}
+
 impl ToRounded<f32> for i32 {
     #[inline(always)]
     fn to_rounded(self) -> f32 {
@@ -650,6 +697,13 @@ impl ToRounded<i64> for i32 {
 }
 
 // i16
+impl ToRounded<Self> for i16 {
+    #[inline(always)]
+    fn to_rounded(self) -> Self {
+        self
+    }
+}
+
 impl ToRounded<f32> for i16 {
     #[inline(always)]
     fn to_rounded(self) -> f32 {
@@ -733,6 +787,13 @@ impl ToRounded<i64> for i16 {
 }
 
 // i8
+impl ToRounded<Self> for i8 {
+    #[inline(always)]
+    fn to_rounded(self) -> Self {
+        self
+    }
+}
+
 impl ToRounded<f32> for i8 {
     #[inline(always)]
     fn to_rounded(self) -> f32 {
@@ -815,9 +876,38 @@ impl ToRounded<i64> for i8 {
 }
 
 // usize
+impl ToRounded<Self> for usize {
+    #[inline(always)]
+    fn to_rounded(self) -> Self {
+        self
+    }
+}
+
+impl ToRounded<f32> for usize {
+    #[inline(always)]
+    fn to_rounded(self) -> f32 {
+        self as f32
+    }
+}
+
+// isize
+impl ToRounded<Self> for isize {
+    #[inline(always)]
+    fn to_rounded(self) -> Self {
+        self
+    }
+}
+
 impl ToRounded<isize> for usize {
     fn to_rounded(self) -> isize {
         self.min(<isize>::max_value() as Self) as isize
+    }
+}
+
+impl ToRounded<f32> for isize {
+    #[inline(always)]
+    fn to_rounded(self) -> f32 {
+        self as f32
     }
 }
 

@@ -17,6 +17,7 @@ use ::std::ops::SubAssign;
 use super::Half;
 use super::NumTrampolene;
 use crate::num::NumIdentity;
+use crate::num::ToRounded;
 
 /// A common number trait.
 ///
@@ -44,6 +45,7 @@ pub trait Num:
     + NumIdentity
     + Sized
     + Debug
+    + ToRounded<f32>
 {
 }
 
@@ -53,7 +55,8 @@ pub trait Num:
 /// I think it's saying *'the trait above really does exists, and is
 /// implemented, for `U`'*. This applies for cases where `U` matches the `Num`
 /// trait.
-impl<U> Num for U where
+impl<U> Num for U
+where
     U: Add<Self, Output = Self>
         + AddAssign
         + Sub<Self, Output = Self>
@@ -72,6 +75,8 @@ impl<U> Num for U where
         + NumIdentity
         + Sized
         + Debug
+        + ToRounded<f32>,
+    f32: ToRounded<U>,
 {
 }
 

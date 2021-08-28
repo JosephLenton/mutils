@@ -10,7 +10,6 @@ use std::ops::SubAssign;
 
 use crate::num::INum;
 use crate::num::Num;
-use crate::num::NumTuple;
 use crate::num::ToRounded;
 
 use crate::geom::HorizontalPosition;

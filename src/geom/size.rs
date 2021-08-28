@@ -14,13 +14,11 @@ use ::std::ops::ShrAssign;
 use ::std::ops::Sub;
 use ::std::ops::SubAssign;
 
-use ::num_traits::sign::abs;
 use ::num_traits::sign::signum;
 use ::num_traits::sign::Signed;
 
 use crate::num::INum;
 use crate::num::Num;
-use crate::num::NumIdentity;
 use crate::num::NumTuple;
 use crate::num::ToRounded;
 

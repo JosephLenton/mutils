@@ -8,7 +8,7 @@ use crate::geom::Point;
 ///
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct BCurve<const N: usize> {
-    points: [Point; N],
+    pub(crate) points: [Point; N],
 }
 
 #[derive(Copy, Clone, Debug, PartialEq)]

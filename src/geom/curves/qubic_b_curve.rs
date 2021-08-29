@@ -1,11 +1,41 @@
 use crate::geom::BCurve;
 use crate::geom::Line;
+use crate::geom::Point;
 
 pub type QubicBCurve = BCurve<4>;
+
+const START_POSITION: usize = 0;
+const START_GUIDE: usize = 1;
+const END_GUIDE: usize = 2;
+const END_POSITION: usize = 3;
 
 impl QubicBCurve {
     pub fn new_from_guide_lines(start: Line, end: Line) -> Self {
         Self::new_from_points([start.start(), start.end(), end.end(), end.start()])
+    }
+
+    pub fn start_position(self) -> Point {
+        self.points[START_POSITION]
+    }
+
+    pub fn end_position(self) -> Point {
+        self.points[END_POSITION]
+    }
+
+    pub fn start_guide(self) -> Point {
+        self.points[START_GUIDE]
+    }
+
+    pub fn end_guide(self) -> Point {
+        self.points[END_GUIDE]
+    }
+
+    pub fn start_line(self) -> Line {
+        Line(self.start_position(), self.start_guide())
+    }
+
+    pub fn end_line(self) -> Line {
+        Line(self.end_position(), self.end_guide())
     }
 }
 

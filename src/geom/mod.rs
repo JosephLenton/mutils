@@ -1,4 +1,5 @@
 mod circle;
+mod curves;
 mod line;
 mod point;
 mod position;
@@ -7,6 +8,7 @@ mod size;
 mod transform;
 
 pub use circle::*;
+pub use curves::*;
 pub use line::*;
 pub use point::*;
 pub use position::*;

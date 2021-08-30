@@ -108,11 +108,15 @@ impl<N: Num> Rect<N> {
     }
 
     pub fn set_bottom_left(&mut self, xy: Point<N>) {
-        self.0 = xy
+        self.0 = xy;
     }
 
     pub fn set_centre(&mut self, xy: Point<N>) {
-        self.0 = xy - self.size().half()
+        self.0 = xy - self.size().half();
+    }
+
+    pub fn set_size(&mut self, size: Size<N>) {
+        self.1 = size;
     }
 
     pub fn overlaps(&self, other: Self) -> bool {
@@ -224,6 +228,10 @@ impl<N: Num> Rect<N> {
             self.bottom_left().max(other.bottom_left()),
             self.size().max(other.size()),
         )
+    }
+
+    pub(crate) fn to_f32(self) -> Rect<f32> {
+        self.to_rounded()
     }
 }
 

@@ -101,6 +101,34 @@ impl<N: Num> Point<N> {
     pub fn hypot_to(self, other: Point<N>) -> N {
         self.distance_to(other).hypot()
     }
+
+    pub fn rotate_around_point(self, angle: f32, other: Self) -> Self {
+        (self - other).rotate_around_zero(angle) + other
+    }
+
+    fn rotate_around_zero(self, rotation: f32) -> Self {
+        let Point(x, y): Point<f32> = self.to_f32();
+
+        let hypot = x.hypot(y);
+        let angle = self.angle_to_zero() - rotation;
+        let cos = angle.cos();
+        let sin = angle.sin();
+
+        Point(hypot * cos, hypot * sin).from_f32()
+    }
+
+    pub fn angle_to(self, other: Self) -> f32 {
+        (self - other).angle_to_zero()
+    }
+
+    fn angle_to_zero(self) -> f32 {
+        let self_f32 = self.to_f32();
+        self_f32.y().atan2(self_f32.x())
+    }
+
+    pub(crate) fn to_f32(self) -> Point<f32> {
+        self.to_rounded()
+    }
 }
 
 impl<N: Num> NumTuple<N> for Point<N> {
@@ -209,29 +237,6 @@ impl Point<f32> {
 
     pub fn round(self) -> Self {
         Self::new(self.first().round(), self.second().round())
-    }
-
-    pub fn rotate_around_point(self, angle: f32, other: Self) -> Self {
-        (self - other).rotate_around_zero(angle) + other
-    }
-
-    fn rotate_around_zero(self, rotation: f32) -> Self {
-        let Point(x, y) = self;
-
-        let hypot = x.hypot(y);
-        let angle = self.angle_to_zero() - rotation;
-        let cos = angle.cos();
-        let sin = angle.sin();
-
-        Self(hypot * cos, hypot * sin)
-    }
-
-    pub fn angle_to(self, other: Self) -> f32 {
-        (self - other).angle_to_zero()
-    }
-
-    fn angle_to_zero(self) -> f32 {
-        self.y().atan2(self.x())
     }
 
     pub(crate) fn from_f32<N: Num>(self) -> Point<N> {

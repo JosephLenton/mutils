@@ -38,6 +38,10 @@ impl<N: Num> Size<N> {
         Size(N::zero(), N::zero())
     }
 
+    pub fn new_one_value() -> Self {
+        Size(N::one(), N::one())
+    }
+
     pub fn width(&self) -> N {
         self.first()
     }
@@ -154,6 +158,10 @@ impl<N: Num + Signed> Size<N> {
         }
 
         signum(self.height())
+    }
+
+    pub fn flip(self) -> Self {
+        Self(-self.width(), -self.height())
     }
 
     pub fn flip_horizontal(self) -> Self {

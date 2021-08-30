@@ -184,8 +184,8 @@ impl<N: Num> Line<N> {
         //    - Start and end outside, but don't quite cross the inside. They came close.
 
         // Should only iterate twice, at most.
-        let mut line_f32: Line<f32> = self.to_rounded();
-        let rect_f32: Rect<f32> = rect.to_rounded();
+        let mut line_f32 = self.to_f32();
+        let rect_f32 = rect.to_f32();
         loop {
             // Case 1:
             // both endpoints are within the clipping region
@@ -247,8 +247,9 @@ impl<N: Num> Line<N> {
      * Returns the atan2( y dist, x dist )
      */
     pub fn angle(self) -> N {
-        let y_diff: f32 = self.to_rounded().y_diff();
-        let x_diff: f32 = self.to_rounded().x_diff();
+        let self_f32 = self.to_f32();
+        let y_diff = self_f32.y_diff();
+        let x_diff = self_f32.x_diff();
         let angle = y_diff.atan2(x_diff);
         FromRounded::from_rounded(angle)
     }
@@ -259,6 +260,54 @@ impl<N: Num> Line<N> {
 
     pub fn hypot_sqrd(self) -> N {
         self.start().distance_to(self.end()).hypot_sqrd()
+    }
+
+    pub fn rotate(self, angle: f32) -> Self {
+        let self_f32 = self.to_f32();
+        let midpoint = self_f32.midpoint();
+        let half_len = self_f32.hypot() / 2.0;
+
+        let angle = self_f32.angle() - angle;
+        let cos = angle.cos();
+        let sin = angle.sin();
+
+        let start = midpoint - Point(half_len * cos, half_len * sin);
+        let end = midpoint + Point(half_len * cos, half_len * sin);
+
+        Line(start, end).from_f32()
+    }
+
+    pub fn rotate_around_zero(self, angle: f32) -> Self {
+        self.rotate_around_point(angle, Point::new_zero_value())
+    }
+
+    pub fn rotate_around_point(self, angle: f32, target: Point<N>) -> Self {
+        Line(
+            self.start().rotate_around_point(angle, target),
+            self.end().rotate_around_point(angle, target),
+        )
+    }
+
+    pub fn rotate_around_start(self, angle: f32) -> Self {
+        Line(
+            self.start(),
+            self.end().rotate_around_point(angle, self.start()),
+        )
+    }
+
+    pub fn rotate_around_end(self, angle: f32) -> Self {
+        Line(
+            self.start().rotate_around_point(angle, self.end()),
+            self.end(),
+        )
+    }
+
+    pub fn midpoint(self) -> Point<N> {
+        ((self.start() + self.end()).to_rounded() / 2.0).from_f32()
+    }
+
+    pub(crate) fn to_f32(self) -> Line<f32> {
+        self.to_rounded()
     }
 }
 
@@ -338,49 +387,6 @@ impl Line<f32> {
         }
 
         None
-    }
-
-    pub fn rotate(self, angle: f32) -> Self {
-        let midpoint = self.midpoint();
-        let half_len = self.hypot() / 2.0;
-
-        let angle = self.angle() - angle;
-        let cos = angle.cos();
-        let sin = angle.sin();
-
-        let start = midpoint - Point(half_len * cos, half_len * sin);
-        let end = midpoint + Point(half_len * cos, half_len * sin);
-
-        Line(start, end)
-    }
-
-    pub fn rotate_around_zero(self, angle: f32) -> Self {
-        self.rotate_around_point(angle, Point(0.0, 0.0))
-    }
-
-    pub fn rotate_around_point(self, angle: f32, target: Point<f32>) -> Self {
-        Line(
-            self.start().rotate_around_point(angle, target),
-            self.end().rotate_around_point(angle, target),
-        )
-    }
-
-    pub fn rotate_around_start(self, angle: f32) -> Self {
-        Line(
-            self.start(),
-            self.end().rotate_around_point(angle, self.start()),
-        )
-    }
-
-    pub fn rotate_around_end(self, angle: f32) -> Self {
-        Line(
-            self.start().rotate_around_point(angle, self.end()),
-            self.end(),
-        )
-    }
-
-    pub fn midpoint(self) -> Point {
-        (self.start() + self.end()) / 2.0
     }
 }
 
@@ -630,10 +636,13 @@ impl<N: Num + Signed> Neg for Line<N> {
     }
 }
 
-impl Add<Transform> for Line {
-    type Output = Line;
+impl<N> Add<Transform<N>> for Line<N>
+where
+    N: Num,
+{
+    type Output = Line<N>;
 
-    fn add(self, transform: Transform) -> Self::Output {
+    fn add(self, transform: Transform<N>) -> Self::Output {
         transform + self
     }
 }

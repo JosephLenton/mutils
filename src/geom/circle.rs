@@ -123,6 +123,10 @@ impl<N: Num> Circle<N> {
     pub fn iter_circumference_lines(self, num_lines: usize) -> CircleCircumferenceLinesIterator {
         CircleCircumferenceLinesIterator::new(self, num_lines)
     }
+
+    pub(crate) fn to_f32(self) -> Circle<f32> {
+        self.to_rounded()
+    }
 }
 
 impl Circle<f32> {

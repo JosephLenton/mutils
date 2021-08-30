@@ -35,11 +35,14 @@ impl<const N: usize> BCurve<N> {
         self.points[N - 1]
     }
 
-    pub fn transition_line(self, n1: f32, n2: f32) -> Line {
-        Line(self.transition_point(n1), self.transition_point(n2))
+    pub fn interpolation_line(self, start_n: f32, end_n: f32) -> Line {
+        Line(
+            self.interpolation_point(start_n),
+            self.interpolation_point(end_n),
+        )
     }
 
-    pub fn transition_point(self, n: f32) -> Point {
+    pub fn interpolation_point(self, n: f32) -> Point {
         let mut ps: [Point; N] = self.points.clone();
 
         let mut count = N - 1;
@@ -56,15 +59,21 @@ impl<const N: usize> BCurve<N> {
 
     /// An approximate total length for the curve.
     pub fn length(self) -> f32 {
-        self.length_segments(LENGTH_SEGMENTS)
+        self.length_by_segments(LENGTH_SEGMENTS)
     }
 
-    fn length_segments(self, num_segments: u32) -> f32 {
-        self.iter_transition_lines(num_segments)
+    /// Calculates an approximate length of the curve,
+    /// using the number of segments you provide.
+    ///
+    /// The lower the number of segments, the faster this will run.
+    /// However it will be less accurate. A higher number will be slower,
+    /// but more accurate.
+    fn length_by_segments(self, num_segments: u32) -> f32 {
+        self.iter_interpolation_lines(num_segments)
             .fold(0.0, |total, line| total + line.hypot())
     }
 
-    pub fn iter_transition_lines<'a>(&'a self, num_lines: u32) -> CurveLinesIterator<'a, N> {
+    pub fn iter_interpolation_lines<'a>(&'a self, num_lines: u32) -> CurveLinesIterator<'a, N> {
         CurveLinesIterator::new(self, num_lines)
     }
 }
@@ -76,7 +85,7 @@ impl<const N: usize> Into<Line> for BCurve<N> {
 }
 
 #[cfg(test)]
-mod transition_line {
+mod interpolation_line {
     use super::*;
 
     #[test]
@@ -89,7 +98,7 @@ mod transition_line {
         ]);
 
         assert_eq!(
-            curve.transition_line(0.0, 1.0),
+            curve.interpolation_line(0.0, 1.0),
             Line(Point(100.0, 100.0), Point(100.0, 500.0)),
         );
     }
@@ -104,14 +113,14 @@ mod transition_line {
         ]);
 
         assert_eq!(
-            curve.transition_line(0.0, 0.5),
+            curve.interpolation_line(0.0, 0.5),
             Line(Point(1.0, 0.0), Point(1.0, 5.0)),
         );
     }
 }
 
 #[cfg(test)]
-mod transition_point {
+mod interpolation_point {
     use super::*;
 
     #[test]
@@ -123,13 +132,14 @@ mod transition_point {
             Point(1.0, 10.0),
         ]);
 
-        assert_eq!(curve.transition_point(0.5), Point(1.0, 5.0));
+        assert_eq!(curve.interpolation_point(0.5), Point(1.0, 5.0));
     }
 }
 
 #[cfg(test)]
-mod iter_transition_lines {
+mod iter_interpolation_lines {
     use super::*;
+    use crate::geom::Point;
 
     #[test]
     fn it_should_return_number_of_lines_asked_for() {
@@ -140,6 +150,27 @@ mod iter_transition_lines {
             Point(1.0, 10.0),
         ]);
 
-        assert_eq!(13, curve.iter_transition_lines(13).count());
+        assert_eq!(13, curve.iter_interpolation_lines(13).count());
+    }
+
+    #[test]
+    fn it_should_return_the_lines_we_expect() {
+        let curve = BCurve::new_from_points([
+            Point(0.0, 0.0),
+            Point(0.0, 0.0),
+            Point(10.0, 10.0),
+            Point(10.0, 10.0),
+        ]);
+
+        let lines: Vec<Line> = curve.iter_interpolation_lines(4).collect();
+        assert_eq!(
+            lines,
+            &[
+                Line(Point(0.0, 0.0), Point(1.5625, 1.5625)),
+                Line(Point(1.5625, 1.5625), Point(5.0, 5.0)),
+                Line(Point(5.0, 5.0), Point(8.4375, 8.4375)),
+                Line(Point(8.4375, 8.4375), Point(10.0, 10.0))
+            ]
+        );
     }
 }

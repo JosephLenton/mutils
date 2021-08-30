@@ -40,7 +40,7 @@ impl QubicBCurve {
 }
 
 #[cfg(test)]
-mod transition_line {
+mod interpolation_line {
     use super::*;
     use crate::geom::Point;
 
@@ -52,7 +52,7 @@ mod transition_line {
         );
 
         assert_eq!(
-            curve.transition_line(0.0, 1.0),
+            curve.interpolation_line(0.0, 1.0),
             Line(Point(100.0, 100.0), Point(100.0, 500.0)),
         );
     }
@@ -65,14 +65,14 @@ mod transition_line {
         );
 
         assert_eq!(
-            curve.transition_line(0.0, 0.5),
+            curve.interpolation_line(0.0, 0.5),
             Line(Point(1.0, 0.0), Point(1.0, 5.0)),
         );
     }
 }
 
 #[cfg(test)]
-mod transition_point {
+mod interpolation_point {
     use super::*;
     use crate::geom::Point;
 
@@ -83,12 +83,12 @@ mod transition_point {
             Line(Point(1.0, 10.0), Point(1.0, 8.0)),
         );
 
-        assert_eq!(curve.transition_point(0.5), Point(1.0, 5.0));
+        assert_eq!(curve.interpolation_point(0.5), Point(1.0, 5.0));
     }
 }
 
 #[cfg(test)]
-mod iter_transition_lines {
+mod iter_interpolation_lines {
     use super::*;
     use crate::geom::Point;
 
@@ -99,6 +99,25 @@ mod iter_transition_lines {
             Line(Point(1.0, 10.0), Point(1.0, 8.0)),
         );
 
-        assert_eq!(13, curve.iter_transition_lines(13).count());
+        assert_eq!(13, curve.iter_interpolation_lines(13).count());
+    }
+
+    #[test]
+    fn it_should_return_the_lines_we_expect() {
+        let curve = QubicBCurve::new_from_guide_lines(
+            Line(Point(0.0, 0.0), Point(0.0, 0.0)),
+            Line(Point(10.0, 10.0), Point(10.0, 10.0)),
+        );
+
+        let lines: Vec<Line> = curve.iter_interpolation_lines(4).collect();
+        assert_eq!(
+            lines,
+            &[
+                Line(Point(0.0, 0.0), Point(1.5625, 1.5625)),
+                Line(Point(1.5625, 1.5625), Point(5.0, 5.0)),
+                Line(Point(5.0, 5.0), Point(8.4375, 8.4375)),
+                Line(Point(8.4375, 8.4375), Point(10.0, 10.0))
+            ]
+        );
     }
 }

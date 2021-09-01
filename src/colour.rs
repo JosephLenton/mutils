@@ -179,6 +179,15 @@ impl Colour {
         result
     }
 
+    pub fn replace_alpha_f32(self, alpha: f32) -> Self {
+        self.replace_alpha_u32(Colour::f32_to_rgba_u32(alpha))
+    }
+
+    pub fn replace_alpha_u32(mut self, alpha: u32) -> Self {
+        self.rgba = (self.rgba & 0xffffff00) & alpha;
+        self
+    }
+
     #[inline(always)]
     pub fn to_rgba_u32(self) -> u32 {
         self.rgba

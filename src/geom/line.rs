@@ -278,7 +278,10 @@ impl<N: Num> Line<N> {
     }
 
     pub fn rotate_around_zero(self, angle: f32) -> Self {
-        self.rotate_around_point(angle, Point::new_zero_value())
+        Line(
+            self.start().rotate_around_zero(angle),
+            self.end().rotate_around_zero(angle),
+        )
     }
 
     pub fn rotate_around_point(self, angle: f32, target: Point<N>) -> Self {

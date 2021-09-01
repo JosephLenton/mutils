@@ -106,7 +106,7 @@ impl<N: Num> Point<N> {
         (self - other).rotate_around_zero(angle) + other
     }
 
-    fn rotate_around_zero(self, rotation: f32) -> Self {
+    pub fn rotate_around_zero(self, rotation: f32) -> Self {
         let Point(x, y): Point<f32> = self.to_f32();
 
         let hypot = x.hypot(y);

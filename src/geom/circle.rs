@@ -124,6 +124,10 @@ impl<N: Num> Circle<N> {
         CircleCircumferenceLinesIterator::new(self, num_lines)
     }
 
+    pub fn rotate_around_zero(self, rotation: f32) -> Self {
+        Circle(self.centre().rotate_around_zero(rotation), self.radius())
+    }
+
     pub(crate) fn to_f32(self) -> Circle<f32> {
         self.to_rounded()
     }

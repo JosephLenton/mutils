@@ -128,6 +128,10 @@ impl<N: Num> Circle<N> {
         Circle(self.centre().rotate_around_zero(rotation), self.radius())
     }
 
+    pub fn rotate_around_point(self, rotation: f32, point: Point<N>) -> Self {
+        Circle(self.centre().rotate_around_point(rotation, point), self.radius())
+    }
+
     pub(crate) fn to_f32(self) -> Circle<f32> {
         self.to_rounded()
     }

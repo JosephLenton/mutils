@@ -39,6 +39,22 @@ impl<N: Num> Point<N> {
         Point(N::zero(), N::zero())
     }
 
+    pub fn new_from_angle(angle: f32, hypot: f32) -> Self {
+        let cos = angle.cos();
+        let sin = angle.sin();
+
+        Point(hypot * cos, hypot * sin).from_f32()
+    }
+
+    pub fn move_from_angle(self, angle: f32, hypot: f32) -> Self {
+        let cos = angle.cos();
+        let sin = angle.sin();
+        let move_xy = Point(hypot * cos, hypot * sin);
+
+        let new_position = self.to_f32() + move_xy;
+        new_position.from_f32()
+    }
+
     pub fn x(&self) -> N {
         self.first()
     }

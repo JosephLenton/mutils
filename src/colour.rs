@@ -184,8 +184,16 @@ impl Colour {
     }
 
     pub fn replace_alpha_u32(mut self, alpha: u32) -> Self {
-        self.rgba = (self.rgba & 0xffffff00) & alpha;
+        self.set_alpha_u32(alpha);
         self
+    }
+
+    pub fn set_alpha_f32(&mut self, alpha: f32) {
+        self.set_alpha_u32(Colour::f32_to_rgba_u32(alpha));
+    }
+
+    pub fn set_alpha_u32(&mut self, alpha: u32) {
+        self.rgba = (self.rgba & 0xffffff00) | alpha;
     }
 
     #[inline(always)]
@@ -395,5 +403,36 @@ mod new_rgba_hex {
         assert_eq!(colour.blue_u32(), 147);
         assert_eq!(colour.alpha_u32(), 33);
         assert_eq!(colour.to_rgba_u32(), rgba_hex);
+    }
+}
+
+#[cfg(test)]
+mod replace_alpha_f32 {
+    use super::*;
+
+    #[test]
+    pub fn it_should_replace_alpha_value() {
+        let rgba_hex = 0xffffff11;
+        let mut colour = Colour::new_from_rgba(rgba_hex);
+
+        colour = colour.replace_alpha_f32(0.0);
+        assert_eq!(colour.alpha_u8(), 0);
+
+        colour = colour.replace_alpha_f32(0.5);
+        assert_eq!(colour.alpha_u8(), 127);
+
+        colour = colour.replace_alpha_f32(1.0);
+        assert_eq!(colour.alpha_u8(), 255);
+    }
+
+    #[test]
+    pub fn it_should_not_replace_other_values() {
+        let rgba_hex = 0xffffff11;
+        let mut colour = Colour::new_from_rgba(rgba_hex);
+
+        colour = colour.replace_alpha_f32(0.0);
+        assert_eq!(colour.red_u8(), 255);
+        assert_eq!(colour.green_u8(), 255);
+        assert_eq!(colour.blue_u8(), 255);
     }
 }

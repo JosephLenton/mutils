@@ -107,7 +107,7 @@ impl<N: Num> Circle<N> {
         let other_rounded = other.to_rounded();
 
         let distance = self_rounded.centre().hypot_to(other_rounded.centre());
-        let radius_distance = self_rounded.radius() + other_rounded.radius();
+        let radius_distance = self_rounded.radius().abs() + other_rounded.radius().abs();
 
         distance < radius_distance
     }
@@ -192,6 +192,15 @@ impl<N: Num> PartialEq for Circle<N> {
 #[cfg(test)]
 mod overlaps {
     use super::*;
+
+    #[test]
+    fn it_should_overlap_with_another_circle_when_negative_radius_used() {
+        let a = Circle(Point(288.0, 179.0), 44.0);
+        let b = Circle(Point(341.0, 196.0), -148.0);
+
+        assert_eq!(a.overlaps(b), true);
+        assert_eq!(b.overlaps(a), true);
+    }
 
     #[test]
     fn it_should_overlap_with_another_circle_when_within_its_radius() {

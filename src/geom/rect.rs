@@ -68,11 +68,11 @@ impl<N: Num> Rect<N> {
     }
 
     pub fn size(&self) -> Size<N> {
-        self.1
+        self.1.abs()
     }
 
     pub fn bottom_left(&self) -> Point<N> {
-        self.0
+        self.0 + self.1.min(Size(N::zero(), N::zero()))
     }
 
     pub fn bottom_right(&self) -> Point<N> {
@@ -212,10 +212,6 @@ impl<N: Num> Rect<N> {
         Rect(self.bottom_left().to(), self.size().to())
     }
 
-    pub fn abs(&self) -> Self {
-        Self(self.bottom_left().abs(), self.size().abs())
-    }
-
     pub fn min(self, other: Self) -> Self {
         Self(
             self.bottom_left().min(other.bottom_left()),
@@ -236,6 +232,7 @@ impl<N: Num> Rect<N> {
 }
 
 impl Rect<f32> {
+    #[allow(dead_code)]
     pub(crate) fn from_f32<N: Num>(self) -> Rect<N> {
         Rect(self.bottom_left().from_f32(), self.size().from_f32())
     }
@@ -341,29 +338,6 @@ impl<N: Num> IntoIterator for Rect<N> {
 }
 
 #[cfg(test)]
-mod abs {
-    use super::*;
-
-    #[test]
-    fn it_should_return_same_values_when_abs() {
-        let r: Rect<i32> = Rect(Point(123, 456), Size(333, 444));
-        assert_eq!(r.abs(), r);
-    }
-
-    #[test]
-    fn it_should_abs_the_point() {
-        let r: Rect<i32> = Rect(Point(-123, -456), Size(333, 444));
-        assert_eq!(r.abs(), Rect(Point(123, 456), Size(333, 444)));
-    }
-
-    #[test]
-    fn it_should_abs_the_size() {
-        let r: Rect<i32> = Rect(Point(123, 456), Size(-333, -444));
-        assert_eq!(r.abs(), Rect(Point(123, 456), Size(333, 444)));
-    }
-}
-
-#[cfg(test)]
 mod overlaps {
     use super::*;
 
@@ -436,7 +410,7 @@ mod overlaps {
         let a: Rect<i32> = Rect(Point(3, 2), Size(4, 5));
         let b: Rect<i32> = Rect(Point(3, 2), Size(4, 5));
 
-        assert!(a.overlaps(b));
+        assert_eq!(a.overlaps(b), true);
     }
 
     #[test]
@@ -444,7 +418,16 @@ mod overlaps {
         let a: Rect<i32> = Rect(Point(2, 2), Size(2, 2));
         let b: Rect<i32> = Rect(Point(4, 2), Size(2, 2));
 
-        assert!(!a.overlaps(b));
+        assert_eq!(a.overlaps(b), false);
+    }
+
+    #[test]
+    fn it_should_overlap_with_negative_sizes() {
+        let a: Rect<i32> = Rect(Point(0, 0), Size(10, 10));
+        let b: Rect<i32> = Rect(Point(12, 12), Size(-10, -10));
+
+        assert_eq!(a.overlaps(b), true);
+        assert_eq!(b.overlaps(a), true);
     }
 }
 
@@ -467,6 +450,18 @@ mod bottom_left {
     fn it_should_return_bottom_left() {
         let rect: Rect<u32> = Rect(Point(3, 4), Size(9, 13));
         assert_eq!(rect.bottom_left(), Point(3, 4));
+    }
+
+    #[test]
+    fn it_should_return_bottom_left_for_positive_sizes() {
+        let rect: Rect<i32> = Rect(Point(10, 12), Size(5, 8));
+        assert_eq!(rect.bottom_left(), Point(10, 12));
+    }
+
+    #[test]
+    fn it_should_account_for_negative_sizes() {
+        let rect: Rect<i32> = Rect(Point(10, 12), Size(-5, -8));
+        assert_eq!(rect.bottom_left(), Point(5, 4));
     }
 }
 

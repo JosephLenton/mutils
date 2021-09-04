@@ -57,10 +57,12 @@ impl Colour {
     }
 
     #[inline(always)]
+    #[allow(dead_code)]
     fn f32_to_hex_u32(val: f32, shift: u8) -> u32 {
         ((val * 255.0).round() as u32) << shift
     }
 
+    #[allow(dead_code)]
     fn clamp_u8_to_f32(val: u8) -> f32 {
         if val >= 255 {
             1.0
@@ -71,6 +73,7 @@ impl Colour {
         }
     }
 
+    #[allow(dead_code)]
     fn f32_to_rgba_u8(val: f32) -> u8 {
         if val >= 1.0 {
             255

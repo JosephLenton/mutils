@@ -1,3 +1,12 @@
+#![deny(private_in_public)]
+#![deny(unused_must_use)]
+#![deny(unused_mut)]
+#![deny(unused_variables)]
+#![deny(large_assignments)]
+#![deny(non_camel_case_types)]
+#![deny(dead_code)]
+#![deny(non_snake_case)]
+
 mod colour;
 mod random;
 mod vec2d;

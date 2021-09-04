@@ -135,12 +135,14 @@ impl<N: Num> Circle<N> {
         )
     }
 
+    #[allow(dead_code)]
     pub(crate) fn to_f32(self) -> Circle<f32> {
         self.to_rounded()
     }
 }
 
 impl Circle<f32> {
+    #[allow(dead_code)]
     pub(crate) fn from_f32<N: Num>(self) -> Circle<N> {
         Circle(
             self.centre().from_f32(),

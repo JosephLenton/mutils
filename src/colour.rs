@@ -22,9 +22,20 @@ impl Colour {
     pub const DARK_GREY: Colour = Colour::new_from_rgba(0x404040ff);
     pub const BLACK: Colour = Colour::new_from_rgba(0x000000ff);
 
+    pub const ORANGE_RED: Colour = Colour::new_from_rgba(0xff4500ff);
+    pub const ORANGE: Colour = Colour::new_from_rgba(0xffA500ff);
+
+    pub const DARK_RED: Colour = Colour::new_from_rgba(0x800000ff);
     pub const RED: Colour = Colour::new_from_rgba(0xff0000ff);
+    pub const LIGHT_RED: Colour = Colour::new_from_rgba(0xff6666ff);
+
+    pub const DARK_GREEN: Colour = Colour::new_from_rgba(0x006400ff);
     pub const GREEN: Colour = Colour::new_from_rgba(0x00ff00ff);
+    pub const LIGHT_GREEN: Colour = Colour::new_from_rgba(0x90EE90ff);
+
+    pub const DARK_BLUE: Colour = Colour::new_from_rgba(0x00008Bff);
     pub const BLUE: Colour = Colour::new_from_rgba(0x0000ffff);
+    pub const LIGHT_BLUE: Colour = Colour::new_from_rgba(0xADD8E6ff);
 
     pub const MAGENTA: Colour = Colour::new_from_rgba(0xff00ffff);
     pub const CYAN: Colour = Colour::new_from_rgba(0x00ffffff);

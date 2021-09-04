@@ -29,6 +29,7 @@ use crate::num::ToSignedClamped;
 use crate::geom::Line;
 use crate::geom::Rect;
 use crate::geom::Size;
+use crate::geom::Transform;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Point<N: Num = f32>(pub N, pub N);
@@ -444,6 +445,18 @@ impl<N: Num + Signed> Neg for Point<N> {
 
     fn neg(self) -> Self::Output {
         Self(-self.x(), -self.y())
+    }
+}
+
+impl<N> Add<Transform<N>> for Point<N>
+where
+    N: Num,
+{
+    type Output = Point<N>;
+
+    #[inline(always)]
+    fn add(self, transform: Transform<N>) -> Self::Output {
+        transform + self
     }
 }
 

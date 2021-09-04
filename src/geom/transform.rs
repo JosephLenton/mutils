@@ -17,6 +17,7 @@ pub struct Transform<N: Num = f32> {
 }
 
 impl<N: Num> Transform<N> {
+    #[must_use]
     pub fn new() -> Self {
         Self {
             position: Point::new_zero_value(),
@@ -25,6 +26,7 @@ impl<N: Num> Transform<N> {
         }
     }
 
+    #[must_use]
     pub fn set_position(mut self, position: Point<N>) -> Self {
         self.position = position;
         self
@@ -34,6 +36,7 @@ impl<N: Num> Transform<N> {
         self.position
     }
 
+    #[must_use]
     pub fn set_rotation(mut self, rotation: f32) -> Self {
         self.rotation = rotation;
         self
@@ -43,16 +46,19 @@ impl<N: Num> Transform<N> {
         self.rotation
     }
 
+    #[must_use]
     fn set_scale_width(mut self, scale_width: N) -> Self {
         self.scale.set_width(scale_width);
         self
     }
 
+    #[must_use]
     fn set_scale_height(mut self, scale_height: N) -> Self {
         self.scale.set_height(scale_height);
         self
     }
 
+    #[must_use]
     pub fn set_scale(mut self, scale: Size<N>) -> Self {
         self.scale = scale;
         self
@@ -100,6 +106,17 @@ where
 
     fn add(self, line: Self::Output) -> Self::Output {
         line.rotate_around_zero(self.rotation()) * self.scale() + self.position()
+    }
+}
+
+impl<N> Add<Point<N>> for Transform<N>
+where
+    N: Num,
+{
+    type Output = Point<N>;
+
+    fn add(self, point: Self::Output) -> Self::Output {
+        point.rotate_around_zero(self.rotation()) * self.scale() + self.position()
     }
 }
 

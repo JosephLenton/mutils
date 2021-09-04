@@ -645,6 +645,7 @@ where
 {
     type Output = Line<N>;
 
+    #[inline(always)]
     fn add(self, transform: Transform<N>) -> Self::Output {
         transform + self
     }

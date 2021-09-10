@@ -25,6 +25,7 @@ use crate::num::NumTuple;
 use crate::num::ToRounded;
 
 use crate::geom::Point;
+use crate::geom::Rect;
 
 mod size_iterator;
 pub use self::size_iterator::SizeIterator;
@@ -97,6 +98,10 @@ impl<N: Num> Size<N> {
 
     pub fn to_point(self) -> Point<N> {
         Point(self.width(), self.height())
+    }
+
+    pub fn to_rect(self) -> Rect<N> {
+        Rect(Point::new_zero_value(), self)
     }
 
     pub fn get_scale_diff(self, other: Self) -> Self {
@@ -394,6 +399,17 @@ impl<N: Num> IntoIterator for Size<N> {
 
     fn into_iter(self) -> Self::IntoIter {
         SizeIterator::new(self)
+    }
+}
+
+#[cfg(test)]
+mod to_rect {
+    use super::*;
+
+    #[test]
+    fn it_should_return_rect_with_this_size() {
+        let size: Size<i32> = Size(123, 456);
+        assert_eq!(size.to_rect(), Rect(Point(0, 0), Size(123, 456)));
     }
 }
 

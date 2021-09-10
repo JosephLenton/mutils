@@ -348,7 +348,7 @@ mod red_xx {
     use super::*;
 
     #[test]
-    pub fn it_should_return_red_given() {
+    fn it_should_return_red_given() {
         let rgba_hex = 0xffa89321;
         let colour = Colour::new_from_rgba(rgba_hex);
 
@@ -363,7 +363,7 @@ mod green_xx {
     use super::*;
 
     #[test]
-    pub fn it_should_return_green_given() {
+    fn it_should_return_green_given() {
         let rgba_hex = 0xffa89321;
         let colour = Colour::new_from_rgba(rgba_hex);
 
@@ -378,7 +378,7 @@ mod blue_xx {
     use super::*;
 
     #[test]
-    pub fn it_should_return_blue_given() {
+    fn it_should_return_blue_given() {
         let rgba_hex = 0xffa89321;
         let colour = Colour::new_from_rgba(rgba_hex);
 
@@ -393,7 +393,7 @@ mod alpha_xx {
     use super::*;
 
     #[test]
-    pub fn it_should_return_alpha_given() {
+    fn it_should_return_alpha_given() {
         let rgba_hex = 0xffa89321;
         let colour = Colour::new_from_rgba(rgba_hex);
 
@@ -408,7 +408,7 @@ mod new_rgba_hex {
     use super::*;
 
     #[test]
-    pub fn it_should_have_components_match_those_given() {
+    fn it_should_have_components_match_those_given() {
         let rgba_hex = 0xffa89321;
         let colour = Colour::new_from_rgba(rgba_hex);
 
@@ -425,7 +425,7 @@ mod replace_alpha_f32 {
     use super::*;
 
     #[test]
-    pub fn it_should_replace_alpha_value() {
+    fn it_should_replace_alpha_value() {
         let rgba_hex = 0xffffff11;
         let mut colour = Colour::new_from_rgba(rgba_hex);
 
@@ -440,7 +440,7 @@ mod replace_alpha_f32 {
     }
 
     #[test]
-    pub fn it_should_not_replace_other_values() {
+    fn it_should_not_replace_other_values() {
         let rgba_hex = 0xffffff11;
         let mut colour = Colour::new_from_rgba(rgba_hex);
 

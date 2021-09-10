@@ -1,6 +1,7 @@
 use ::lazy_static::lazy_static;
 use ::rand::rngs::SmallRng;
-use ::rand::{Rng, SeedableRng};
+use ::rand::Rng;
+use ::rand::SeedableRng;
 use ::std::ops::Add;
 use ::std::ops::Sub;
 use ::std::sync::Mutex;

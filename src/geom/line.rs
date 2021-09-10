@@ -312,6 +312,12 @@ impl<N: Num> Line<N> {
     pub(crate) fn to_f32(self) -> Line<f32> {
         self.to_rounded()
     }
+
+    /// Returns a line where the start is at the end,
+    /// and the end is at the start.
+    pub fn flip(self) -> Self {
+        Self(self.end(), self.start())
+    }
 }
 
 impl<N: Num + Signed> Line<N> {
@@ -1029,5 +1035,16 @@ mod intersect_line {
 
         let intersection = line_1.intersect_line(line_2);
         assert_eq!(intersection, None);
+    }
+}
+
+#[cfg(test)]
+mod flip {
+    use super::*;
+
+    #[test]
+    fn it_should_swap_start_and_end() {
+        let line: Line<i32> = Line(Point(123, 456), Point(987, 654));
+        assert_eq!(line.flip(), Line(Point(987, 654), Point(123, 456)))
     }
 }

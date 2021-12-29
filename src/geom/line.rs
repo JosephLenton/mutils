@@ -23,6 +23,7 @@ use crate::num::ToSignedClamped;
 
 use crate::geom::Point;
 use crate::geom::Rect;
+use crate::geom::Circle;
 use crate::geom::Size;
 
 use crate::geom::PointPosition;
@@ -131,6 +132,10 @@ impl<N: Num> Line<N> {
 
     pub fn overlaps_line(self, other: Line<N>) -> bool {
         self.intersect_line(other).is_some()
+    }
+
+    pub fn overlaps_circle(self, other: Circle<N>) -> bool {
+        other.overlaps_line(self)
     }
 
     pub fn intersect_line(self, other: Line<N>) -> Option<Point<N>> {

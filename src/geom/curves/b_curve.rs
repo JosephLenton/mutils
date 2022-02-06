@@ -48,7 +48,7 @@ impl<const N: usize> BCurve<N> {
         let mut count = N - 1;
         while count > 0 {
             for i in 0..count {
-                ps[i] = Line(ps[i], ps[i + 1]).transition_point(n);
+                ps[i] = Line(ps[i], ps[i + 1]).interpolation_point(n);
             }
 
             count -= 1;

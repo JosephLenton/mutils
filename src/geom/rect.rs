@@ -229,6 +229,10 @@ impl<N: Num> Rect<N> {
     pub(crate) fn to_f32(self) -> Rect<f32> {
         self.to_rounded()
     }
+
+    pub fn centre_to(self, other: Rect<N>) -> Line<N> {
+        Line(self.centre(), other.centre())
+    }
 }
 
 impl Rect<f32> {
@@ -581,5 +585,19 @@ mod point_position {
             rect.point_position(Point(30, 34)),
             PointPosition(HorizontalPosition::Right, VerticalPosition::Above)
         );
+    }
+}
+
+#[cfg(test)]
+mod centre_to {
+    use super::*;
+
+    #[test]
+    fn it_should_return_line_from_first_rect_to_second() {
+        let first_rect = Rect::new_from_centre(Point(24_i32, 123_i32), Size(100_i32, 200_i32));
+        let second_rect = Rect::new_from_centre(Point(999_i32, -283_i32), Size(100_i32, 200_i32));
+        let line = first_rect.centre_to(second_rect);
+
+        assert_eq!(line, Line(Point(24_i32, 123_i32), Point(999_i32, -283_i32)));
     }
 }

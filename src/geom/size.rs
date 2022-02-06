@@ -20,6 +20,7 @@ use ::num_traits::sign::Signed;
 use crate::num::FromRounded;
 use crate::num::INum;
 use crate::num::Num;
+use crate::num::NumberExtensions;
 use crate::num::NumIdentity;
 use crate::num::NumTuple;
 use crate::num::ToRounded;
@@ -141,6 +142,19 @@ impl<N: Num> Size<N> {
 
     pub fn hypot_sqrd(self) -> N {
         (self.width() * self.width()) + (self.height() * self.height())
+    }
+
+    pub fn interpolate_to(self, other: Size<N>, n: N) -> Size<N> {
+        let start_f32 = self.to_f32();
+        let other_f32 = other.to_f32();
+        let n_f32 : f32 = n.to_rounded();
+
+        let new_size_f32 = (start_f32 * n_f32.inverse()) + (other_f32 * n_f32);
+        new_size_f32.from_f32()
+    }
+
+    pub(crate) fn to_f32(self) -> Size<f32> {
+        self.to_rounded()
     }
 }
 

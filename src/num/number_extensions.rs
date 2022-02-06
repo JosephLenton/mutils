@@ -23,7 +23,9 @@ pub trait NumberExtensions {
     /**
      * Returns self limited to between min and max.
      */
-    fn limit(self, min: Self, max: Self) -> f32;
+    fn limit(self, min: Self, max: Self) -> Self;
+
+    fn interpolate_to(self, dest: Self, n: Self) -> Self;
 }
 
 impl NumberExtensions for f32 {
@@ -52,7 +54,11 @@ impl NumberExtensions for f32 {
         1.0 - self
     }
 
-    fn limit(self, min: f32, max: f32) -> Self {
+    fn limit(self, min: Self, max: Self) -> Self {
         self.max(min).min(max)
+    }
+
+    fn interpolate_to(self, dest: Self, n: Self) -> Self {
+        (self * n.inverse()) + (dest * n)
     }
 }

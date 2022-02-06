@@ -233,6 +233,13 @@ impl<N: Num> Rect<N> {
     pub fn centre_to(self, other: Rect<N>) -> Line<N> {
         Line(self.centre(), other.centre())
     }
+
+    pub fn interpolate_to(self, other: Rect<N>, n: N) -> Rect<N> {
+        let new_centre = self.centre().interpolate_to(other.centre(), n);
+        let new_size = self.size().interpolate_to(other.size(), n);
+
+        Rect::new_from_centre(new_centre, new_size)
+    }
 }
 
 impl Rect<f32> {
@@ -599,5 +606,28 @@ mod centre_to {
         let line = first_rect.centre_to(second_rect);
 
         assert_eq!(line, Line(Point(24_i32, 123_i32), Point(999_i32, -283_i32)));
+    }
+}
+
+#[cfg(test)]
+mod interpolate_to {
+    use super::*;
+
+    #[test]
+    fn it_should_interpolate_centre() {
+        let first_rect : Rect<f32> = Rect::new_from_centre(Point(100.0, 200.0), Size(100.0, 200.0));
+        let second_rect : Rect<f32> = Rect::new_from_centre(Point(1100.0, -400.0), Size(100.0, 200.0));
+        let interpolated_rect : Rect<f32> = first_rect.interpolate_to(second_rect, 0.5);
+
+        assert_eq!(interpolated_rect, Rect::new_from_centre(Point(600.0, -100.0), Size(100.0, 200.0)));
+    }
+
+    #[test]
+    fn it_should_interpolate_size() {
+        let first_rect : Rect<f32> = Rect::new_from_centre(Point(100.0, 200.0), Size(100.0, 200.0));
+        let second_rect : Rect<f32> = Rect::new_from_centre(Point(1100.0, -400.0), Size(200.0, 100.0));
+        let interpolated_rect : Rect<f32> = first_rect.interpolate_to(second_rect, 0.5);
+
+        assert_eq!(interpolated_rect, Rect::new_from_centre(Point(600.0, -100.0), Size(150.0, 150.0)));
     }
 }

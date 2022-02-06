@@ -46,6 +46,7 @@ impl Iterator for CircleCircumferencePointsIterator {
 #[cfg(test)]
 mod iterator {
     use super::*;
+    use crate::geom::testing_utils::assert_approx_point_eq;
 
     #[test]
     fn it_should_return_num_of_points_requested() {
@@ -64,21 +65,18 @@ mod iterator {
 
     #[test]
     fn it_should_return_all_points_of_a_circle() {
-        let iterator = CircleCircumferencePointsIterator::new(Circle(Point(10.0, 20.0), 5.0), 8);
+        let circle: Circle<f32> = Circle(Point(10.0, 20.0), 5.0);
+        let iterator = CircleCircumferencePointsIterator::new(circle, 8);
 
         let points: Vec<Point<f32>> = iterator.collect();
-        assert_eq!(
-            points,
-            vec![
-                Point(10.0, 25.0),
-                Point(13.535534, 23.535534),
-                Point(15.0, 20.0),
-                Point(13.535534, 16.464466),
-                Point(10.0, 15.0),
-                Point(6.464466, 16.464466),
-                Point(5.0, 20.0),
-                Point(6.4644666, 23.535534),
-            ]
-        );
+        assert_eq!(points.len(), 8);
+        assert_approx_point_eq(points[0], Point(10.0, 25.0));
+        assert_approx_point_eq(points[1], Point(13.535534, 23.535534));
+        assert_approx_point_eq(points[2], Point(15.0, 20.0));
+        assert_approx_point_eq(points[3], Point(13.535534, 16.464466));
+        assert_approx_point_eq(points[4], Point(10.0, 15.0));
+        assert_approx_point_eq(points[5], Point(6.464466, 16.464466));
+        assert_approx_point_eq(points[6], Point(5.0, 20.0));
+        assert_approx_point_eq(points[7], Point(6.4644666, 23.535534));
     }
 }

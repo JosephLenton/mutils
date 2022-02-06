@@ -7,9 +7,9 @@ use crate::num::FromRounded;
 use crate::num::Num;
 use crate::num::ToRounded;
 
+use crate::geom::Line;
 use crate::geom::Point;
 use crate::geom::Size;
-use crate::geom::Line;
 
 mod circle_circumference_points_iterator;
 pub use self::circle_circumference_points_iterator::*;
@@ -243,42 +243,42 @@ mod overlaps_line {
 
     #[test]
     fn it_should_not_overlap_line_that_doesnt_cut() {
-        let circle : Circle<i32> = Circle(Point(10, 10), 4);
+        let circle: Circle<i32> = Circle(Point(10, 10), 4);
         let line = Line(Point(0, 10), Point(10, 15));
         assert_eq!(circle.overlaps_line(line), false);
     }
 
     #[test]
     fn it_should_overlap_line_cutting_through() {
-        let circle : Circle<i32> = Circle(Point(10, 10), 5);
+        let circle: Circle<i32> = Circle(Point(10, 10), 5);
         let line = Line(Point(0, 10), Point(20, 10));
         assert!(circle.overlaps_line(line));
     }
 
     #[test]
     fn it_should_overlap_line_that_starts_in_circle() {
-        let circle : Circle<i32> = Circle(Point(10, 10), 5);
+        let circle: Circle<i32> = Circle(Point(10, 10), 5);
         let line = Line(Point(9, 10), Point(20, 10));
         assert!(circle.overlaps_line(line));
     }
 
     #[test]
     fn it_should_overlap_line_that_end_in_circle() {
-        let circle : Circle<i32> = Circle(Point(10, 10), 5);
+        let circle: Circle<i32> = Circle(Point(10, 10), 5);
         let line = Line(Point(0, 10), Point(11, 10));
         assert!(circle.overlaps_line(line));
     }
 
     #[test]
     fn it_should_overlap_line_that_end_and_starts_in_circle() {
-        let circle : Circle<i32> = Circle(Point(10, 10), 5);
+        let circle: Circle<i32> = Circle(Point(10, 10), 5);
         let line = Line(Point(9, 10), Point(11, 10));
         assert!(circle.overlaps_line(line));
     }
 
     #[test]
     fn it_should_overlap_line_that_end_and_starts_in_circle_in_opposite_direction() {
-        let circle : Circle<i32> = Circle(Point(10, 10), 5);
+        let circle: Circle<i32> = Circle(Point(10, 10), 5);
         let line = Line(Point(11, 10), Point(9, 10));
         assert!(circle.overlaps_line(line));
     }

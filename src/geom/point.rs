@@ -21,9 +21,9 @@ use ::num_traits::sign::Signed;
 use crate::num::FromRounded;
 use crate::num::INum;
 use crate::num::Num;
-use crate::num::NumberExtensions;
 use crate::num::NumIdentity;
 use crate::num::NumTuple;
+use crate::num::NumberExtensions;
 use crate::num::ToRounded;
 use crate::num::ToSignedClamped;
 
@@ -147,7 +147,7 @@ impl<N: Num> Point<N> {
     pub fn interpolate_to(self, other: Point<N>, n: N) -> Point<N> {
         let start_f32 = self.to_f32();
         let other_f32 = other.to_f32();
-        let n_f32 : f32 = n.to_rounded();
+        let n_f32: f32 = n.to_rounded();
 
         let new_size_f32 = (start_f32 * n_f32.inverse()) + (other_f32 * n_f32);
         new_size_f32.from_f32()
@@ -509,7 +509,7 @@ mod flip_y {
 #[cfg(test)]
 mod rotate_around_point {
     use super::*;
-    use ::assert_approx_eq::assert_approx_eq;
+    use crate::geom::testing_utils::assert_approx_point_eq;
     use ::std::f32::consts::TAU;
 
     #[test]
@@ -526,11 +526,6 @@ mod rotate_around_point {
         let rotate = point.rotate_around_point(TAU * 0.25, Point(25.0, 25.0));
 
         assert_approx_point_eq(rotate, Point(35.0, 25.0));
-    }
-
-    fn assert_approx_point_eq(a: Point<f32>, b: Point<f32>) {
-        assert_approx_eq!(a.x(), b.x());
-        assert_approx_eq!(a.y(), b.y());
     }
 }
 

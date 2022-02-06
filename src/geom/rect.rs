@@ -615,19 +615,27 @@ mod interpolate_to {
 
     #[test]
     fn it_should_interpolate_centre() {
-        let first_rect : Rect<f32> = Rect::new_from_centre(Point(100.0, 200.0), Size(100.0, 200.0));
-        let second_rect : Rect<f32> = Rect::new_from_centre(Point(1100.0, -400.0), Size(100.0, 200.0));
-        let interpolated_rect : Rect<f32> = first_rect.interpolate_to(second_rect, 0.5);
+        let first_rect: Rect<f32> = Rect::new_from_centre(Point(100.0, 200.0), Size(100.0, 200.0));
+        let second_rect: Rect<f32> =
+            Rect::new_from_centre(Point(1100.0, -400.0), Size(100.0, 200.0));
+        let interpolated_rect: Rect<f32> = first_rect.interpolate_to(second_rect, 0.5);
 
-        assert_eq!(interpolated_rect, Rect::new_from_centre(Point(600.0, -100.0), Size(100.0, 200.0)));
+        assert_eq!(
+            interpolated_rect,
+            Rect::new_from_centre(Point(600.0, -100.0), Size(100.0, 200.0))
+        );
     }
 
     #[test]
     fn it_should_interpolate_size() {
-        let first_rect : Rect<f32> = Rect::new_from_centre(Point(100.0, 200.0), Size(100.0, 200.0));
-        let second_rect : Rect<f32> = Rect::new_from_centre(Point(1100.0, -400.0), Size(200.0, 100.0));
-        let interpolated_rect : Rect<f32> = first_rect.interpolate_to(second_rect, 0.5);
+        let first_rect: Rect<f32> = Rect::new_from_centre(Point(100.0, 200.0), Size(100.0, 200.0));
+        let second_rect: Rect<f32> =
+            Rect::new_from_centre(Point(1100.0, -400.0), Size(200.0, 100.0));
+        let interpolated_rect: Rect<f32> = first_rect.interpolate_to(second_rect, 0.5);
 
-        assert_eq!(interpolated_rect, Rect::new_from_centre(Point(600.0, -100.0), Size(150.0, 150.0)));
+        assert_eq!(
+            interpolated_rect,
+            Rect::new_from_centre(Point(600.0, -100.0), Size(150.0, 150.0))
+        );
     }
 }

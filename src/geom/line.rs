@@ -21,9 +21,9 @@ use crate::num::Num;
 use crate::num::ToRounded;
 use crate::num::ToSignedClamped;
 
+use crate::geom::Circle;
 use crate::geom::Point;
 use crate::geom::Rect;
-use crate::geom::Circle;
 use crate::geom::Size;
 
 use crate::geom::PointPosition;

@@ -234,6 +234,22 @@ impl<N: Num> Rect<N> {
         Line(self.centre(), other.centre())
     }
 
+    pub fn left_edge(self) -> Line<N> {
+        Line(self.bottom_left(), self.top_left())
+    }
+
+    pub fn right_edge(self) -> Line<N> {
+        Line(self.bottom_right(), self.top_right())
+    }
+
+    pub fn top_edge(self) -> Line<N> {
+        Line(self.top_left(), self.top_right())
+    }
+
+    pub fn bottom_edge(self) -> Line<N> {
+        Line(self.bottom_left(), self.bottom_right())
+    }
+
     pub fn interpolate_to(self, other: Rect<N>, n: N) -> Rect<N> {
         let new_centre = self.centre().interpolate_to(other.centre(), n);
         let new_size = self.size().interpolate_to(other.size(), n);

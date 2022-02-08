@@ -283,7 +283,8 @@ impl<N: Num> Rect<N> {
             new_top_right_y = top_right_y.ceil();
         }
 
-        let new_rect_f32 = Point(new_bottom_left_x, new_bottom_left_y).rect_to(Point(new_top_right_x, new_top_right_y));
+        let new_rect_f32 = Point(new_bottom_left_x, new_bottom_left_y)
+            .rect_to(Point(new_top_right_x, new_top_right_y));
         new_rect_f32.from_f32()
     }
 }
@@ -689,60 +690,78 @@ mod interpolate_to {
 #[cfg(test)]
 mod round_to_max_size {
     use super::*;
-    use ::testcat::*;
     use crate::geom::testing_utils::assert_approx_rect_eq;
+    use ::testcat::*;
 
-    it!("should enlarge positive rectangles to make size larger", test_positive_rect);
-    it!("should enlarge positive rectangles with an inverse size", test_positive_rect_with_negative_size);
-    it!("should enlarge negative rectangles to make size larger", test_negative_rect);
-    it!("should enlarge negative rectangles with an inverse size", test_negative_rect_with_negative_size);
-    it!("should enlarge rectangles that cross zero to make size larger", test_cross_zero_rect);
-    it!("should enlarge rectangles that cross zero with an inverse size", test_cross_zero_rect_with_negative_size);
+    it!(
+        "should enlarge positive rectangles to make size larger",
+        test_positive_rect
+    );
+    it!(
+        "should enlarge positive rectangles with an inverse size",
+        test_positive_rect_with_negative_size
+    );
+    it!(
+        "should enlarge negative rectangles to make size larger",
+        test_negative_rect
+    );
+    it!(
+        "should enlarge negative rectangles with an inverse size",
+        test_negative_rect_with_negative_size
+    );
+    it!(
+        "should enlarge rectangles that cross zero to make size larger",
+        test_cross_zero_rect
+    );
+    it!(
+        "should enlarge rectangles that cross zero with an inverse size",
+        test_cross_zero_rect_with_negative_size
+    );
 
     fn test_positive_rect() {
-        let rect : Rect<f32> = Point(10.2, 10.8).rect_to(Point(19.2, 19.8));
+        let rect: Rect<f32> = Point(10.2, 10.8).rect_to(Point(19.2, 19.8));
         let rounded = rect.round_to_max_size();
-        let expected : Rect<f32> = Point(10.0, 10.0).rect_to(Point(20.0, 20.0));
+        let expected: Rect<f32> = Point(10.0, 10.0).rect_to(Point(20.0, 20.0));
 
         assert_approx_rect_eq(expected, rounded);
     }
 
     fn test_positive_rect_with_negative_size() {
-        let rect : Rect<f32> = Point(19.2, 19.8).rect_to(Point(10.2, 10.8));
+        let rect: Rect<f32> = Point(19.2, 19.8).rect_to(Point(10.2, 10.8));
         let rounded = rect.round_to_max_size();
-        let expected : Rect<f32> = Point(20.0, 20.0).rect_to(Point(10.0, 10.0));
+        let expected: Rect<f32> = Point(20.0, 20.0).rect_to(Point(10.0, 10.0));
 
         assert_approx_rect_eq(expected, rounded);
     }
 
     fn test_negative_rect() {
-        let rect : Rect<f32> = Point(-10.2, -10.8).rect_to(Point(-19.2, -19.8));
+        let rect: Rect<f32> = Point(-10.2, -10.8).rect_to(Point(-19.2, -19.8));
         let rounded = rect.round_to_max_size();
-        let expected : Rect<f32> = Point(-10.0, -10.0).rect_to(Point(-20.0, -20.0));
+        let expected: Rect<f32> = Point(-10.0, -10.0).rect_to(Point(-20.0, -20.0));
 
         assert_approx_rect_eq(expected, rounded);
     }
 
     fn test_negative_rect_with_negative_size() {
-        let rect : Rect<f32> = Point(-19.2, -19.8).rect_to(Point(-10.2, -10.8));
+        let rect: Rect<f32> = Point(-19.2, -19.8).rect_to(Point(-10.2, -10.8));
         let rounded = rect.round_to_max_size();
-        let expected : Rect<f32> = Point(-20.0, -20.0).rect_to(Point(-10.0, -10.0));
+        let expected: Rect<f32> = Point(-20.0, -20.0).rect_to(Point(-10.0, -10.0));
 
         assert_approx_rect_eq(expected, rounded);
     }
 
     fn test_cross_zero_rect() {
-        let rect : Rect<f32> = Point(-10.2, -10.8).rect_to(Point(19.2, 19.8));
+        let rect: Rect<f32> = Point(-10.2, -10.8).rect_to(Point(19.2, 19.8));
         let rounded = rect.round_to_max_size();
-        let expected : Rect<f32> = Point(-11.0, -11.0).rect_to(Point(20.0, 20.0));
+        let expected: Rect<f32> = Point(-11.0, -11.0).rect_to(Point(20.0, 20.0));
 
         assert_approx_rect_eq(expected, rounded);
     }
 
     fn test_cross_zero_rect_with_negative_size() {
-        let rect : Rect<f32> = Point(19.2, 19.8).rect_to(Point(-10.2, -10.8));
+        let rect: Rect<f32> = Point(19.2, 19.8).rect_to(Point(-10.2, -10.8));
         let rounded = rect.round_to_max_size();
-        let expected : Rect<f32> = Point(20.0, 20.0).rect_to(Point(-11.0, -11.0));
+        let expected: Rect<f32> = Point(20.0, 20.0).rect_to(Point(-11.0, -11.0));
 
         assert_approx_rect_eq(expected, rounded);
     }

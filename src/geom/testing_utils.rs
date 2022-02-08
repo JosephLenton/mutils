@@ -1,7 +1,7 @@
 use crate::geom::Line;
 use crate::geom::Point;
-use crate::geom::Size;
 use crate::geom::Rect;
+use crate::geom::Size;
 
 use ::assert_approx_eq::assert_approx_eq;
 

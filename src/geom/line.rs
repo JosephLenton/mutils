@@ -336,7 +336,10 @@ impl<N: Num + Signed> Line<N> {
     }
 }
 
-impl<N: Num + ToSignedClamped> Line<N> {
+impl<N: Num + ToSignedClamped> Line<N>
+where
+    <N as ToSignedClamped>::Output : Signed
+{
     pub fn to_signed_clamped(self) -> Line<<N as ToSignedClamped>::Output> {
         Line(
             self.start().to_signed_clamped(),
@@ -364,6 +367,10 @@ impl<N: Num + ToSignedClamped> Line<N> {
     pub fn inverse_slope(self) -> <N as ToSignedClamped>::Output {
         let diff = self.diff();
         diff.width() / diff.height()
+    }
+
+    pub fn step_direction(self) -> Point<<N as ToSignedClamped>::Output> {
+        self.diff().to_point().sign()
     }
 }
 

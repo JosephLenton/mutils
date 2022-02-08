@@ -199,9 +199,16 @@ impl<O: Num, N: Num + ToRounded<O>> ToRounded<Point<O>> for Point<N> {
     }
 }
 
-impl<N: Num + ToSignedClamped> Point<N> {
+impl<N: Num + ToSignedClamped> Point<N>
+where
+    <N as ToSignedClamped>::Output : Signed
+{
     pub fn to_signed_clamped(self) -> Point<<N as ToSignedClamped>::Output> {
         Point(self.x().to_signed_clamped(), self.y().to_signed_clamped())
+    }
+
+    pub fn step_direction_to(self, other: Point<N>) -> Point<<N as ToSignedClamped>::Output> {
+        Line(self, other).step_direction()
     }
 }
 
@@ -620,5 +627,39 @@ mod angle_to {
         let origin = Point(5.0, 8.0);
         let point = Point(0.0, -10.0) + origin;
         assert_approx_eq!(point.angle_to(origin), -TAU * 0.25);
+    }
+}
+
+#[cfg(test)]
+mod step_direction_to {
+    use super::*;
+    use ::testcat::*;
+
+    it!("should return positive steps when stepping positively", test_positive_step);
+    it!("should return a step of 0 when both points on top of each other", test_zero_step);
+    it!("should return negative steps when stepping negatively", test_negative_step);
+
+    fn test_positive_step() {
+        let from : Point<i32> = Point(100, 200);
+        let to : Point<i32> = Point(333, 666);
+        let step = from.step_direction_to(to);
+
+        assert_eq!(step, Point(1, 1));
+    }
+
+    fn test_zero_step() {
+        let from : Point<i32> = Point(100, 200);
+        let to : Point<i32> = Point(100, 200);
+        let step = from.step_direction_to(to);
+
+        assert_eq!(step, Point(0, 0));
+    }
+
+    fn test_negative_step() {
+        let from : Point<i32> = Point(333, 666);
+        let to : Point<i32> = Point(-100, -200);
+        let step = from.step_direction_to(to);
+
+        assert_eq!(step, Point(-1, -1));
     }
 }

@@ -240,6 +240,36 @@ impl<N: Num> Rect<N> {
 
         Rect::new_from_centre(new_centre, new_size)
     }
+
+    pub fn round_to_max_size(self) -> Rect<N> {
+        let self_f32 = self.to_f32();
+        let Point(bottom_left_x, bottom_left_y) = self_f32.bottom_left();
+        let Point(top_right_x, top_right_y) = self_f32.top_right();
+
+        let new_bottom_left_x;
+        let new_bottom_left_y;
+        let new_top_right_x;
+        let new_top_right_y;
+
+        if bottom_left_x < top_right_x {
+            new_bottom_left_x = bottom_left_x.floor();
+            new_top_right_x = top_right_x.ceil();
+        } else {
+            new_bottom_left_x = bottom_left_x.floor();
+            new_top_right_x = top_right_x.ceil();
+        }
+
+        if bottom_left_y < top_right_y {
+            new_bottom_left_y = bottom_left_y.floor();
+            new_top_right_y = top_right_y.ceil();
+        } else {
+            new_bottom_left_y = bottom_left_y.floor();
+            new_top_right_y = top_right_y.ceil();
+        }
+
+        let new_rect_f32 = Point(new_bottom_left_x, new_bottom_left_y).rect_to(Point(new_top_right_x, new_top_right_y));
+        new_rect_f32.from_f32()
+    }
 }
 
 impl Rect<f32> {
@@ -637,5 +667,67 @@ mod interpolate_to {
             interpolated_rect,
             Rect::new_from_centre(Point(600.0, -100.0), Size(150.0, 150.0))
         );
+    }
+}
+
+#[cfg(test)]
+mod round_to_max_size {
+    use super::*;
+    use ::testcat::*;
+    use crate::geom::testing_utils::assert_approx_rect_eq;
+
+    it!("should enlarge positive rectangles to make size larger", test_positive_rect);
+    it!("should enlarge positive rectangles with an inverse size", test_positive_rect_with_negative_size);
+    it!("should enlarge negative rectangles to make size larger", test_negative_rect);
+    it!("should enlarge negative rectangles with an inverse size", test_negative_rect_with_negative_size);
+    it!("should enlarge rectangles that cross zero to make size larger", test_cross_zero_rect);
+    it!("should enlarge rectangles that cross zero with an inverse size", test_cross_zero_rect_with_negative_size);
+
+    fn test_positive_rect() {
+        let rect : Rect<f32> = Point(10.2, 10.8).rect_to(Point(19.2, 19.8));
+        let rounded = rect.round_to_max_size();
+        let expected : Rect<f32> = Point(10.0, 10.0).rect_to(Point(20.0, 20.0));
+
+        assert_approx_rect_eq(expected, rounded);
+    }
+
+    fn test_positive_rect_with_negative_size() {
+        let rect : Rect<f32> = Point(19.2, 19.8).rect_to(Point(10.2, 10.8));
+        let rounded = rect.round_to_max_size();
+        let expected : Rect<f32> = Point(20.0, 20.0).rect_to(Point(10.0, 10.0));
+
+        assert_approx_rect_eq(expected, rounded);
+    }
+
+    fn test_negative_rect() {
+        let rect : Rect<f32> = Point(-10.2, -10.8).rect_to(Point(-19.2, -19.8));
+        let rounded = rect.round_to_max_size();
+        let expected : Rect<f32> = Point(-10.0, -10.0).rect_to(Point(-20.0, -20.0));
+
+        assert_approx_rect_eq(expected, rounded);
+    }
+
+    fn test_negative_rect_with_negative_size() {
+        let rect : Rect<f32> = Point(-19.2, -19.8).rect_to(Point(-10.2, -10.8));
+        let rounded = rect.round_to_max_size();
+        let expected : Rect<f32> = Point(-20.0, -20.0).rect_to(Point(-10.0, -10.0));
+
+        assert_approx_rect_eq(expected, rounded);
+    }
+
+    fn test_cross_zero_rect() {
+        let rect : Rect<f32> = Point(-10.2, -10.8).rect_to(Point(19.2, 19.8));
+        let rounded = rect.round_to_max_size();
+        let expected : Rect<f32> = Point(-11.0, -11.0).rect_to(Point(20.0, 20.0));
+
+        assert_approx_rect_eq(expected, rounded);
+    }
+
+    fn test_cross_zero_rect_with_negative_size() {
+        let rect : Rect<f32> = Point(19.2, 19.8).rect_to(Point(-10.2, -10.8));
+        let rounded = rect.round_to_max_size();
+        let expected : Rect<f32> = Point(20.0, 20.0).rect_to(Point(-11.0, -11.0));
+
+        assert_approx_rect_eq(expected, rounded);
     }
 }

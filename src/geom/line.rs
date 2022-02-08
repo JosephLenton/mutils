@@ -338,7 +338,7 @@ impl<N: Num + Signed> Line<N> {
 
 impl<N: Num + ToSignedClamped> Line<N>
 where
-    <N as ToSignedClamped>::Output : Signed
+    <N as ToSignedClamped>::Output: Signed,
 {
     pub fn to_signed_clamped(self) -> Line<<N as ToSignedClamped>::Output> {
         Line(

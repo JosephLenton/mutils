@@ -43,6 +43,22 @@ impl<N: Num> Rect<N> {
         Self(centre - size.half(), size)
     }
 
+    pub fn new_from_top_left(position: Point<N>, size: Size<N>) -> Self {
+        Self(position - Point(N::zero(), size.height()), size)
+    }
+
+    pub fn new_from_top_right(position: Point<N>, size: Size<N>) -> Self {
+        Self(position - size.to_point(), size)
+    }
+
+    pub fn new_from_bottom_right(position: Point<N>, size: Size<N>) -> Self {
+        Self(position - Point(size.width(), N::zero()), size)
+    }
+
+    pub fn new_from_bottom_left(position: Point<N>, size: Size<N>) -> Self {
+        Self(position, size)
+    }
+
     pub fn move_xy(&mut self, xy: Point<N>) {
         self.0 += xy;
     }
@@ -497,6 +513,58 @@ mod new_from_centre {
     fn it_should_create_a_rectangle_around_the_point_given() {
         let rect: Rect<f32> = Rect::new_from_centre(Point(10.0, 10.0), Size(5.0, 8.0));
         assert_eq!(rect, Rect(Point(7.5, 6.0), Size(5.0, 8.0)));
+    }
+}
+
+#[cfg(test)]
+mod new_from_top_left {
+    use super::*;
+
+    #[test]
+    fn it_should_place_rect_correctly() {
+        let rect: Rect<i32> = Rect::new_from_top_left(Point(10, 100), Size(10, 20));
+        let expected: Rect<i32> = Rect(Point(10, 80), Size(10, 20));
+
+        assert_eq!(rect, expected);
+    }
+}
+
+#[cfg(test)]
+mod new_from_top_right {
+    use super::*;
+
+    #[test]
+    fn it_should_place_rect_correctly() {
+        let rect: Rect<i32> = Rect::new_from_top_right(Point(10, 100), Size(10, 20));
+        let expected: Rect<i32> = Rect(Point(0, 80), Size(10, 20));
+
+        assert_eq!(rect, expected);
+    }
+}
+
+#[cfg(test)]
+mod new_from_bottom_left {
+    use super::*;
+
+    #[test]
+    fn it_should_place_rect_correctly() {
+        let rect: Rect<i32> = Rect::new_from_bottom_left(Point(10, 100), Size(10, 20));
+        let expected: Rect<i32> = Rect(Point(10, 100), Size(10, 20));
+
+        assert_eq!(rect, expected);
+    }
+}
+
+#[cfg(test)]
+mod new_from_bottom_right {
+    use super::*;
+
+    #[test]
+    fn it_should_place_rect_correctly() {
+        let rect: Rect<i32> = Rect::new_from_bottom_right(Point(10, 100), Size(10, 20));
+        let expected: Rect<i32> = Rect(Point(0, 100), Size(10, 20));
+
+        assert_eq!(rect, expected);
     }
 }
 

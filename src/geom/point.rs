@@ -538,54 +538,85 @@ mod angle_to {
     use super::*;
     use ::assert_approx_eq::assert_approx_eq;
     use ::std::f32::consts::TAU;
+    use ::testcat::*;
 
-    #[test]
-    fn it_should_angle_to_zero_from_right() {
+    describe!("angle to zero", {
+        it!(
+            "should angle to zero from right",
+            test_angle_to_zero_from_right
+        );
+        it!(
+            "should angle to zero from above",
+            test_angle_to_zero_from_above
+        );
+        it!(
+            "should angle to zero from left",
+            test_angle_to_zero_from_left
+        );
+        it!(
+            "should angle to zero from below",
+            test_angle_to_zero_from_below
+        );
+    });
+
+    describe!("angle to point", {
+        it!(
+            "should angle to point from right",
+            test_angle_to_point_from_right
+        );
+        it!(
+            "should angle to point from above",
+            test_angle_to_point_from_above
+        );
+        it!(
+            "should angle to point from left",
+            test_angle_to_point_from_left
+        );
+        it!(
+            "should angle to point from below",
+            test_angle_to_point_from_below
+        );
+    });
+
+    fn test_angle_to_zero_from_right() {
         let point = Point(10.0, 0.0);
         assert_approx_eq!(point.angle_to(Point(0.0, 0.0)), 0.0);
     }
 
-    #[test]
-    fn it_should_angle_to_zero_from_above() {
+    fn test_angle_to_zero_from_above() {
         let point = Point(0.0, 10.0);
         assert_approx_eq!(point.angle_to(Point(0.0, 0.0)), TAU * 0.25);
     }
 
-    #[test]
-    fn it_should_angle_to_zero_from_left() {
+    fn test_angle_to_zero_from_left() {
         let point = Point(-10.0, 0.0);
         assert_approx_eq!(point.angle_to(Point(0.0, 0.0)), TAU * 0.5);
     }
 
-    #[test]
-    fn it_should_angle_to_zero_from_below() {
+    fn test_angle_to_zero_from_below() {
         let point = Point(0.0, -10.0);
         assert_approx_eq!(point.angle_to(Point(0.0, 0.0)), -TAU * 0.25);
     }
 
-    #[test]
-    fn it_should_angle_to_point_from_right() {
+    fn test_angle_to_point_from_right() {
         let origin = Point(5.0, 8.0);
         let point = Point(10.0, 0.0) + origin;
         assert_approx_eq!(point.angle_to(origin), 0.0);
     }
 
-    #[test]
-    fn it_should_angle_to_point_from_above() {
+    fn test_angle_to_point_from_above() {
         let origin = Point(5.0, 8.0);
         let point = Point(0.0, 10.0) + origin;
         assert_approx_eq!(point.angle_to(origin), TAU * 0.25);
     }
 
-    #[test]
-    fn it_should_angle_to_point_from_left() {
+    fn test_angle_to_point_from_left() {
         let origin = Point(5.0, 8.0);
         let point = Point(-10.0, 0.0) + origin;
         assert_approx_eq!(point.angle_to(origin), TAU * 0.5);
     }
 
-    #[test]
-    fn it_should_angle_to_point_from_below() {
+    fn test_angle_to_point_from_below() {
         let origin = Point(5.0, 8.0);
         let point = Point(0.0, -10.0) + origin;
         assert_approx_eq!(point.angle_to(origin), -TAU * 0.25);

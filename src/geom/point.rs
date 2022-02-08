@@ -97,6 +97,10 @@ impl<N: Num> Point<N> {
         Size::new(other.first() - self.first(), other.second() - self.second())
     }
 
+    pub fn direction_to(self, other: Self) -> Size<f32> {
+        Line(self, other).direction()
+    }
+
     /// This is to allow creating a new Point, which wraps a different number type.
     ///
     /// For example `Point(1u8, 2u8)::to::<u32>()` creates a `Point(1u32, 2u32)`.

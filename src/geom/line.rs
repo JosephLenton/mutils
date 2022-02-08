@@ -259,6 +259,11 @@ impl<N: Num> Line<N> {
         FromRounded::from_rounded(angle)
     }
 
+    pub fn direction(self) -> Size<f32> {
+        let angle = self.to_f32().angle();
+        Size(angle.cos(), angle.sin())
+    }
+
     pub fn hypot(self) -> N {
         self.start().hypot_to(self.end())
     }

@@ -1,12 +1,12 @@
+use ::std::iter::IntoIterator;
+use ::std::ops::Add;
+use ::std::ops::AddAssign;
 use ::std::ops::Shl;
 use ::std::ops::ShlAssign;
 use ::std::ops::Shr;
 use ::std::ops::ShrAssign;
-use std::iter::IntoIterator;
-use std::ops::Add;
-use std::ops::AddAssign;
-use std::ops::Sub;
-use std::ops::SubAssign;
+use ::std::ops::Sub;
+use ::std::ops::SubAssign;
 
 use crate::num::INum;
 use crate::num::Num;

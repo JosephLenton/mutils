@@ -24,3 +24,18 @@ pub fn assert_approx_point_eq(a: Point<f32>, b: Point<f32>) {
     assert_approx_eq!(a.x(), b.x());
     assert_approx_eq!(a.y(), b.y());
 }
+
+pub fn assert_approx_points_vec_eq(as_vec: Vec<Point<f32>>, bs_vec: Vec<Point<f32>>) {
+    let as_len = as_vec.len();
+    let bs_len = bs_vec.len();
+
+    for (a, b) in as_vec.iter().zip(bs_vec) {
+        assert_approx_point_eq(*a, b);
+    }
+
+    assert_eq!(
+        as_len, bs_len,
+        "Point vectors have different lengths ... {} vs {}",
+        as_len, bs_len
+    );
+}

@@ -1,3 +1,4 @@
+use ::std::iter::IntoIterator;
 use ::std::ops::Add;
 use ::std::ops::AddAssign;
 use ::std::ops::Div;
@@ -18,6 +19,7 @@ use ::num_traits::sign::Signed;
 use crate::num::FromRounded;
 use crate::num::INum;
 use crate::num::Num;
+use crate::num::NumIdentity;
 use crate::num::ToRounded;
 use crate::num::ToSignedClamped;
 
@@ -30,6 +32,9 @@ use crate::geom::PointPosition;
 use crate::geom::Transform;
 
 use crate::Random;
+
+mod line_iterator;
+pub use self::line_iterator::LineIterator;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Line<N: Num = f32>(pub Point<N>, pub Point<N>);
@@ -327,6 +332,18 @@ impl<N: Num> Line<N> {
     /// and the end is at the start.
     pub fn flip(self) -> Self {
         Self(self.end(), self.start())
+    }
+
+    pub fn into_iter_with_step(self, step: N) -> LineIterator<N> {
+        LineIterator::new(self, step, true)
+    }
+
+    pub fn into_iter_inclusive(self) -> LineIterator<N> {
+        LineIterator::new(self, <N as NumIdentity>::one(), false)
+    }
+
+    pub fn into_iter_inclusive_with_step(self, step: N) -> LineIterator<N> {
+        LineIterator::new(self, step, false)
     }
 }
 
@@ -683,6 +700,15 @@ impl<N: Num> From<(Point<N>, Point<N>)> for Line<N> {
 impl<N: Num> Into<(Point<N>, Point<N>)> for Line<N> {
     fn into(self) -> (Point<N>, Point<N>) {
         (self.0, self.1)
+    }
+}
+
+impl<N: Num> IntoIterator for Line<N> {
+    type Item = Point<N>;
+    type IntoIter = LineIterator<N>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        LineIterator::new(self, <N as NumIdentity>::one(), true)
     }
 }
 

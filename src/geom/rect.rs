@@ -59,6 +59,22 @@ impl<N: Num> Rect<N> {
         Self(position, size)
     }
 
+    pub fn new_from_bottom_centre(position: Point<N>, size: Size<N>) -> Self {
+        Self(position - Point(size.width().half(), N::zero()), size)
+    }
+
+    pub fn new_from_left_centre(position: Point<N>, size: Size<N>) -> Self {
+        Self(position - Point(N::zero(), size.height().half()), size)
+    }
+
+    pub fn new_from_top_centre(position: Point<N>, size: Size<N>) -> Self {
+        Self(position - Point(size.width().half(), size.height()), size)
+    }
+
+    pub fn new_from_right_centre(position: Point<N>, size: Size<N>) -> Self {
+        Self(position - Point(size.width(), size.height().half()), size)
+    }
+
     pub fn move_xy(&mut self, xy: Point<N>) {
         self.0 += xy;
     }
@@ -101,6 +117,26 @@ impl<N: Num> Rect<N> {
 
     pub fn top_right(&self) -> Point<N> {
         self.bottom_left() + self.size()
+    }
+
+    pub fn bottom_centre(&self) -> Point<N> {
+        let size = self.size().abs();
+        self.bottom_left() + Point(size.width().half(), N::zero())
+    }
+
+    pub fn top_centre(&self) -> Point<N> {
+        let size = self.size().abs();
+        self.top_left() + Point(size.width().half(), N::zero())
+    }
+
+    pub fn left_centre(&self) -> Point<N> {
+        let size = self.size().abs();
+        self.bottom_left() + Point(N::zero(), size.height().half())
+    }
+
+    pub fn right_centre(&self) -> Point<N> {
+        let size = self.size().abs();
+        self.bottom_right() + Point(N::zero(), size.height().half())
     }
 
     pub fn top_y(&self) -> N {
@@ -569,6 +605,58 @@ mod new_from_bottom_right {
 }
 
 #[cfg(test)]
+mod new_from_bottom_centre {
+    use super::*;
+
+    #[test]
+    fn it_should_place_rect_correctly() {
+        let rect: Rect<i32> = Rect::new_from_bottom_centre(Point(10, 100), Size(10, 20));
+        let expected: Rect<i32> = Rect(Point(5, 100), Size(10, 20));
+
+        assert_eq!(rect, expected);
+    }
+}
+
+#[cfg(test)]
+mod new_from_top_centre {
+    use super::*;
+
+    #[test]
+    fn it_should_place_rect_correctly() {
+        let rect: Rect<i32> = Rect::new_from_top_centre(Point(10, 100), Size(10, 20));
+        let expected: Rect<i32> = Rect(Point(5, 80), Size(10, 20));
+
+        assert_eq!(rect, expected);
+    }
+}
+
+#[cfg(test)]
+mod new_from_left_centre {
+    use super::*;
+
+    #[test]
+    fn it_should_place_rect_correctly() {
+        let rect: Rect<i32> = Rect::new_from_left_centre(Point(10, 100), Size(10, 20));
+        let expected: Rect<i32> = Rect(Point(10, 90), Size(10, 20));
+
+        assert_eq!(rect, expected);
+    }
+}
+
+#[cfg(test)]
+mod new_from_right_centre {
+    use super::*;
+
+    #[test]
+    fn it_should_place_rect_correctly() {
+        let rect: Rect<i32> = Rect::new_from_right_centre(Point(10, 100), Size(10, 20));
+        let expected: Rect<i32> = Rect(Point(0, 90), Size(10, 20));
+
+        assert_eq!(rect, expected);
+    }
+}
+
+#[cfg(test)]
 mod bottom_left {
     use super::*;
 
@@ -621,6 +709,50 @@ mod top_right {
     fn it_should_return_top_right() {
         let rect: Rect<u32> = Rect(Point(3, 4), Size(9, 13));
         assert_eq!(rect.top_right(), Point(12, 17));
+    }
+}
+
+#[cfg(test)]
+mod bottom_centre {
+    use super::*;
+
+    #[test]
+    fn it_should_return_bottom_centre() {
+        let rect: Rect<u32> = Rect(Point(3, 4), Size(10, 13));
+        assert_eq!(rect.bottom_centre(), Point(8, 4));
+    }
+}
+
+#[cfg(test)]
+mod top_centre {
+    use super::*;
+
+    #[test]
+    fn it_should_return_top_centre() {
+        let rect: Rect<u32> = Rect(Point(3, 4), Size(10, 13));
+        assert_eq!(rect.top_centre(), Point(8, 17));
+    }
+}
+
+#[cfg(test)]
+mod left_centre {
+    use super::*;
+
+    #[test]
+    fn it_should_return_left_centre() {
+        let rect: Rect<u32> = Rect(Point(3, 4), Size(10, 14));
+        assert_eq!(rect.left_centre(), Point(3, 11));
+    }
+}
+
+#[cfg(test)]
+mod right_centre {
+    use super::*;
+
+    #[test]
+    fn it_should_return_right_centre() {
+        let rect: Rect<u32> = Rect(Point(3, 4), Size(10, 14));
+        assert_eq!(rect.right_centre(), Point(13, 11));
     }
 }
 

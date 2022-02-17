@@ -1,6 +1,6 @@
 [package]
 name = "mutils"
-version = "11.2.0"
+version = "11.3.0"
 authors = ["josephlenton@gmail.com <josephlenton@gmail.com>"]
 edition = "2018"
 license = "MIT"
@@ -17,4 +17,4 @@ default-features = false
 
 [dev-dependencies]
 assert_approx_eq = "1.1.0"
-testcat = "1.1.2"
+testcat = "2.0.1"

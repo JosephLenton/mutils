@@ -1,12 +1,15 @@
-use std::ops::Add;
-use std::ops::AddAssign;
-use std::ops::Div;
-use std::ops::DivAssign;
-use std::ops::Mul;
-use std::ops::MulAssign;
-use std::ops::Rem;
-use std::ops::Sub;
-use std::ops::SubAssign;
+use ::std::ops::Add;
+use ::std::ops::AddAssign;
+use ::std::ops::Div;
+use ::std::ops::DivAssign;
+use ::std::ops::Mul;
+use ::std::ops::MulAssign;
+use ::std::ops::Rem;
+use ::std::ops::Sub;
+use ::std::ops::SubAssign;
+
+mod colour_parse_error;
+pub use self::colour_parse_error::*;
 
 pub type Color = Colour;
 
@@ -40,6 +43,96 @@ impl Colour {
     pub const MAGENTA: Colour = Colour::new_from_rgba(0xff00ffff);
     pub const CYAN: Colour = Colour::new_from_rgba(0x00ffffff);
     pub const YELLOW: Colour = Colour::new_from_rgba(0xffff00ff);
+
+    /// Parses a string hex code into a `Colour`.
+    /// The hex code is expected to be 3 or 6 characters long,
+    /// using base 16 encoding.
+    ///
+    /// This supports the following RGB formats ...
+    ///  * 123
+    ///  * #123
+    ///  * 0x123
+    ///  * 112233
+    ///  * #112233
+    ///  * 0x112233
+    ///
+    /// And the following RGBA formats ...
+    ///  * 1234
+    ///  * #1234
+    ///  * 0x1234
+    ///  * 11223344
+    ///  * #11223344
+    ///  * 0x11223344
+    ///
+    pub fn from_hex_str(hex: &str) -> Result<Color, ColourParseError> {
+        if hex.len() <= 6 {
+            return Self::from_short_hex_str(hex);
+        }
+
+        Self::from_long_hex_str(hex)
+    }
+
+    fn from_short_hex_str(hex: &str) -> Result<Color, ColourParseError> {
+        let len = hex.len();
+
+        if len < 3 || 6 < len {
+            return Err(ColourParseError::InvalidFormat);
+        }
+
+        if let Some(first) = hex.get(0..1) {
+            if first == "#" {
+                return Self::from_short_hex_str(&hex[1..]);
+            }
+        }
+
+        if let Some(first) = hex.get(0..2) {
+            if first == "0x" || first == "0X" {
+                return Self::from_short_hex_str(&hex[2..]);
+            }
+        }
+
+        if len == 6 {
+            return Self::from_long_hex_str(hex);
+        }
+
+        let red = lengthen_short_hex_num(&hex.get(0..1).ok_or(ColourParseError::InvalidFormat)?)?;
+        let green = lengthen_short_hex_num(&hex.get(1..2).ok_or(ColourParseError::InvalidFormat)?)?;
+        let blue = lengthen_short_hex_num(&hex.get(2..3).ok_or(ColourParseError::InvalidFormat)?)?;
+        let alpha = match len {
+            3 => 255,
+            4 => lengthen_short_hex_num(&hex.get(3..4).ok_or(ColourParseError::InvalidFormat)?)?,
+            _ => return Err(ColourParseError::InvalidFormat),
+        };
+
+        Ok(Color::new_from_u8s(red, green, blue, alpha))
+    }
+
+    fn from_long_hex_str(hex: &str) -> Result<Color, ColourParseError> {
+        let len = hex.len();
+
+        if let Some(first) = hex.get(0..1) {
+            if first == "#" {
+                return Self::from_long_hex_str(&hex[1..]);
+            }
+        }
+
+        if let Some(first) = hex.get(0..2) {
+            if first == "0x" || first == "0X" {
+                return Self::from_long_hex_str(&hex[2..]);
+            }
+        }
+
+        let red = u8::from_str_radix(&hex.get(0..2).ok_or(ColourParseError::InvalidFormat)?, 16)?;
+        let green = u8::from_str_radix(&hex.get(2..4).ok_or(ColourParseError::InvalidFormat)?, 16)?;
+        let blue = u8::from_str_radix(&hex.get(4..6).ok_or(ColourParseError::InvalidFormat)?, 16)?;
+        let alpha = match len {
+            6 => 255,
+            8 => u8::from_str_radix(&hex.get(6..8).ok_or(ColourParseError::InvalidFormat)?, 16)?,
+            _ => return Err(ColourParseError::InvalidFormat),
+        };
+
+        Ok(Color::new_from_u8s(red, green, blue, alpha))
+    }
 
     #[inline(always)]
     fn hex_u32_to_f32(val: u32, shift: u32) -> f32 {
@@ -343,6 +436,13 @@ impl DivAssign<f32> for Colour {
     }
 }
 
+fn lengthen_short_hex_num(hex_num: &str) -> Result<u8, ColourParseError> {
+    let num = u8::from_str_radix(&hex_num, 16)?;
+    let lengthened_num = (num << 4) + num;
+
+    Ok(lengthened_num)
+}
+
 #[cfg(test)]
 mod red_xx {
     use super::*;
@@ -448,5 +548,129 @@ mod replace_alpha_f32 {
         assert_eq!(colour.red_u8(), 255);
         assert_eq!(colour.green_u8(), 255);
         assert_eq!(colour.blue_u8(), 255);
+    }
+}
+
+#[cfg(test)]
+mod from_hex_str {
+    use super::*;
+    use ::testcat::*;
+
+    describe!("short hex codes", {
+        it!("should parse with no prefix", short_hex::test_no_prefix);
+        it!("should parse with hash prefix", short_hex::test_hash_prefix);
+        it!("should parse with 0x prefix", short_hex::test_zero_x_prefix);
+        it!(
+            "should parse with no prefix, with alpha",
+            short_hex::test_no_prefix_with_alpha
+        );
+        it!(
+            "should parse with hash prefix, with alpha",
+            short_hex::test_hash_prefix_with_alpha
+        );
+        it!(
+            "should parse with 0x prefix, with alpha",
+            short_hex::test_zero_x_prefix_with_alpha
+        );
+    });
+
+    describe!("long hex codes", {
+        it!("should parse with no prefix", long_hex::test_no_prefix);
+        it!("should parse with hash prefix", long_hex::test_hash_prefix);
+        it!("should parse with 0x prefix", long_hex::test_zero_x_prefix);
+        it!(
+            "should parse with no prefix, with alpha",
+            long_hex::test_no_prefix_with_alpha
+        );
+        it!(
+            "should parse with hash prefix, with alpha",
+            long_hex::test_hash_prefix_with_alpha
+        );
+        it!(
+            "should parse with 0x prefix, with alpha",
+            long_hex::test_zero_x_prefix_with_alpha
+        );
+    });
+
+    #[cfg(test)]
+    mod short_hex {
+        use super::*;
+
+        pub fn test_no_prefix() {
+            let colour = Colour::from_hex_str(&"12c").unwrap();
+
+            assert_eq!(colour, Colour::new_from_u8s(17, 34, 204, 255));
+        }
+
+        pub fn test_hash_prefix() {
+            let colour = Colour::from_hex_str(&"#12c").unwrap();
+
+            assert_eq!(colour, Colour::new_from_u8s(17, 34, 204, 255));
+        }
+
+        pub fn test_zero_x_prefix() {
+            let colour = Colour::from_hex_str(&"0x12c").unwrap();
+
+            assert_eq!(colour, Colour::new_from_u8s(17, 34, 204, 255));
+        }
+
+        pub fn test_no_prefix_with_alpha() {
+            let colour = Colour::from_hex_str(&"12c4").unwrap();
+
+            assert_eq!(colour, Colour::new_from_u8s(17, 34, 204, 68));
+        }
+
+        pub fn test_hash_prefix_with_alpha() {
+            let colour = Colour::from_hex_str(&"#12c4").unwrap();
+
+            assert_eq!(colour, Colour::new_from_u8s(17, 34, 204, 68));
+        }
+
+        pub fn test_zero_x_prefix_with_alpha() {
+            let colour = Colour::from_hex_str(&"0x12c4").unwrap();
+
+            assert_eq!(colour, Colour::new_from_u8s(17, 34, 204, 68));
+        }
+    }
+
+    #[cfg(test)]
+    mod long_hex {
+        use super::*;
+
+        pub fn test_no_prefix() {
+            let colour = Colour::from_hex_str(&"1122cc").unwrap();
+
+            assert_eq!(colour, Colour::new_from_u8s(17, 34, 204, 255));
+        }
+
+        pub fn test_hash_prefix() {
+            let colour = Colour::from_hex_str(&"#1122cc").unwrap();
+
+            assert_eq!(colour, Colour::new_from_u8s(17, 34, 204, 255));
+        }
+
+        pub fn test_zero_x_prefix() {
+            let colour = Colour::from_hex_str(&"0x1122cc").unwrap();
+
+            assert_eq!(colour, Colour::new_from_u8s(17, 34, 204, 255));
+        }
+
+        pub fn test_no_prefix_with_alpha() {
+            let colour = Colour::from_hex_str(&"1122cc44").unwrap();
+
+            assert_eq!(colour, Colour::new_from_u8s(17, 34, 204, 68));
+        }
+
+        pub fn test_hash_prefix_with_alpha() {
+            let colour = Colour::from_hex_str(&"#1122cc44").unwrap();
+
+            assert_eq!(colour, Colour::new_from_u8s(17, 34, 204, 68));
+        }
+
+        pub fn test_zero_x_prefix_with_alpha() {
+            let colour = Colour::from_hex_str(&"0x1122cc44").unwrap();
+
+            assert_eq!(colour, Colour::new_from_u8s(17, 34, 204, 68));
+        }
     }
 }

@@ -137,19 +137,37 @@ impl<N: Num> Circle<N> {
     }
 
     pub fn overlaps_line(self, other: Line<N>) -> bool {
+        self.distance_to_line(other) <= self.to_f32().radius()
+    }
+
+    fn distance_to_line(self, line: Line<N>) -> f32 {
         let self_f32 = self.to_f32();
-        let other_f32 = other.to_f32();
-        let radius = self_f32.radius();
+        let line_f32 = line.to_f32();
 
-        let v1 = other_f32.diff().to_point();
-        let v2 = Line(self_f32.centre(), other_f32.start()).diff().to_point();
+        let v1 = line_f32.diff().to_point();
+        let mut v2 = line_f32.start().distance_to(self_f32.centre()).to_point();
+        let u = (v2.x() * v1.x() + v2.y() * v1.y()) / (v1.y() * v1.y() + v1.x() * v1.x());
 
-        let mut b = v1.x() * v2.x() + v1.y() * v2.y();
-        let c = 2.0 * (v1.x() * v1.x() + v1.y() * v1.y());
-        b *= -2.0;
-        let d = (b * b - 2.0 * c * (v2.x() * v2.x() + v2.y() * v2.y() - radius * radius)).sqrt();
+        if u >= 0.0 && u <= 1.0 {
+            let mut x = (v1.x() * u + line_f32.start().x()) - self_f32.centre().x();
+            let mut y = (v1.y() * u + line_f32.start().y()) - self_f32.centre().y();
+            x *= x;
+            y *= y;
 
-        return !d.is_nan();
+            return (y + x).sqrt(); // return distance from line
+        }
+
+        // get distance from end points
+        let mut x = self_f32.centre().x() - line_f32.end().x();
+        let mut y = self_f32.centre().y() - line_f32.end().y();
+        x *= x;
+        y *= y;
+
+        v2 *= v2;
+
+        let first = (v2.y() + v2.x()).sqrt();
+        let second = (y + x).sqrt();
+        return first.min(second); // return smaller of two distances as the result
     }
 
     #[allow(dead_code)]
@@ -290,5 +308,12 @@ mod overlaps_line {
         let circle: Circle<i32> = Circle(Point(10, 10), 5);
         let line = Line(Point(11, 10), Point(9, 10));
         assert!(circle.overlaps_line(line));
+    }
+
+    #[test]
+    fn it_should_not_overlap_an_infinite_line() {
+        let circle: Circle<f32> = Circle(Point(10.0, 10.0), 5.0);
+        let line: Line<f32> = Line(Point(10.0, 20.0), Point(10.0, 30.0));
+        assert_eq!(false, circle.overlaps_line(line));
     }
 }

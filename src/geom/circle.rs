@@ -137,10 +137,19 @@ impl<N: Num> Circle<N> {
     }
 
     pub fn overlaps_line(self, other: Line<N>) -> bool {
-        let midpoint = other.midpoint();
-        let midpoint_dist = Line(midpoint, self.centre()).hypot().abs();
+        let self_f32 = self.to_f32();
+        let other_f32 = other.to_f32();
+        let radius = self_f32.radius();
 
-        midpoint_dist <= self.radius()
+        let v1 = other_f32.diff().to_point();
+        let v2 = Line(self_f32.centre(), other_f32.start()).diff().to_point();
+
+        let mut b = v1.x() * v2.x() + v1.y() * v2.y();
+        let c = 2.0 * (v1.x() * v1.x() + v1.y() * v1.y());
+        b *= -2.0;
+        let d = (b * b - 2.0 * c * (v2.x() * v2.x() + v2.y() * v2.y() - radius * radius)).sqrt();
+
+        return !d.is_nan();
     }
 
     #[allow(dead_code)]

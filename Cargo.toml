@@ -1,6 +1,6 @@
 [package]
 name = "mutils"
-version = "11.3.2"
+version = "11.3.3"
 authors = ["josephlenton@gmail.com <josephlenton@gmail.com>"]
 edition = "2018"
 license = "MIT"

@@ -387,7 +387,7 @@ where
     }
 
     pub fn step_direction(self) -> Point<<N as ToSignedClamped>::Output> {
-        self.diff().to_point().sign()
+        self.diff().to_point().step()
     }
 }
 
@@ -1089,5 +1089,19 @@ mod flip {
     fn it_should_swap_start_and_end() {
         let line: Line<i32> = Line(Point(123, 456), Point(987, 654));
         assert_eq!(line.flip(), Line(Point(987, 654), Point(123, 456)))
+    }
+}
+
+#[cfg(test)]
+mod step_direction {
+    use super::*;
+
+    #[test]
+    fn it_should_return_zero_for_no_direction() {
+        let point: Point<f32> = Point(0.0, 0.0);
+        let line = Line(point, point);
+
+        let step_direction = line.step_direction();
+        assert_eq!(Point(0.0_f32, 0.0_f32), step_direction);
     }
 }

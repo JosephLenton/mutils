@@ -217,6 +217,22 @@ impl<N: Num + Signed> Point<N> {
         Self(signum(self.0), signum(self.1))
     }
 
+    pub fn step(&self) -> Self {
+        let x = if self.0 == <N as NumIdentity>::zero() {
+            <N as NumIdentity>::zero()
+        } else {
+            signum(self.0)
+        };
+
+        let y = if self.1 == <N as NumIdentity>::zero() {
+            <N as NumIdentity>::zero()
+        } else {
+            signum(self.1)
+        };
+
+        Self(x, y)
+    }
+
     pub fn sign_exclusive_dir(&self) -> Self {
         let w_abs = abs(self.first());
         let h_abs = abs(self.second());

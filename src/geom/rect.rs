@@ -163,6 +163,18 @@ impl<N: Num> Rect<N> {
         self.0 = xy;
     }
 
+    pub fn set_top_left(&mut self, xy: Point<N>) {
+        self.0 = Point(xy.x(), xy.y() - self.height());
+    }
+
+    pub fn set_top_right(&mut self, xy: Point<N>) {
+        self.0 = Point(xy.x() - self.width(), xy.y() - self.height());
+    }
+
+    pub fn set_bottom_right(&mut self, xy: Point<N>) {
+        self.0 = Point(xy.x() - self.width(), xy.y());
+    }
+
     pub fn set_centre(&mut self, xy: Point<N>) {
         self.0 = xy - self.size().half();
     }

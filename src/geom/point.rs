@@ -160,6 +160,10 @@ impl<N: Num> Point<N> {
     pub(crate) fn to_f32(self) -> Point<f32> {
         self.to_rounded()
     }
+
+    pub fn to_size(self) -> Size<N> {
+        Size(self.x(), self.y())
+    }
 }
 
 impl<N: Num> NumTuple<N> for Point<N> {

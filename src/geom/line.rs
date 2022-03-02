@@ -135,6 +135,22 @@ impl<N: Num> Line<N> {
         Self(self.start().max(other.start()), self.end().max(other.end()))
     }
 
+    pub fn min_x(self) -> N {
+        self.start().x().min(self.end().x())
+    }
+
+    pub fn min_y(self) -> N {
+        self.start().y().min(self.end().y())
+    }
+
+    pub fn max_x(self) -> N {
+        self.start().x().max(self.end().x())
+    }
+
+    pub fn max_y(self) -> N {
+        self.start().y().max(self.end().y())
+    }
+
     pub fn overlaps_line(self, other: Line<N>) -> bool {
         self.intersect_line(other).is_some()
     }

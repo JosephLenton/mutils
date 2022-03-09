@@ -156,6 +156,38 @@ impl<N: Num> Size<N> {
     pub(crate) fn to_f32(self) -> Size<f32> {
         self.to_rounded()
     }
+
+    pub fn swizzle_wh(self) -> Self {
+        Self(self.width(), self.height())
+    }
+
+    pub fn swizzle_hw(self) -> Self {
+        Self(self.height(), self.width())
+    }
+
+    pub fn swizzle_ww(self) -> Self {
+        Self(self.width(), self.width())
+    }
+
+    pub fn swizzle_hh(self) -> Self {
+        Self(self.height(), self.height())
+    }
+
+    pub fn swizzle_0w(self) -> Self {
+        Self(N::zero(), self.width())
+    }
+
+    pub fn swizzle_0h(self) -> Self {
+        Self(N::zero(), self.height())
+    }
+
+    pub fn swizzle_w0(self) -> Self {
+        Self(self.width(), N::zero())
+    }
+
+    pub fn swizzle_h0(self) -> Self {
+        Self(self.height(), N::zero())
+    }
 }
 
 impl<N: Num + Signed> Size<N> {

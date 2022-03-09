@@ -164,6 +164,40 @@ impl<N: Num> Point<N> {
     pub fn to_size(self) -> Size<N> {
         Size(self.x(), self.y())
     }
+
+    /// Returns a copy of this point (with no changes).
+    pub fn swizzle_xy(self) -> Self {
+        Self(self.x(), self.y())
+    }
+
+    /// Returns a copy of this Point with the x and y values swapped.
+    pub fn swizzle_yx(self) -> Self {
+        Self(self.y(), self.x())
+    }
+
+    pub fn swizzle_xx(self) -> Self {
+        Self(self.x(), self.x())
+    }
+
+    pub fn swizzle_yy(self) -> Self {
+        Self(self.y(), self.y())
+    }
+
+    pub fn swizzle_0x(self) -> Self {
+        Self(N::zero(), self.x())
+    }
+
+    pub fn swizzle_0y(self) -> Self {
+        Self(N::zero(), self.y())
+    }
+
+    pub fn swizzle_x0(self) -> Self {
+        Self(self.x(), N::zero())
+    }
+
+    pub fn swizzle_y0(self) -> Self {
+        Self(self.y(), N::zero())
+    }
 }
 
 impl<N: Num> NumTuple<N> for Point<N> {

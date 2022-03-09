@@ -40,6 +40,17 @@ pub use self::line_iterator::LineIterator;
 pub struct Line<N: Num = f32>(pub Point<N>, pub Point<N>);
 
 impl<N: Num> Line<N> {
+    pub fn new_from_points(points: &[N]) -> Self {
+        if points.len() != 4 {
+            panic!(
+                "Given points slice which isn't exactly 4 elements, length given ... {}",
+                points.len()
+            );
+        }
+
+        Line(Point(points[0], points[1]), Point(points[2], points[3]))
+    }
+
     pub fn new_zero_value() -> Self {
         Line(Point::new_zero_value(), Point::new_zero_value())
     }

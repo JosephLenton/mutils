@@ -3,6 +3,7 @@ use ::rand::rngs::SmallRng;
 use ::rand::Rng;
 use ::rand::SeedableRng;
 use ::std::ops::Add;
+use ::std::ops::Range;
 use ::std::ops::Sub;
 use ::std::sync::Mutex;
 
@@ -23,17 +24,27 @@ pub struct Random {
 }
 
 impl Random {
-    pub fn new(min: f32, max: f32) -> Self {
+    pub fn new(range: Range<f32>) -> Self {
+        let min = range.start.min(range.end);
+        let max = range.start.max(range.end);
+
         Self { min, max }
     }
 
     pub fn random(&self) -> f32 {
-        random(self.min, self.max)
+        random_range(self.min..self.max)
     }
 }
 
-pub fn random(min: f32, max: f32) -> f32 {
-    GLOBAL_RNG.lock().unwrap().gen_range(min..max)
+pub fn random(range: Range<f32>) -> f32 {
+    let min = range.start.min(range.end);
+    let max = range.start.max(range.end);
+
+    random_range(min..max)
+}
+
+fn random_range(range: Range<f32>) -> f32 {
+    GLOBAL_RNG.lock().unwrap().gen_range(range)
 }
 
 impl Add<f32> for Random {

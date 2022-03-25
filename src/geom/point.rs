@@ -337,6 +337,10 @@ impl Point<f32> {
             FromRounded::from_rounded(self.y()),
         )
     }
+
+    pub fn cossin(self, angle: f32) -> Self {
+        Self::new(self.x() * angle.cos(), self.y() * angle.sin())
+    }
 }
 
 impl<N: Num> Add<Self> for Point<N> {

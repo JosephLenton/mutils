@@ -301,6 +301,10 @@ impl Size<f32> {
     pub fn round(self) -> Self {
         Self::new(self.first().round(), self.second().round())
     }
+
+    pub fn cossin(self, angle: f32) -> Self {
+        Self::new(self.width() * angle.cos(), self.height() * angle.sin())
+    }
 }
 
 impl<O: Num, N: Num + ToRounded<O>> ToRounded<Size<O>> for Size<N> {

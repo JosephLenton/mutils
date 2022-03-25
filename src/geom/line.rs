@@ -65,6 +65,14 @@ impl<N: Num> Line<N> {
         self.1
     }
 
+    pub fn min_point(self) -> Point<N> {
+        self.start().min(self.end())
+    }
+
+    pub fn max_point(self) -> Point<N> {
+        self.start().max(self.end())
+    }
+
     pub fn left_x(self) -> N {
         self.start().x().min(self.end().x())
     }

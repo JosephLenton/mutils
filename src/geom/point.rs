@@ -198,6 +198,10 @@ impl<N: Num> Point<N> {
     pub fn swizzle_y0(self) -> Self {
         Self(self.y(), N::zero())
     }
+
+    pub fn into_slice(self) -> [N; 2] {
+        [self.x(), self.y()]
+    }
 }
 
 impl<N: Num> NumTuple<N> for Point<N> {
@@ -728,5 +732,16 @@ mod step_direction_to {
         let step = from.step_direction_to(to);
 
         assert_eq!(step, Point(-1, -1));
+    }
+}
+
+#[cfg(test)]
+mod into_slice {
+    use super::*;
+
+    #[test]
+    fn it_should_return_position_as_slice() {
+        let point: Point<u32> = Point(1, 2);
+        assert_eq!(point.into_slice(), [1, 2]);
     }
 }

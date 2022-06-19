@@ -380,6 +380,15 @@ impl<N: Num> Line<N> {
     pub fn into_iter_inclusive_with_step(self, step: N) -> LineIterator<N> {
         LineIterator::new(self, step, false)
     }
+
+    pub fn into_slice(self) -> [N; 4] {
+        [
+            self.start().x(),
+            self.start().y(),
+            self.end().x(),
+            self.end().y(),
+        ]
+    }
 }
 
 impl<N: Num + Signed> Line<N> {
@@ -1138,5 +1147,16 @@ mod step_direction {
 
         let step_direction = line.step_direction();
         assert_eq!(Point(0.0_f32, 0.0_f32), step_direction);
+    }
+}
+
+#[cfg(test)]
+mod into_slice {
+    use super::*;
+
+    #[test]
+    fn it_should_return_start_and_end_in_slice() {
+        let line: Line<u32> = Line(Point(1, 2), Point(3, 4));
+        assert_eq!(line.into_slice(), [1, 2, 3, 4]);
     }
 }

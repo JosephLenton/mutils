@@ -1,5 +1,6 @@
 #![deny(private_in_public)]
 #![deny(unused_must_use)]
+#![deny(unused_macros)]
 #![deny(unused_mut)]
 #![deny(unused_variables)]
 #![deny(large_assignments)]
@@ -18,3 +19,6 @@ pub use self::colour::{Color, Colour};
 pub use self::random::random;
 pub use self::random::Random;
 pub use self::vec2d::*;
+
+#[macro_use]
+pub(crate) mod internal;

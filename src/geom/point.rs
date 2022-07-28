@@ -31,6 +31,8 @@ use crate::geom::Line;
 use crate::geom::Rect;
 use crate::geom::Size;
 use crate::geom::Transform;
+use crate::internal::macros::quick_n_div;
+use crate::internal::macros::quick_n_mul;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Point<N: Num = f32>(pub N, pub N);
@@ -467,6 +469,40 @@ impl<N: Num> DivAssign<Size<N>> for Point<N> {
     }
 }
 
+quick_n_div!(f32, Point<f32>);
+quick_n_div!(f64, Point<f64>);
+
+quick_n_div!(usize, Point<usize>);
+quick_n_div!(u8, Point<u8>);
+quick_n_div!(u16, Point<u16>);
+quick_n_div!(u32, Point<u32>);
+quick_n_div!(u64, Point<u64>);
+quick_n_div!(u128, Point<u128>);
+
+quick_n_div!(isize, Point<isize>);
+quick_n_div!(i8, Point<i8>);
+quick_n_div!(i16, Point<i16>);
+quick_n_div!(i32, Point<i32>);
+quick_n_div!(i64, Point<i64>);
+quick_n_div!(i128, Point<i128>);
+
+quick_n_mul!(f32, Point<f32>);
+quick_n_mul!(f64, Point<f64>);
+
+quick_n_mul!(usize, Point<usize>);
+quick_n_mul!(u8, Point<u8>);
+quick_n_mul!(u16, Point<u16>);
+quick_n_mul!(u32, Point<u32>);
+quick_n_mul!(u64, Point<u64>);
+quick_n_mul!(u128, Point<u128>);
+
+quick_n_mul!(isize, Point<isize>);
+quick_n_mul!(i8, Point<i8>);
+quick_n_mul!(i16, Point<i16>);
+quick_n_mul!(i32, Point<i32>);
+quick_n_mul!(i64, Point<i64>);
+quick_n_mul!(i128, Point<i128>);
+
 impl<N: Num> Mul<N> for Point<N> {
     type Output = Self;
 
@@ -743,5 +779,31 @@ mod into_slice {
     fn it_should_return_position_as_slice() {
         let point: Point<u32> = Point(1, 2);
         assert_eq!(point.into_slice(), [1, 2]);
+    }
+}
+
+#[cfg(test)]
+mod integration_mul {
+    use super::*;
+
+    #[test]
+    fn it_should_have_same_result_for_mul_in_both_directions() {
+        let a: Point<i64> = Point(123, 27) * 4;
+        let b: Point<i64> = 4i64 * Point(123, 27);
+
+        assert_eq!(a, b);
+    }
+}
+
+#[cfg(test)]
+mod integration_div {
+    use super::*;
+
+    #[test]
+    fn it_should_have_same_result_for_mul_in_both_directions() {
+        let a: Point<i64> = Point(123, 27) / 3;
+        let b: Point<i64> = 3i64 / Point(123, 27);
+
+        assert_eq!(a, b);
     }
 }

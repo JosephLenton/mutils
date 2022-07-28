@@ -38,6 +38,12 @@ impl Half for u64 {
     }
 }
 
+impl Half for u128 {
+    fn half(&self) -> Self {
+        self / 2
+    }
+}
+
 impl Half for i8 {
     fn half(&self) -> Self {
         self / 2
@@ -57,6 +63,12 @@ impl Half for i32 {
 }
 
 impl Half for i64 {
+    fn half(&self) -> Self {
+        self / 2
+    }
+}
+
+impl Half for i128 {
     fn half(&self) -> Self {
         self / 2
     }

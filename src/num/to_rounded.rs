@@ -66,6 +66,12 @@ impl ToRounded<u64> for f64 {
     }
 }
 
+impl ToRounded<u128> for f64 {
+    fn to_rounded(self) -> u128 {
+        self.round() as u128
+    }
+}
+
 impl ToRounded<i8> for f64 {
     fn to_rounded(self) -> i8 {
         self.round() as i8
@@ -87,6 +93,12 @@ impl ToRounded<i32> for f64 {
 impl ToRounded<i64> for f64 {
     fn to_rounded(self) -> i64 {
         self.round() as i64
+    }
+}
+
+impl ToRounded<i128> for f64 {
+    fn to_rounded(self) -> i128 {
+        self.round() as i128
     }
 }
 
@@ -141,6 +153,12 @@ impl ToRounded<u64> for f32 {
     }
 }
 
+impl ToRounded<u128> for f32 {
+    fn to_rounded(self) -> u128 {
+        self.round() as u128
+    }
+}
+
 impl ToRounded<i8> for f32 {
     fn to_rounded(self) -> i8 {
         self.round() as i8
@@ -162,6 +180,102 @@ impl ToRounded<i32> for f32 {
 impl ToRounded<i64> for f32 {
     fn to_rounded(self) -> i64 {
         self.round() as i64
+    }
+}
+
+impl ToRounded<i128> for f32 {
+    fn to_rounded(self) -> i128 {
+        self.round() as i128
+    }
+}
+
+// u128
+impl ToRounded<Self> for u128 {
+    #[inline(always)]
+    fn to_rounded(self) -> Self {
+        self
+    }
+}
+
+impl ToRounded<f32> for u128 {
+    #[inline(always)]
+    fn to_rounded(self) -> f32 {
+        self as f32
+    }
+}
+
+impl ToRounded<f64> for u128 {
+    #[inline(always)]
+    fn to_rounded(self) -> f64 {
+        self as f64
+    }
+}
+
+impl ToRounded<usize> for u128 {
+    fn to_rounded(self) -> usize {
+        if size_of::<Self>() <= size_of::<usize>() {
+            self as usize
+        } else {
+            self.min(<usize>::max_value() as Self) as usize
+        }
+    }
+}
+
+impl ToRounded<isize> for u128 {
+    fn to_rounded(self) -> isize {
+        if size_of::<Self>() < size_of::<isize>() {
+            self as isize
+        } else {
+            self.min(<isize>::max_value() as Self) as isize
+        }
+    }
+}
+
+impl ToRounded<u8> for u128 {
+    fn to_rounded(self) -> u8 {
+        self.min(<u8>::max_value() as Self) as u8
+    }
+}
+
+impl ToRounded<u16> for u128 {
+    fn to_rounded(self) -> u16 {
+        self.min(<u16>::max_value() as Self) as u16
+    }
+}
+
+impl ToRounded<u32> for u128 {
+    fn to_rounded(self) -> u32 {
+        self.min(<u32>::max_value() as Self) as u32
+    }
+}
+
+impl ToRounded<i8> for u128 {
+    fn to_rounded(self) -> i8 {
+        self.min(<i8>::max_value() as Self) as i8
+    }
+}
+
+impl ToRounded<i16> for u128 {
+    fn to_rounded(self) -> i16 {
+        self.min(<i16>::max_value() as Self) as i16
+    }
+}
+
+impl ToRounded<i32> for u128 {
+    fn to_rounded(self) -> i32 {
+        self.min(<i32>::max_value() as Self) as i32
+    }
+}
+
+impl ToRounded<i64> for u128 {
+    fn to_rounded(self) -> i64 {
+        self.min(<i64>::max_value() as Self) as i64
+    }
+}
+
+impl ToRounded<i128> for u128 {
+    fn to_rounded(self) -> i128 {
+        self.min(<i128>::max_value() as Self) as i128
     }
 }
 
@@ -225,6 +339,12 @@ impl ToRounded<u32> for u64 {
     }
 }
 
+impl ToRounded<u128> for u64 {
+    fn to_rounded(self) -> u128 {
+        self as u128
+    }
+}
+
 impl ToRounded<i8> for u64 {
     fn to_rounded(self) -> i8 {
         self.min(<i8>::max_value() as Self) as i8
@@ -246,6 +366,12 @@ impl ToRounded<i32> for u64 {
 impl ToRounded<i64> for u64 {
     fn to_rounded(self) -> i64 {
         self.min(<i64>::max_value() as Self) as i64
+    }
+}
+
+impl ToRounded<i128> for u64 {
+    fn to_rounded(self) -> i128 {
+        self as i128
     }
 }
 
@@ -310,6 +436,13 @@ impl ToRounded<u64> for u32 {
     }
 }
 
+impl ToRounded<u128> for u32 {
+    #[inline(always)]
+    fn to_rounded(self) -> u128 {
+        self as u128
+    }
+}
+
 impl ToRounded<i8> for u32 {
     fn to_rounded(self) -> i8 {
         self.min(<i8>::max_value() as Self) as i8
@@ -332,6 +465,13 @@ impl ToRounded<i64> for u32 {
     #[inline(always)]
     fn to_rounded(self) -> i64 {
         self as i64
+    }
+}
+
+impl ToRounded<i128> for u32 {
+    #[inline(always)]
+    fn to_rounded(self) -> i128 {
+        self as i128
     }
 }
 
@@ -397,6 +537,13 @@ impl ToRounded<u64> for u16 {
     }
 }
 
+impl ToRounded<u128> for u16 {
+    #[inline(always)]
+    fn to_rounded(self) -> u128 {
+        self as u128
+    }
+}
+
 impl ToRounded<i8> for u16 {
     fn to_rounded(self) -> i8 {
         self.min(<i8>::max_value() as Self) as i8
@@ -420,6 +567,13 @@ impl ToRounded<i64> for u16 {
     #[inline(always)]
     fn to_rounded(self) -> i64 {
         self as i64
+    }
+}
+
+impl ToRounded<i128> for u16 {
+    #[inline(always)]
+    fn to_rounded(self) -> i128 {
+        self as i128
     }
 }
 
@@ -486,6 +640,13 @@ impl ToRounded<u64> for u8 {
     }
 }
 
+impl ToRounded<u128> for u8 {
+    #[inline(always)]
+    fn to_rounded(self) -> u128 {
+        self as u128
+    }
+}
+
 impl ToRounded<i8> for u8 {
     fn to_rounded(self) -> i8 {
         self.min(<i8>::max_value() as Self) as i8
@@ -510,6 +671,118 @@ impl ToRounded<i64> for u8 {
     #[inline(always)]
     fn to_rounded(self) -> i64 {
         self as i64
+    }
+}
+
+impl ToRounded<i128> for u8 {
+    #[inline(always)]
+    fn to_rounded(self) -> i128 {
+        self as i128
+    }
+}
+
+// i128
+impl ToRounded<Self> for i128 {
+    #[inline(always)]
+    fn to_rounded(self) -> Self {
+        self
+    }
+}
+
+impl ToRounded<f32> for i128 {
+    #[inline(always)]
+    fn to_rounded(self) -> f32 {
+        self as f32
+    }
+}
+
+impl ToRounded<f64> for i128 {
+    #[inline(always)]
+    fn to_rounded(self) -> f64 {
+        self as f64
+    }
+}
+
+impl ToRounded<usize> for i128 {
+    fn to_rounded(self) -> usize {
+        if size_of::<Self>() <= size_of::<usize>() {
+            self.max(0) as usize
+        } else {
+            self.max(<usize>::min_value() as Self)
+                .min(<usize>::max_value() as Self) as usize
+        }
+    }
+}
+
+impl ToRounded<isize> for i128 {
+    fn to_rounded(self) -> isize {
+        if size_of::<Self>() < size_of::<isize>() {
+            self as isize
+        } else {
+            self.max(<isize>::min_value() as Self)
+                .min(<isize>::max_value() as Self) as isize
+        }
+    }
+}
+
+impl ToRounded<u8> for i128 {
+    fn to_rounded(self) -> u8 {
+        self.max(<u8>::min_value() as Self)
+            .min(<u8>::max_value() as Self) as u8
+    }
+}
+
+impl ToRounded<u16> for i128 {
+    fn to_rounded(self) -> u16 {
+        self.max(<u16>::min_value() as Self)
+            .min(<u16>::max_value() as Self) as u16
+    }
+}
+
+impl ToRounded<u32> for i128 {
+    fn to_rounded(self) -> u32 {
+        self.max(<u32>::min_value() as Self)
+            .min(<u32>::max_value() as Self) as u32
+    }
+}
+
+impl ToRounded<u64> for i128 {
+    fn to_rounded(self) -> u64 {
+        self.max(0) as u64
+    }
+}
+
+impl ToRounded<u128> for i128 {
+    fn to_rounded(self) -> u128 {
+        self.max(0) as u128
+    }
+}
+
+impl ToRounded<i8> for i128 {
+    fn to_rounded(self) -> i8 {
+        self.max(<i8>::min_value() as Self)
+            .min(<i8>::max_value() as Self) as i8
+    }
+}
+
+impl ToRounded<i16> for i128 {
+    fn to_rounded(self) -> i16 {
+        self.max(<i16>::min_value() as Self)
+            .min(<i16>::max_value() as Self) as i16
+    }
+}
+
+impl ToRounded<i32> for i128 {
+    fn to_rounded(self) -> i32 {
+        self.max(<i32>::min_value() as Self)
+            .min(<i32>::max_value() as Self) as i32
+    }
+}
+
+impl ToRounded<i64> for i128 {
+    fn to_rounded(self) -> i64 {
+        self.max(<i64>::min_value() as Self)
+            .min(<i64>::max_value() as Self) as i64
     }
 }
 
@@ -584,6 +857,12 @@ impl ToRounded<u64> for i64 {
     }
 }
 
+impl ToRounded<u128> for i64 {
+    fn to_rounded(self) -> u128 {
+        self.max(0) as u128
+    }
+}
+
 impl ToRounded<i8> for i64 {
     fn to_rounded(self) -> i8 {
         self.max(<i8>::min_value() as Self)
@@ -602,6 +881,12 @@ impl ToRounded<i32> for i64 {
     fn to_rounded(self) -> i32 {
         self.max(<i32>::min_value() as Self)
             .min(<i32>::max_value() as Self) as i32
+    }
+}
+
+impl ToRounded<i128> for i64 {
+    fn to_rounded(self) -> i128 {
+        self as i128
     }
 }
 
@@ -675,6 +960,12 @@ impl ToRounded<u64> for i32 {
     }
 }
 
+impl ToRounded<u128> for i32 {
+    fn to_rounded(self) -> u128 {
+        self.max(<u128>::min_value() as Self) as u128
+    }
+}
+
 impl ToRounded<i8> for i32 {
     fn to_rounded(self) -> i8 {
         self.max(<i8>::min_value() as Self)
@@ -693,6 +984,13 @@ impl ToRounded<i64> for i32 {
     #[inline(always)]
     fn to_rounded(self) -> i64 {
         self as i64
+    }
+}
+
+impl ToRounded<i128> for i32 {
+    #[inline(always)]
+    fn to_rounded(self) -> i128 {
+        self as i128
     }
 }
 
@@ -765,6 +1063,12 @@ impl ToRounded<u64> for i16 {
     }
 }
 
+impl ToRounded<u128> for i16 {
+    fn to_rounded(self) -> u128 {
+        self.max(0) as u128
+    }
+}
+
 impl ToRounded<i8> for i16 {
     fn to_rounded(self) -> i8 {
         self.max(<i8>::min_value() as Self)
@@ -783,6 +1087,13 @@ impl ToRounded<i64> for i16 {
     #[inline(always)]
     fn to_rounded(self) -> i64 {
         self as i64
+    }
+}
+
+impl ToRounded<i128> for i16 {
+    #[inline(always)]
+    fn to_rounded(self) -> i128 {
+        self as i128
     }
 }
 
@@ -854,6 +1165,12 @@ impl ToRounded<u64> for i8 {
     }
 }
 
+impl ToRounded<u128> for i8 {
+    fn to_rounded(self) -> u128 {
+        self.max(0) as u128
+    }
+}
+
 impl ToRounded<i16> for i8 {
     #[inline(always)]
     fn to_rounded(self) -> i16 {
@@ -872,6 +1189,13 @@ impl ToRounded<i64> for i8 {
     #[inline(always)]
     fn to_rounded(self) -> i64 {
         self as i64
+    }
+}
+
+impl ToRounded<i128> for i8 {
+    #[inline(always)]
+    fn to_rounded(self) -> i128 {
+        self as i128
     }
 }
 

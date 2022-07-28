@@ -66,6 +66,20 @@ impl NumTrampolene for u64 {
     }
 }
 
+impl NumTrampolene for u128 {
+    fn min(self, other: Self) -> Self {
+        Ord::min(self, other)
+    }
+
+    fn max(self, other: Self) -> Self {
+        Ord::max(self, other)
+    }
+
+    fn abs(self) -> Self {
+        self
+    }
+}
+
 impl NumTrampolene for i8 {
     fn min(self, other: Self) -> Self {
         Ord::min(self, other)
@@ -109,6 +123,20 @@ impl NumTrampolene for i32 {
 }
 
 impl NumTrampolene for i64 {
+    fn min(self, other: Self) -> Self {
+        Ord::min(self, other)
+    }
+
+    fn max(self, other: Self) -> Self {
+        Ord::max(self, other)
+    }
+
+    fn abs(self) -> Self {
+        self.abs()
+    }
+}
+
+impl NumTrampolene for i128 {
     fn min(self, other: Self) -> Self {
         Ord::min(self, other)
     }

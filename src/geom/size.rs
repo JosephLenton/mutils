@@ -28,6 +28,9 @@ use crate::num::ToRounded;
 use crate::geom::Point;
 use crate::geom::Rect;
 
+use crate::internal::macros::quick_n_div;
+use crate::internal::macros::quick_n_mul;
+
 mod size_iterator;
 pub use self::size_iterator::SizeIterator;
 
@@ -377,6 +380,40 @@ impl<N: Num> DivAssign<Self> for Size<N> {
     }
 }
 
+quick_n_div!(f32, Size<f32>);
+quick_n_div!(f64, Size<f64>);
+
+quick_n_div!(usize, Size<usize>);
+quick_n_div!(u8, Size<u8>);
+quick_n_div!(u16, Size<u16>);
+quick_n_div!(u32, Size<u32>);
+quick_n_div!(u64, Size<u64>);
+quick_n_div!(u128, Size<u128>);
+
+quick_n_div!(isize, Size<isize>);
+quick_n_div!(i8, Size<i8>);
+quick_n_div!(i16, Size<i16>);
+quick_n_div!(i32, Size<i32>);
+quick_n_div!(i64, Size<i64>);
+quick_n_div!(i128, Size<i128>);
+
+quick_n_mul!(f32, Size<f32>);
+quick_n_mul!(f64, Size<f64>);
+
+quick_n_mul!(usize, Size<usize>);
+quick_n_mul!(u8, Size<u8>);
+quick_n_mul!(u16, Size<u16>);
+quick_n_mul!(u32, Size<u32>);
+quick_n_mul!(u64, Size<u64>);
+quick_n_mul!(u128, Size<u128>);
+
+quick_n_mul!(isize, Size<isize>);
+quick_n_mul!(i8, Size<i8>);
+quick_n_mul!(i16, Size<i16>);
+quick_n_mul!(i32, Size<i32>);
+quick_n_mul!(i64, Size<i64>);
+quick_n_mul!(i128, Size<i128>);
+
 impl<N: Num> Mul<N> for Size<N> {
     type Output = Self;
 
@@ -385,11 +422,23 @@ impl<N: Num> Mul<N> for Size<N> {
     }
 }
 
+impl<N: Num> MulAssign<N> for Size<N> {
+    fn mul_assign(&mut self, other: N) {
+        *self = *self * other;
+    }
+}
+
 impl<N: Num> Div<N> for Size<N> {
     type Output = Self;
 
     fn div(self, other: N) -> Self {
         Size::new(self.0 / other, self.1 / other)
+    }
+}
+
+impl<N: Num> DivAssign<N> for Size<N> {
+    fn div_assign(&mut self, other: N) {
+        *self = *self / other;
     }
 }
 

@@ -1,6 +1,10 @@
 use ::std::iter::IntoIterator;
 use ::std::ops::Add;
 use ::std::ops::AddAssign;
+use ::std::ops::Div;
+use ::std::ops::DivAssign;
+use ::std::ops::Mul;
+use ::std::ops::MulAssign;
 use ::std::ops::Shl;
 use ::std::ops::ShlAssign;
 use ::std::ops::Shr;
@@ -19,6 +23,9 @@ use crate::geom::Point;
 use crate::geom::PointPosition;
 use crate::geom::Size;
 use crate::geom::VerticalPosition;
+
+use crate::internal::macros::quick_n_div;
+use crate::internal::macros::quick_n_mul;
 
 mod rect_iterator;
 pub use self::rect_iterator::RectIterator;
@@ -363,6 +370,68 @@ impl Rect<f32> {
 impl<O: Num, N: Num + ToRounded<O>> ToRounded<Rect<O>> for Rect<N> {
     fn to_rounded(self) -> Rect<O> {
         Rect(self.bottom_left().to_rounded(), self.size().to_rounded())
+    }
+}
+
+quick_n_div!(f32, Rect<f32>);
+quick_n_div!(f64, Rect<f64>);
+
+quick_n_div!(usize, Rect<usize>);
+quick_n_div!(u8, Rect<u8>);
+quick_n_div!(u16, Rect<u16>);
+quick_n_div!(u32, Rect<u32>);
+quick_n_div!(u64, Rect<u64>);
+quick_n_div!(u128, Rect<u128>);
+
+quick_n_div!(isize, Rect<isize>);
+quick_n_div!(i8, Rect<i8>);
+quick_n_div!(i16, Rect<i16>);
+quick_n_div!(i32, Rect<i32>);
+quick_n_div!(i64, Rect<i64>);
+quick_n_div!(i128, Rect<i128>);
+
+quick_n_mul!(f32, Rect<f32>);
+quick_n_mul!(f64, Rect<f64>);
+
+quick_n_mul!(usize, Rect<usize>);
+quick_n_mul!(u8, Rect<u8>);
+quick_n_mul!(u16, Rect<u16>);
+quick_n_mul!(u32, Rect<u32>);
+quick_n_mul!(u64, Rect<u64>);
+quick_n_mul!(u128, Rect<u128>);
+
+quick_n_mul!(isize, Rect<isize>);
+quick_n_mul!(i8, Rect<i8>);
+quick_n_mul!(i16, Rect<i16>);
+quick_n_mul!(i32, Rect<i32>);
+quick_n_mul!(i64, Rect<i64>);
+quick_n_mul!(i128, Rect<i128>);
+
+impl<N: Num> Mul<N> for Rect<N> {
+    type Output = Self;
+
+    fn mul(self, other: N) -> Self {
+        Rect::new(self.0 * other, self.1 * other)
+    }
+}
+
+impl<N: Num> MulAssign<N> for Rect<N> {
+    fn mul_assign(&mut self, other: N) {
+        *self = *self * other;
+    }
+}
+
+impl<N: Num> Div<N> for Rect<N> {
+    type Output = Self;
+
+    fn div(self, other: N) -> Self {
+        Rect::new(self.0 / other, self.1 / other)
+    }
+}
+
+impl<N: Num> DivAssign<N> for Rect<N> {
+    fn div_assign(&mut self, other: N) {
+        *self = *self / other;
     }
 }
 
@@ -976,5 +1045,47 @@ mod round_to_max_size {
         let expected: Rect<f32> = Point(20.0, 20.0).rect_to(Point(-11.0, -11.0));
 
         assert_approx_rect_eq(expected, rounded);
+    }
+}
+
+#[cfg(test)]
+mod mul_n {
+    use super::*;
+
+    #[test]
+    fn it_should_multiply_rect() {
+        let rect: Rect<u32> = Rect::new_from_centre(Point(10, 12), Size(6, 8));
+        let doubled = rect * 2;
+
+        assert_eq!(doubled, Rect::new_from_centre(Point(20, 24), Size(12, 16)));
+    }
+
+    #[test]
+    fn it_should_multiply_rect_using_left_hand() {
+        let rect: Rect<u32> = Rect::new_from_centre(Point(10, 12), Size(6, 8));
+        let doubled = 2 * rect;
+
+        assert_eq!(doubled, Rect::new_from_centre(Point(20, 24), Size(12, 16)));
+    }
+}
+
+#[cfg(test)]
+mod div_n {
+    use super::*;
+
+    #[test]
+    fn it_should_divide_rect() {
+        let rect: Rect<u32> = Rect::new_from_centre(Point(20, 24), Size(12, 16));
+        let doubled = rect / 2;
+
+        assert_eq!(doubled, Rect::new_from_centre(Point(10, 12), Size(6, 8)));
+    }
+
+    #[test]
+    fn it_should_divide_rect_using_left_hand() {
+        let rect: Rect<u32> = Rect::new_from_centre(Point(20, 24), Size(12, 16));
+        let doubled = 2 / rect;
+
+        assert_eq!(doubled, Rect::new_from_centre(Point(10, 12), Size(6, 8)));
     }
 }

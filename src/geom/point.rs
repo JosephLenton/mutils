@@ -118,8 +118,24 @@ impl<N: Num> Point<N> {
         Self(self.x().min(other.x()), self.y().min(other.y()))
     }
 
+    pub fn min_x(self, other_x: N) -> Self {
+        Self(self.x().min(other_x), self.y())
+    }
+
+    pub fn min_y(self, other_y: N) -> Self {
+        Self(self.x(), self.y().min(other_y))
+    }
+
     pub fn max(self, other: Self) -> Self {
         Self(self.x().max(other.x()), self.y().max(other.y()))
+    }
+
+    pub fn max_x(self, other_x: N) -> Self {
+        Self(self.x().max(other_x), self.y())
+    }
+
+    pub fn max_y(self, other_y: N) -> Self {
+        Self(self.x(), self.y().max(other_y))
     }
 
     pub fn hypot_to(self, other: Point<N>) -> N {
@@ -259,6 +275,42 @@ where
 impl<N: Num + Signed> Point<N> {
     pub fn sign(&self) -> Self {
         Self(signum(self.0), signum(self.1))
+    }
+
+    pub fn min_by_abs(self, other: Self) -> Self {
+        self.abs().min(other.abs()) * self.sign()
+    }
+
+    pub fn min_x_by_abs(self, other_x: N) -> Self {
+        let x_sign = signum(self.x());
+        let x = self.x().abs().min(other_x.abs());
+
+        Self(x * x_sign, self.y())
+    }
+
+    pub fn min_y_by_abs(self, other_y: N) -> Self {
+        let y_sign = signum(self.y());
+        let y = self.y().abs().min(other_y.abs());
+
+        Self(self.x(), y * y_sign)
+    }
+
+    pub fn max_by_abs(self, other: Self) -> Self {
+        self.abs().max(other.abs()) * self.sign()
+    }
+
+    pub fn max_x_by_abs(self, other_x: N) -> Self {
+        let x_sign = signum(self.x());
+        let x = self.x().abs().max(other_x.abs());
+
+        Self(x * x_sign, self.y())
+    }
+
+    pub fn max_y_by_abs(self, other_y: N) -> Self {
+        let y_sign = signum(self.y());
+        let y = self.y().abs().max(other_y.abs());
+
+        Self(self.x(), y * y_sign)
     }
 
     pub fn step(&self) -> Self {
@@ -805,5 +857,227 @@ mod integration_div {
         let b: Point<i64> = 3i64 / Point(123, 27);
 
         assert_eq!(a, b);
+    }
+}
+
+#[cfg(test)]
+mod min_by_abs {
+    use super::*;
+
+    #[test]
+    fn it_should_return_self_if_smaller() {
+        let p = Point(100.0, 200.0);
+        let received = p.min_by_abs(Point(999.0, 999.0));
+
+        assert_eq!(received, Point(100.0, 200.0));
+    }
+
+    #[test]
+    fn it_should_return_other_if_smaller() {
+        let p = Point(1000.0, 2000.0);
+        let received = p.min_by_abs(Point(999.0, 999.0));
+
+        assert_eq!(received, Point(999.0, 999.0));
+    }
+
+    #[test]
+    fn it_should_return_self_if_smaller_when_negative() {
+        let p = Point(-100.0, -200.0);
+        let received = p.min_by_abs(Point(999.0, 999.0));
+
+        assert_eq!(received, Point(-100.0, -200.0));
+    }
+
+    #[test]
+    fn it_should_return_other_if_smaller_when_negative() {
+        let p = Point(-1000.0, -2000.0);
+        let received = p.min_by_abs(Point(999.0, 999.0));
+
+        assert_eq!(received, Point(-999.0, -999.0));
+    }
+}
+
+#[cfg(test)]
+mod min_x_by_abs {
+    use super::*;
+
+    #[test]
+    fn it_should_return_self_if_smaller() {
+        let p: Point<f32> = Point(100.0, 200.0);
+        let received = p.min_x_by_abs(999.0);
+
+        assert_eq!(received, Point(100.0, 200.0));
+    }
+
+    #[test]
+    fn it_should_return_other_if_smaller() {
+        let p: Point<f32> = Point(1000.0, 2000.0);
+        let received = p.min_x_by_abs(999.0);
+
+        assert_eq!(received, Point(999.0, 2000.0));
+    }
+
+    #[test]
+    fn it_should_return_self_if_smaller_when_negative() {
+        let p: Point<f32> = Point(-100.0, -200.0);
+        let received = p.min_x_by_abs(999.0);
+
+        assert_eq!(received, Point(-100.0, -200.0));
+    }
+
+    #[test]
+    fn it_should_return_other_if_smaller_when_negative() {
+        let p: Point<f32> = Point(-1000.0, -2000.0);
+        let received = p.min_x_by_abs(999.0);
+
+        assert_eq!(received, Point(-999.0, -2000.0));
+    }
+}
+
+#[cfg(test)]
+mod min_y_by_abs {
+    use super::*;
+
+    #[test]
+    fn it_should_return_self_if_smaller() {
+        let p: Point<f32> = Point(100.0, 200.0);
+        let received = p.min_y_by_abs(999.0);
+
+        assert_eq!(received, Point(100.0, 200.0));
+    }
+
+    #[test]
+    fn it_should_return_other_if_smaller() {
+        let p: Point<f32> = Point(1000.0, 2000.0);
+        let received = p.min_y_by_abs(999.0);
+
+        assert_eq!(received, Point(1000.0, 999.0));
+    }
+
+    #[test]
+    fn it_should_return_self_if_smaller_when_negative() {
+        let p: Point<f32> = Point(-100.0, -200.0);
+        let received = p.min_y_by_abs(999.0);
+
+        assert_eq!(received, Point(-100.0, -200.0));
+    }
+
+    #[test]
+    fn it_should_return_other_if_smaller_when_negative() {
+        let p: Point<f32> = Point(-1000.0, -2000.0);
+        let received = p.min_y_by_abs(999.0);
+
+        assert_eq!(received, Point(-1000.0, -999.0));
+    }
+}
+
+#[cfg(test)]
+mod max_by_abs {
+    use super::*;
+
+    #[test]
+    fn it_should_return_self_if_larger() {
+        let p = Point(1000.0, 2000.0);
+        let received = p.max_by_abs(Point(999.0, 999.0));
+
+        assert_eq!(received, Point(1000.0, 2000.0));
+    }
+
+    #[test]
+    fn it_should_return_other_if_larger() {
+        let p = Point(100.0, 200.0);
+        let received = p.max_by_abs(Point(999.0, 999.0));
+
+        assert_eq!(received, Point(999.0, 999.0));
+    }
+
+    #[test]
+    fn it_should_return_self_if_larger_when_negative() {
+        let p = Point(-1000.0, -2000.0);
+        let received = p.max_by_abs(Point(999.0, 999.0));
+
+        assert_eq!(received, Point(-1000.0, -2000.0));
+    }
+
+    #[test]
+    fn it_should_return_other_if_larger_when_negative() {
+        let p = Point(-100.0, -200.0);
+        let received = p.max_by_abs(Point(999.0, 999.0));
+
+        assert_eq!(received, Point(-999.0, -999.0));
+    }
+}
+
+#[cfg(test)]
+mod max_x_by_abs {
+    use super::*;
+
+    #[test]
+    fn it_should_return_self_if_larger() {
+        let p = Point(1000.0, 2000.0);
+        let received = p.max_x_by_abs(999.0);
+
+        assert_eq!(received, Point(1000.0, 2000.0));
+    }
+
+    #[test]
+    fn it_should_return_other_if_larger() {
+        let p = Point(100.0, 200.0);
+        let received = p.max_x_by_abs(999.0);
+
+        assert_eq!(received, Point(999.0, 200.0));
+    }
+
+    #[test]
+    fn it_should_return_self_if_larger_when_negative() {
+        let p = Point(-1000.0, -2000.0);
+        let received = p.max_x_by_abs(999.0);
+
+        assert_eq!(received, Point(-1000.0, -2000.0));
+    }
+
+    #[test]
+    fn it_should_return_other_if_larger_when_negative() {
+        let p = Point(-100.0, -200.0);
+        let received = p.max_x_by_abs(999.0);
+
+        assert_eq!(received, Point(-999.0, -200.0));
+    }
+}
+
+#[cfg(test)]
+mod max_y_by_abs {
+    use super::*;
+
+    #[test]
+    fn it_should_return_self_if_larger() {
+        let p = Point(1000.0, 2000.0);
+        let received = p.max_y_by_abs(999.0);
+
+        assert_eq!(received, Point(1000.0, 2000.0));
+    }
+
+    #[test]
+    fn it_should_return_other_if_larger() {
+        let p = Point(100.0, 200.0);
+        let received = p.max_y_by_abs(999.0);
+
+        assert_eq!(received, Point(100.0, 999.0));
+    }
+
+    #[test]
+    fn it_should_return_self_if_larger_when_negative() {
+        let p = Point(-1000.0, -2000.0);
+        let received = p.max_y_by_abs(999.0);
+
+        assert_eq!(received, Point(-1000.0, -2000.0));
+    }
+
+    #[test]
+    fn it_should_return_other_if_larger_when_negative() {
+        let p = Point(-100.0, -200.0);
+        let received = p.max_y_by_abs(999.0);
+
+        assert_eq!(received, Point(-100.0, -999.0));
     }
 }

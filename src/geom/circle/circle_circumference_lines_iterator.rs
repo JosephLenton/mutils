@@ -3,7 +3,7 @@ use crate::geom::Line;
 use crate::geom::Point;
 use crate::num::Num;
 use crate::num::ToRounded;
-use ::std::f32::consts::TAU;
+use std::f32::consts::TAU;
 
 #[derive(Clone, Debug)]
 pub struct CircleCircumferenceLinesIterator {

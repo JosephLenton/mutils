@@ -49,7 +49,7 @@ impl<N: Num> Iterator for RectIterator<N> {
 mod iterating {
     use super::*;
     use crate::geom::Size;
-    use ::testcat::*;
+    use testcat::*;
 
     it!("should not iterate over empty rect", test_empty_rect);
     it!(

@@ -1,21 +1,23 @@
-use ::std::convert::Into;
-use ::std::ops::Add;
-use ::std::ops::AddAssign;
-use ::std::ops::Div;
-use ::std::ops::DivAssign;
-use ::std::ops::Mul;
-use ::std::ops::MulAssign;
-use ::std::ops::Neg;
-use ::std::ops::Rem;
-use ::std::ops::Shl;
-use ::std::ops::ShlAssign;
-use ::std::ops::Shr;
-use ::std::ops::ShrAssign;
-use ::std::ops::Sub;
-use ::std::ops::SubAssign;
-
-use ::num_traits::sign::signum;
-use ::num_traits::sign::Signed;
+use num_traits::sign::signum;
+use num_traits::sign::Signed;
+use std::convert::Into;
+use std::fmt::Display;
+use std::fmt::Formatter;
+use std::fmt::Result as FmtResult;
+use std::ops::Add;
+use std::ops::AddAssign;
+use std::ops::Div;
+use std::ops::DivAssign;
+use std::ops::Mul;
+use std::ops::MulAssign;
+use std::ops::Neg;
+use std::ops::Rem;
+use std::ops::Shl;
+use std::ops::ShlAssign;
+use std::ops::Shr;
+use std::ops::ShrAssign;
+use std::ops::Sub;
+use std::ops::SubAssign;
 
 use crate::num::FromRounded;
 use crate::num::INum;
@@ -498,6 +500,12 @@ impl<N: Num> IntoIterator for Size<N> {
 
     fn into_iter(self) -> Self::IntoIter {
         SizeIterator::new(self)
+    }
+}
+
+impl<N: Num> Display for Size<N> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
+        write!(f, "Point({}, {})", self.0, self.1)
     }
 }
 

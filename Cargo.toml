@@ -1,20 +1,20 @@
 [package]
 name = "mutils"
-version = "12.5.0"
+version = "12.6.0"
 authors = ["josephlenton@gmail.com <josephlenton@gmail.com>"]
-edition = "2018"
+edition = "2021"
 license = "MIT"
 description = "Mathematical-like utilities. Points, Sizes, Colours, maths operating on them. Things like that."
 repository = "https://github.com/JosephLenton/mutils"
 
 [dependencies]
-lazy_static = "1.4.0"
-rand = { version = "0.8.0", default-features=false, features = ["small_rng"] }
+lazy_static = "1.5.0"
+rand = { version = "0.8.5", default-features=false, features = ["small_rng"] }
 
 [dependencies.num-traits]
-version = "0.2.11"
+version = "0.2.19"
 default-features = false
 
 [dev-dependencies]
 assert_approx_eq = "1.1.0"
-testcat = "2.0.1"
+testcat = "2.1.0"

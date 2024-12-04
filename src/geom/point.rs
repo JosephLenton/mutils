@@ -1,22 +1,21 @@
-use ::std::convert::Into;
-use ::std::ops::Add;
-use ::std::ops::AddAssign;
-use ::std::ops::Div;
-use ::std::ops::DivAssign;
-use ::std::ops::Mul;
-use ::std::ops::MulAssign;
-use ::std::ops::Neg;
-use ::std::ops::Rem;
-use ::std::ops::Shl;
-use ::std::ops::ShlAssign;
-use ::std::ops::Shr;
-use ::std::ops::ShrAssign;
-use ::std::ops::Sub;
-use ::std::ops::SubAssign;
-
-use ::num_traits::sign::abs;
-use ::num_traits::sign::signum;
-use ::num_traits::sign::Signed;
+use num_traits::sign::abs;
+use num_traits::sign::signum;
+use num_traits::sign::Signed;
+use std::convert::Into;
+use std::ops::Add;
+use std::ops::AddAssign;
+use std::ops::Div;
+use std::ops::DivAssign;
+use std::ops::Mul;
+use std::ops::MulAssign;
+use std::ops::Neg;
+use std::ops::Rem;
+use std::ops::Shl;
+use std::ops::ShlAssign;
+use std::ops::Shr;
+use std::ops::ShrAssign;
+use std::ops::Sub;
+use std::ops::SubAssign;
 
 use crate::num::FromRounded;
 use crate::num::INum;
@@ -33,6 +32,9 @@ use crate::geom::Size;
 use crate::geom::Transform;
 use crate::internal::macros::quick_n_div;
 use crate::internal::macros::quick_n_mul;
+use std::fmt::Display;
+use std::fmt::Formatter;
+use std::fmt::Result as FmtResult;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Point<N: Num = f32>(pub N, pub N);
@@ -645,6 +647,12 @@ impl<N: Num> Into<(N, N)> for Point<N> {
     }
 }
 
+impl<N: Num> Display for Point<N> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
+        write!(f, "Point({}, {})", self.0, self.1)
+    }
+}
+
 #[cfg(test)]
 mod flip_x {
     use super::*;
@@ -671,7 +679,7 @@ mod flip_y {
 mod rotate_around_point {
     use super::*;
     use crate::geom::testing_utils::assert_approx_point_eq;
-    use ::std::f32::consts::TAU;
+    use std::f32::consts::TAU;
 
     #[test]
     fn it_should_rotate_90_degrees() {
@@ -693,9 +701,9 @@ mod rotate_around_point {
 #[cfg(test)]
 mod angle_to {
     use super::*;
-    use ::assert_approx_eq::assert_approx_eq;
-    use ::std::f32::consts::TAU;
-    use ::testcat::*;
+    use assert_approx_eq::assert_approx_eq;
+    use std::f32::consts::TAU;
+    use testcat::*;
 
     describe!("angle to zero", {
         it!(
@@ -783,7 +791,7 @@ mod angle_to {
 #[cfg(test)]
 mod step_direction_to {
     use super::*;
-    use ::testcat::*;
+    use testcat::*;
 
     it!(
         "should return positive steps when stepping positively",

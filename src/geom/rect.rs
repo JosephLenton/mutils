@@ -1,16 +1,16 @@
-use ::std::iter::IntoIterator;
-use ::std::ops::Add;
-use ::std::ops::AddAssign;
-use ::std::ops::Div;
-use ::std::ops::DivAssign;
-use ::std::ops::Mul;
-use ::std::ops::MulAssign;
-use ::std::ops::Shl;
-use ::std::ops::ShlAssign;
-use ::std::ops::Shr;
-use ::std::ops::ShrAssign;
-use ::std::ops::Sub;
-use ::std::ops::SubAssign;
+use std::iter::IntoIterator;
+use std::ops::Add;
+use std::ops::AddAssign;
+use std::ops::Div;
+use std::ops::DivAssign;
+use std::ops::Mul;
+use std::ops::MulAssign;
+use std::ops::Shl;
+use std::ops::ShlAssign;
+use std::ops::Shr;
+use std::ops::ShrAssign;
+use std::ops::Sub;
+use std::ops::SubAssign;
 
 use crate::num::INum;
 use crate::num::Num;
@@ -972,7 +972,7 @@ mod interpolate_to {
 mod round_to_max_size {
     use super::*;
     use crate::geom::testing_utils::assert_approx_rect_eq;
-    use ::testcat::*;
+    use testcat::*;
 
     it!(
         "should enlarge positive rectangles to make size larger",

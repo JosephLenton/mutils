@@ -1,4 +1,4 @@
-use ::std::marker::PhantomData;
+use std::marker::PhantomData;
 
 use crate::geom::Line;
 use crate::geom::Point;
@@ -10,7 +10,15 @@ pub struct LineIterator<N: Num = f32> {
     current: Point<f32>,
     end: Point<f32>,
     step: Point<f32>,
-    is_exclusive: bool,
+    iteration_type: IterationType,
+}
+
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+enum IterationType {
+    Exclusive,
+    Inclusive,
+    NoMovement,
+    Done,
 }
 
 impl<N: Num> LineIterator<N> {
@@ -19,7 +27,15 @@ impl<N: Num> LineIterator<N> {
         let current = line_f32.start();
         let end = line_f32.end();
         let step_f32 = step.to_rounded();
-        let step = line.direction().to_point() * step_f32;
+        let mut step = line.direction().to_point() * step_f32;
+
+        if current.x() == end.x() {
+            step.set_x(0.0);
+        }
+
+        if current.y() == end.y() {
+            step.set_y(0.0);
+        }
 
         if step_f32 == 0.0 {
             panic!("Zero step given");
@@ -34,7 +50,23 @@ impl<N: Num> LineIterator<N> {
             current,
             end,
             step,
-            is_exclusive,
+            iteration_type: calculate_iteration_type(line, is_exclusive),
+        }
+    }
+}
+
+fn calculate_iteration_type<N: Num>(line: Line<N>, is_exclusive: bool) -> IterationType {
+    if is_exclusive {
+        if line.is_empty() {
+            IterationType::Done
+        } else {
+            IterationType::Exclusive
+        }
+    } else {
+        if line.is_empty() {
+            IterationType::NoMovement
+        } else {
+            IterationType::Inclusive
         }
     }
 }
@@ -43,21 +75,34 @@ impl<N: Num> Iterator for LineIterator<N> {
     type Item = Point<N>;
 
     fn next(&mut self) -> Option<Self::Item> {
+        if self.iteration_type == IterationType::Done {
+            return None;
+        }
+
+        if self.iteration_type == IterationType::NoMovement {
+            self.iteration_type = IterationType::Done;
+
+            return Some(self.end.from_f32());
+        }
+
         if has_moved_to_final_iteration(self.current, self.end, self.step) {
-            if self.is_exclusive {
+            if self.iteration_type == IterationType::Exclusive {
+                self.iteration_type = IterationType::Done;
                 return None;
             }
 
             if has_moved_to_final_iteration(self.current - self.step, self.end, self.step) {
+                self.iteration_type = IterationType::Done;
                 return None;
             }
 
-            self.current += self.step * 2.0;
+            self.iteration_type = IterationType::Done;
             return Some(self.end.from_f32());
         }
 
         let current = self.current;
         self.current = current + self.step;
+
         Some(current.from_f32())
     }
 }
@@ -90,7 +135,7 @@ fn has_moved_to_final_iteration(current: Point<f32>, end: Point<f32>, step: Poin
 mod iterating {
     use super::*;
     use crate::geom::testing_utils::assert_approx_points_vec_eq;
-    use ::testcat::*;
+    use testcat::*;
 
     describe!("exclusive", {
         it!(
@@ -108,14 +153,6 @@ mod iterating {
     });
 
     describe!("inclusive", {
-        it!(
-            "should return one point when start and finish are same",
-            test_inclusive_same_point
-        );
-        it!(
-            "should iterate all points from start to finish",
-            test_inclusive_iterate_positive
-        );
         it!(
             "should iterate all points from start to finish, in reverse",
             test_inclusive_iterate_negative
@@ -161,7 +198,8 @@ mod iterating {
         ]);
     }
 
-    fn test_inclusive_same_point() {
+    #[test]
+    fn it_should_return_one_point_when_start_and_finish_are_same() {
         let line: Line<f32> = Line(Point(10.0, 20.0), Point(10.0, 20.0));
         let points: Vec<Point<f32>> = line.into_iter_inclusive().collect();
 
@@ -171,7 +209,8 @@ mod iterating {
         ]);
     }
 
-    fn test_inclusive_iterate_positive() {
+    #[test]
+    fn it_should_iterate_all_points_from_start_to_finish() {
         let line: Line<f32> = Line(Point(10.0, 20.0), Point(15.0, 24.0));
         let points: Vec<Point<f32>> = line.into_iter_inclusive().collect();
 

@@ -1,4 +1,4 @@
-use ::std::ops::Range;
+use std::ops::Range;
 
 pub trait NumberExtensions {
     fn range_transform(self, src_from: Self, src_to: Self, dest_from: Self, dest_to: Self) -> Self;

@@ -1,4 +1,4 @@
-use ::std::mem::size_of;
+use std::mem::size_of;
 
 ///
 /// When you convert between numeric types, there are some common issues you run into.

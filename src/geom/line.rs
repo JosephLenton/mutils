@@ -1,20 +1,20 @@
-use ::std::iter::IntoIterator;
-use ::std::ops::Add;
-use ::std::ops::AddAssign;
-use ::std::ops::Div;
-use ::std::ops::DivAssign;
-use ::std::ops::Mul;
-use ::std::ops::MulAssign;
-use ::std::ops::Neg;
-use ::std::ops::Rem;
-use ::std::ops::Shl;
-use ::std::ops::ShlAssign;
-use ::std::ops::Shr;
-use ::std::ops::ShrAssign;
-use ::std::ops::Sub;
-use ::std::ops::SubAssign;
+use std::iter::IntoIterator;
+use std::ops::Add;
+use std::ops::AddAssign;
+use std::ops::Div;
+use std::ops::DivAssign;
+use std::ops::Mul;
+use std::ops::MulAssign;
+use std::ops::Neg;
+use std::ops::Rem;
+use std::ops::Shl;
+use std::ops::ShlAssign;
+use std::ops::Shr;
+use std::ops::ShrAssign;
+use std::ops::Sub;
+use std::ops::SubAssign;
 
-use ::num_traits::sign::Signed;
+use num_traits::sign::Signed;
 
 use crate::num::FromRounded;
 use crate::num::INum;
@@ -87,6 +87,10 @@ impl<N: Num> Line<N> {
 
     pub fn top_y(self) -> N {
         self.start().y().max(self.end().y())
+    }
+
+    pub fn is_empty(self) -> bool {
+        self.start() == self.end()
     }
 
     pub fn is_horizontal(self) -> bool {
@@ -757,6 +761,55 @@ impl<N: Num> IntoIterator for Line<N> {
 }
 
 #[cfg(test)]
+mod test_into_iter {
+    use super::*;
+
+    #[test]
+    fn it_should_iterate_horizontally() {
+        let line = Line::<u32>(Point(0, 0), Point(4, 0));
+        let points = line.into_iter().collect::<Vec<_>>();
+
+        assert_eq!(
+            points,
+            [Point(0, 0), Point(1, 0), Point(2, 0), Point(3, 0),]
+        );
+    }
+
+    #[test]
+    fn it_should_iterate_horizontally_in_reverse() {
+        let line = Line::<u32>(Point(4, 0), Point(0, 0));
+        let points = line.into_iter().collect::<Vec<_>>();
+
+        assert_eq!(
+            points,
+            [Point(4, 0), Point(3, 0), Point(2, 0), Point(1, 0),]
+        );
+    }
+
+    #[test]
+    fn it_should_iterate_vertically() {
+        let line = Line::<u32>(Point(0, 0), Point(0, 4));
+        let points = line.into_iter().collect::<Vec<_>>();
+
+        assert_eq!(
+            points,
+            [Point(0, 0), Point(0, 1), Point(0, 2), Point(0, 3),]
+        );
+    }
+
+    #[test]
+    fn it_should_iterate_vertically_in_reverse() {
+        let line = Line::<u32>(Point(0, 4), Point(0, 0));
+        let points = line.into_iter().collect::<Vec<_>>();
+
+        assert_eq!(
+            points,
+            [Point(0, 4), Point(0, 3), Point(0, 2), Point(0, 1),]
+        );
+    }
+}
+
+#[cfg(test)]
 mod is_horizontal {
     use super::*;
 
@@ -969,7 +1022,7 @@ mod interpolation_point {
 #[cfg(test)]
 mod rotate {
     use super::*;
-    use ::std::f32::consts::TAU;
+    use std::f32::consts::TAU;
 
     #[test]
     fn it_should_be_level_after_45_rotation() {
@@ -996,7 +1049,7 @@ mod rotate {
 #[cfg(test)]
 mod rotate_around_point {
     use super::*;
-    use ::std::f32::consts::TAU;
+    use std::f32::consts::TAU;
 
     #[test]
     fn it_should_be_rotated_with_90_rotation() {

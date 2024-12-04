@@ -12,3 +12,4 @@ Cargo.lock
 /rust-toolchain
 /rust-toolchain_
 
+.DS_Store

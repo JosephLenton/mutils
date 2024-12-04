@@ -1,4 +1,4 @@
-use ::std::cmp::Ord;
+use std::cmp::Ord;
 
 /// The functions defined here don't have traits,
 /// or the traits are only partially implemented on numeric types.

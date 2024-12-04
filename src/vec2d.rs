@@ -1,9 +1,9 @@
-use ::std::cmp::PartialEq;
-use ::std::fmt;
-use ::std::iter::IntoIterator;
-use ::std::iter::Iterator;
-use ::std::ops::Index;
-use ::std::ops::IndexMut;
+use std::cmp::PartialEq;
+use std::fmt;
+use std::iter::IntoIterator;
+use std::iter::Iterator;
+use std::ops::Index;
+use std::ops::IndexMut;
 
 use crate::geom::Point;
 use crate::geom::Rect;
@@ -14,8 +14,11 @@ use crate::geom::Size;
 /// A Vec2D has a fixed size and cannot be resized.
 #[derive(Clone)]
 pub struct Vec2D<V: Copy> {
-    /// The width and height of this Vec2D.
+    /// The width of this.
     width: usize,
+
+    /// The height this.
+    height: usize,
 
     /// The raw data inside.
     /// It's size matches the size of this Vec2D.
@@ -29,6 +32,7 @@ impl<V: Copy> Vec2D<V> {
     pub fn new(size: Size<usize>, default: V) -> Self {
         Vec2D {
             width: size.width(),
+            height: size.height(),
             data: vec![default; size.area()],
         }
     }
@@ -36,6 +40,7 @@ impl<V: Copy> Vec2D<V> {
     /// In Debug mode this will panic! if it is given a vector with different shaped arrays.
     pub fn new_from_vecs(vec: Vec<Vec<V>>) -> Self {
         let width = vec.get(0).map(|v| v.len()).unwrap_or(0);
+        let height = vec.len();
 
         #[cfg(debug_assertions)]
         {
@@ -47,6 +52,7 @@ impl<V: Copy> Vec2D<V> {
         Self {
             data: vec.into_iter().flatten().collect(),
             width,
+            height,
         }
     }
 
@@ -80,7 +86,7 @@ impl<V: Copy> Vec2D<V> {
     }
 
     pub fn height(&self) -> usize {
-        self.data.len() / self.width
+        self.height
     }
 
     /// Returns a slice which encompasses the entire map.
@@ -264,6 +270,44 @@ mod new {
         let pixels = Vec2D::new(Size(2, 2), 123);
 
         assert_eq!(pixels.raw_data(), vec![123, 123, 123, 123,]);
+    }
+}
+
+#[cfg(test)]
+mod test_width {
+    use super::*;
+
+    #[test]
+    fn it_should_return_zero_on_empty() {
+        let matrix = Vec2D::<u32>::new_from_vecs(Vec::new());
+
+        assert_eq!(matrix.width(), 0);
+    }
+
+    #[test]
+    fn it_should_return_width_when_no_height() {
+        let matrix = Vec2D::<u32>::new(Size(5, 0), 0);
+
+        assert_eq!(matrix.width(), 5);
+    }
+}
+
+#[cfg(test)]
+mod test_height {
+    use super::*;
+
+    #[test]
+    fn it_should_return_zero_on_empty() {
+        let matrix = Vec2D::<u32>::new_from_vecs(Vec::new());
+
+        assert_eq!(matrix.height(), 0);
+    }
+
+    #[test]
+    fn it_should_return_height_when_no_width() {
+        let matrix = Vec2D::<u32>::new_from_vecs(vec![Vec::new(), Vec::new(), Vec::new()]);
+
+        assert_eq!(matrix.height(), 3);
     }
 }
 

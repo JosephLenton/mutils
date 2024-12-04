@@ -1,5 +1,5 @@
-use ::std::convert::From;
-use ::std::num::ParseIntError;
+use std::convert::From;
+use std::num::ParseIntError;
 
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum ColourParseError {

@@ -1,7 +1,7 @@
-use ::std::convert::From;
-use ::std::ops::Add;
+use std::convert::From;
+use std::ops::Add;
 
-use ::num_traits::sign::Signed;
+use num_traits::sign::Signed;
 
 use crate::geom::Line;
 use crate::geom::Point;

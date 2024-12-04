@@ -11,9 +11,6 @@ pub struct BCurve<const N: usize> {
     pub(crate) points: [Point; N],
 }
 
-#[derive(Copy, Clone, Debug, PartialEq)]
-struct CurvePoint(pub Line);
-
 /// The number of times to chop up a curve when calculating it's length.
 /// Number picked is entirely arbituary. I have no idea if it's a good / bad number.
 const LENGTH_SEGMENTS: u32 = 12;

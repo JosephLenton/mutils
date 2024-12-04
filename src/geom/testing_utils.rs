@@ -3,7 +3,7 @@ use crate::geom::Point;
 use crate::geom::Rect;
 use crate::geom::Size;
 
-use ::assert_approx_eq::assert_approx_eq;
+use assert_approx_eq::assert_approx_eq;
 
 pub fn assert_approx_rect_eq(a: Rect<f32>, b: Rect<f32>) {
     assert_approx_point_eq(a.bottom_left(), b.bottom_left());

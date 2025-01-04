@@ -763,6 +763,7 @@ impl<N: Num> IntoIterator for Line<N> {
 #[cfg(test)]
 mod test_into_iter {
     use super::*;
+    use crate::geom::testing_utils::assert_approx_points_vec_eq;
 
     #[test]
     fn it_should_iterate_horizontally() {
@@ -805,6 +806,129 @@ mod test_into_iter {
         assert_eq!(
             points,
             [Point(0, 4), Point(0, 3), Point(0, 2), Point(0, 1),]
+        );
+    }
+
+    #[test]
+    fn it_should_iterate_diagonally() {
+        let line = Line::<u32>(Point(0, 0), Point(4, 4));
+        let points = line.into_iter().collect::<Vec<_>>();
+
+        assert_eq!(
+            points,
+            [Point(0, 0), Point(1, 1), Point(2, 2), Point(3, 3),]
+        );
+    }
+
+    #[test]
+    fn it_should_return_one_point_when_start_and_finish_are_same() {
+        let line: Line<f32> = Line(Point(10.0, 20.0), Point(10.0, 20.0));
+        let points: Vec<Point<f32>> = line.into_iter().collect();
+
+        assert_eq!(points, vec![]);
+    }
+
+    #[test]
+    fn it_should_iterate_all_points_from_start_to_finish() {
+        let line: Line<f32> = Line(Point(10.0, 20.0), Point(15.0, 24.0));
+        let points: Vec<Point<f32>> = line.into_iter().collect();
+
+        #[rustfmt::skip]
+        assert_approx_points_vec_eq(points, vec![
+            Point(10.0, 20.0),
+            Point(10.780869, 20.624695),
+            Point(11.561737, 21.24939),
+            Point(12.342606, 21.874084),
+            Point(13.123474, 22.49878),
+            Point(13.904343, 23.123474),
+            Point(14.685211, 23.748169),
+        ]);
+    }
+
+    #[test]
+    fn it_should_iterate_all_points_from_start_to_finish_in_reverse() {
+        let line: Line<f32> = Line(Point(10.0, 20.0), Point(15.0, 24.0)).reverse();
+        let points: Vec<Point<f32>> = line.into_iter().collect();
+
+        #[rustfmt::skip]
+        assert_approx_points_vec_eq(points, vec![
+            Point(15.0, 24.0),
+            Point(14.219131, 23.375305),
+            Point(13.438263, 22.75061),
+            Point(12.657394, 22.125916),
+            Point(11.876526, 21.50122),
+            Point(11.095657, 20.876526),
+            Point(10.314789, 20.251831),
+        ]);
+    }
+}
+
+#[cfg(test)]
+mod test_into_iter_inclusive {
+    use super::*;
+    use crate::geom::testing_utils::assert_approx_points_vec_eq;
+
+    #[test]
+    fn it_should_return_one_point_when_start_and_finish_are_same() {
+        let line: Line<f32> = Line(Point(10.0, 20.0), Point(10.0, 20.0));
+        let points: Vec<Point<f32>> = line.into_iter_inclusive().collect();
+
+        #[rustfmt::skip]
+        assert_approx_points_vec_eq(points, vec![
+            Point(10.0, 20.0),
+        ]);
+    }
+
+    #[test]
+    fn it_should_iterate_all_points_from_start_to_finish_inclusive() {
+        let line: Line<f32> = Line(Point(10.0, 20.0), Point(15.0, 24.0));
+        let points: Vec<Point<f32>> = line.into_iter_inclusive().collect();
+
+        #[rustfmt::skip]
+        assert_approx_points_vec_eq(points, vec![
+            Point(10.0, 20.0),
+            Point(10.780869, 20.624695),
+            Point(11.561737, 21.24939),
+            Point(12.342606, 21.874084),
+            Point(13.123474, 22.49878),
+            Point(13.904343, 23.123474),
+            Point(14.685211, 23.748169),
+            Point(15.0, 24.0),
+        ]);
+    }
+
+    #[test]
+    fn it_should_iterate_all_points_from_start_to_finish_in_reverse_inclusive() {
+        let line: Line<f32> = Line(Point(10.0, 20.0), Point(15.0, 24.0)).reverse();
+        let points: Vec<Point<f32>> = line.into_iter_inclusive().collect();
+
+        #[rustfmt::skip]
+        assert_approx_points_vec_eq(points, vec![
+            Point(15.0, 24.0),
+            Point(14.219131, 23.375305),
+            Point(13.438263, 22.75061),
+            Point(12.657394, 22.125916),
+            Point(11.876526, 21.50122),
+            Point(11.095657, 20.876526),
+            Point(10.314789, 20.251831),
+            Point(10.0, 20.0),
+        ]);
+    }
+
+    #[test]
+    fn it_should_iterate_diagonally() {
+        let line = Line::<u32>(Point(0, 0), Point(4, 4));
+        let points = line.into_iter_inclusive().collect::<Vec<_>>();
+
+        assert_eq!(
+            points,
+            [
+                Point(0, 0),
+                Point(1, 1),
+                Point(2, 2),
+                Point(3, 3),
+                Point(4, 4)
+            ]
         );
     }
 }

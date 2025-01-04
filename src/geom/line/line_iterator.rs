@@ -1,12 +1,10 @@
-use std::marker::PhantomData;
-
 use crate::geom::Line;
 use crate::geom::Point;
 use crate::num::Num;
 
 #[derive(Clone, Debug)]
 pub struct LineIterator<N: Num = f32> {
-    n_type_marker: PhantomData<N>,
+    current_n: Point<N>,
     current: Point<f32>,
     end: Point<f32>,
     step: Point<f32>,
@@ -46,7 +44,7 @@ impl<N: Num> LineIterator<N> {
         }
 
         Self {
-            n_type_marker: PhantomData,
+            current_n: current.from_f32(),
             current,
             end,
             step,
@@ -79,31 +77,29 @@ impl<N: Num> Iterator for LineIterator<N> {
             return None;
         }
 
-        if self.iteration_type == IterationType::NoMovement {
-            self.iteration_type = IterationType::Done;
-
-            return Some(self.end.from_f32());
-        }
-
-        if has_moved_to_final_iteration(self.current, self.end, self.step) {
-            if self.iteration_type == IterationType::Exclusive {
+        let last = self.current_n;
+        loop {
+            if has_moved_to_final_iteration(self.current, self.end, self.step) {
+                let is_exclusive = self.iteration_type == IterationType::Exclusive;
                 self.iteration_type = IterationType::Done;
-                return None;
+
+                if is_exclusive {
+                    return None;
+                } else {
+                    return Some(self.end.from_f32());
+                }
             }
 
-            if has_moved_to_final_iteration(self.current - self.step, self.end, self.step) {
-                self.iteration_type = IterationType::Done;
-                return None;
-            }
+            self.current = self.current + self.step;
 
-            self.iteration_type = IterationType::Done;
-            return Some(self.end.from_f32());
+            let next = self.current.from_f32();
+            if next != last {
+                self.current_n = next;
+                break;
+            }
         }
 
-        let current = self.current;
-        self.current = current + self.step;
-
-        Some(current.from_f32())
+        Some(last)
     }
 }
 
@@ -129,118 +125,4 @@ fn has_moved_to_final_iteration(current: Point<f32>, end: Point<f32>, step: Poin
     }
 
     false
-}
-
-#[cfg(test)]
-mod iterating {
-    use super::*;
-    use crate::geom::testing_utils::assert_approx_points_vec_eq;
-    use testcat::*;
-
-    describe!("exclusive", {
-        it!(
-            "should return no points when start and finish are same",
-            test_exclusive_same_point
-        );
-        it!(
-            "should iterate all points from start to finish",
-            test_exclusive_iterate_positive
-        );
-        it!(
-            "should iterate all points from start to finish, in reverse",
-            test_exclusive_iterate_negative
-        );
-    });
-
-    describe!("inclusive", {
-        it!(
-            "should iterate all points from start to finish, in reverse",
-            test_inclusive_iterate_negative
-        );
-    });
-
-    fn test_exclusive_same_point() {
-        let line: Line<f32> = Line(Point(10.0, 20.0), Point(10.0, 20.0));
-        let points: Vec<Point<f32>> = line.into_iter().collect();
-
-        assert_eq!(points, vec![]);
-    }
-
-    fn test_exclusive_iterate_positive() {
-        let line: Line<f32> = Line(Point(10.0, 20.0), Point(15.0, 24.0));
-        let points: Vec<Point<f32>> = line.into_iter().collect();
-
-        #[rustfmt::skip]
-        assert_approx_points_vec_eq(points, vec![
-            Point(10.0, 20.0),
-            Point(10.780869, 20.624695),
-            Point(11.561737, 21.24939),
-            Point(12.342606, 21.874084),
-            Point(13.123474, 22.49878),
-            Point(13.904343, 23.123474),
-            Point(14.685211, 23.748169),
-        ]);
-    }
-
-    fn test_exclusive_iterate_negative() {
-        let line: Line<f32> = Line(Point(10.0, 20.0), Point(15.0, 24.0)).reverse();
-        let points: Vec<Point<f32>> = line.into_iter().collect();
-
-        #[rustfmt::skip]
-        assert_approx_points_vec_eq(points, vec![
-            Point(15.0, 24.0),
-            Point(14.219131, 23.375305),
-            Point(13.438263, 22.75061),
-            Point(12.657394, 22.125916),
-            Point(11.876526, 21.50122),
-            Point(11.095657, 20.876526),
-            Point(10.314789, 20.251831),
-        ]);
-    }
-
-    #[test]
-    fn it_should_return_one_point_when_start_and_finish_are_same() {
-        let line: Line<f32> = Line(Point(10.0, 20.0), Point(10.0, 20.0));
-        let points: Vec<Point<f32>> = line.into_iter_inclusive().collect();
-
-        #[rustfmt::skip]
-        assert_approx_points_vec_eq(points, vec![
-            Point(10.0, 20.0),
-        ]);
-    }
-
-    #[test]
-    fn it_should_iterate_all_points_from_start_to_finish() {
-        let line: Line<f32> = Line(Point(10.0, 20.0), Point(15.0, 24.0));
-        let points: Vec<Point<f32>> = line.into_iter_inclusive().collect();
-
-        #[rustfmt::skip]
-        assert_approx_points_vec_eq(points, vec![
-            Point(10.0, 20.0),
-            Point(10.780869, 20.624695),
-            Point(11.561737, 21.24939),
-            Point(12.342606, 21.874084),
-            Point(13.123474, 22.49878),
-            Point(13.904343, 23.123474),
-            Point(14.685211, 23.748169),
-            Point(15.0, 24.0),
-        ]);
-    }
-
-    fn test_inclusive_iterate_negative() {
-        let line: Line<f32> = Line(Point(10.0, 20.0), Point(15.0, 24.0)).reverse();
-        let points: Vec<Point<f32>> = line.into_iter_inclusive().collect();
-
-        #[rustfmt::skip]
-        assert_approx_points_vec_eq(points, vec![
-            Point(15.0, 24.0),
-            Point(14.219131, 23.375305),
-            Point(13.438263, 22.75061),
-            Point(12.657394, 22.125916),
-            Point(11.876526, 21.50122),
-            Point(11.095657, 20.876526),
-            Point(10.314789, 20.251831),
-            Point(10.0, 20.0),
-        ]);
-    }
 }

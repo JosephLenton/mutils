@@ -4,6 +4,7 @@ use crate::geom::Rect;
 use crate::geom::Size;
 
 use assert_approx_eq::assert_approx_eq;
+use pretty_assertions::assert_eq;
 
 pub fn assert_approx_rect_eq(a: Rect<f32>, b: Rect<f32>) {
     assert_approx_point_eq(a.bottom_left(), b.bottom_left());
@@ -29,13 +30,11 @@ pub fn assert_approx_points_vec_eq(as_vec: Vec<Point<f32>>, bs_vec: Vec<Point<f3
     let as_len = as_vec.len();
     let bs_len = bs_vec.len();
 
-    for (a, b) in as_vec.iter().zip(bs_vec) {
-        assert_approx_point_eq(*a, b);
+    for (a, b) in as_vec.iter().zip(&bs_vec) {
+        assert_approx_point_eq(*a, *b);
     }
 
-    assert_eq!(
-        as_len, bs_len,
-        "Point vectors have different lengths ... {} vs {}",
-        as_len, bs_len
-    );
+    if as_len != bs_len {
+        assert_eq!(as_vec, bs_vec);
+    }
 }
